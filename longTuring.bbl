@@ -1,0 +1,37 @@
+\begin{thebibliography}{1}
+
+\bibitem{burstyTuring12Conf}
+Ilir \c{C}apuni and Peter G\'acs.
+\newblock A {T}uring machine resisting isolated bursts of faults.
+\newblock In M\'aria Bielikov\'a, Gerhard Friedrich, Georg Gottlob, Stefan
+  Katzenbeisser, and Gy\"orgy Tur\'an, editors, {\em SOFSEM 2012: Theory and
+  Practice of Computer Science}, volume 7147 of {\em Lecture Notes in Computer
+  Science}, pages 165--176. Springer Berlin / Heidelberg, 2012.
+\newblock Full version in arXiv:1203.1335.
+
+\bibitem{DurandRomashShenTiling12}
+Bruno Durand, Andrei Romashchenko, and Alexander Shen.
+\newblock Fixed-point tile sets and their applications.
+\newblock {\em Journal of Computer and System Sciences}, 78(3):731--764, 2012.
+
+\bibitem{Gacs1dim86}
+Peter G\'acs.
+\newblock Reliable computation with cellular automata.
+\newblock {\em Journal of Computer System Science}, 32(1):15--78, February
+  1986.
+\newblock Conference version at STOC' 83.
+
+\bibitem{GacsSorg01}
+Peter G\'acs.
+\newblock Reliable cellular automata with self-organization.
+\newblock {\em Journal of Statistical Physics}, 103(1/2):45--267, April 2001.
+\newblock See also arXiv:math/0003117 [math.PR] and the proceedings of STOC
+  '97.
+
+\bibitem{Kurd78}
+G.~L. Kurdyumov.
+\newblock An example of a nonergodic homogenous one-dimensional random medium
+  with positive transition probabilities.
+\newblock {\em Soviet Mathematical Doklady}, 19(1):211--214, 1978.
+
+\end{thebibliography}

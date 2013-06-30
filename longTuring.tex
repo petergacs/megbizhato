@@ -1,0 +1,2044 @@
+\documentclass[12pt]{memoir}
+
+\pagestyle{simple}
+\setlrmargins{*}{*}{1}
+\checkandfixthelayout
+
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\counterwithout{section}{chapter}
+%\counterwithout{figure}{chapter}
+
+\makeatletter
+% To correct a memoir bug:
+\renewcommand{\@memmain@floats}{%
+  \counterwithin{figure}{section}
+  \counterwithin{table}{section}}
+\makeatother
+
+\firmlists
+
+% Not with mathdesign.  Before hyperref, otherwise AucTex is in trouble:
+% \usepackage{amssymb}
+
+\usepackage[backref,hyperindex,colorlinks,citecolor=blue]{hyperref}
+
+% If you do not want the bibliography on a separate page:
+\renewcommand{\bibsection}{% 
+\section*{\bibname} 
+\prebibhook}
+
+\usepackage[all]{hypcap} % After hyperref, to anchor floats correctly.
+
+\usepackage{float}
+ % After hyperref:
+\usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
+
+\usepackage{cheatpf} % After hyperref ?
+\usepackage{gacs,gacs-algo} % After hyperref.
+
+% After gacs.sty
+%\numberwithin{equation}{section} % in amsmath
+
+\myLibertine % defined in gacs.sty
+
+\hyphenation{com-plex-ity des-tin-at-ion}
+
+\newcommand{\fld}[1]{\ensuremath{\textit{#1}}}
+\newcommand{\rul}[1]{\ensuremath{\texttt{\slshape #1\/}}}
+\newcommand{\maj}{\mathrm{maj}}
+\newcommand{\sign}{\mathop\mathrm{sign}}
+
+\renewcommand{\B}{B}
+\newcommand{\Bad}{\mathit{Bad}}
+\newcommand{\blank}{\text{\textvisiblespace}}
+\newcommand{\Configs}{\mathrm{Configs}}
+\newcommand{\Damage}{Damage}
+\newcommand{\h}{h}
+\newcommand{\hc}{\tilde h}
+\newcommand{\Noise}{\mathit{Noise}}
+\newcommand{\Output}{\mathit{output}}
+\newcommand{\pos}{\mathrm{pos}}
+\newcommand{\Tu}{T}
+\newcommand{\Tus}{T^{*}}
+\renewcommand{\U}{U} % What was it?
+\newcommand{\Z}{Z}
+
+
+\newcommand{\Addr}{\fld{Addr}}
+\newcommand{\cAddr}{\fld{cAddr}}
+\newcommand{\Core}{\fld{Core}}
+\newcommand{\cCore}{\fld{cCore}}
+\newcommand{\Dir}{\fld{Dir}}
+\newcommand{\cDir}{\fld{cDir}}
+\newcommand{\Drift}{\fld{Drift}}
+\newcommand{\Doomed}{\fld{Doomed}}
+\newcommand{\cDrift}{\fld{cDrift}}
+\renewcommand{\G}{\fld{NonAdj}} % What was it?
+\newcommand{\cHold}{\fld{cHold}}
+\newcommand{\Index}{\fld{Index}}
+\newcommand{\Info}{\fld{Info}}
+\newcommand{\cInfo}{\fld{cInfo}}
+\newcommand{\Kind}{\fld{Kind}}
+\newcommand{\cKind}{\fld{cKind}}
+\newcommand{\cLevel}{\fld{cLevel}}
+\newcommand{\Mode}{\fld{Mode}}
+\newcommand{\cProg}{\fld{cProg}}
+\newcommand{\State}{\fld{State}}
+\newcommand{\cState}{\fld{cState}}
+\newcommand{\Sweep}{\fld{Sw}}
+\newcommand{\cSweep}{\fld{cSw}}
+\newcommand{\cWork}{\fld{cWork}}
+\newcommand{\ZigDepth}{\fld{ZigDepth}}
+\newcommand{\ZigDir}{\fld{ZigDir}}
+
+\newcommand{\Bridge}{\mathrm{Bridge}}
+\newcommand{\Coordinated}{\mathrm{Coordinated}}
+\newcommand{\decode}{\mathrm{decode}}
+\newcommand{\dir}{\mathrm{dir}}
+\newcommand{\encode}{\mathrm{encode}}
+\newcommand{\Healing}{\mathrm{Healing}}
+\newcommand{\Histories}{\mathrm{Histories}}
+\newcommand{\Last}{\mathrm{Last}}
+\newcommand{\Member}{\mathrm{Member}}
+\newcommand{\Neighbor}{\mathrm{Neighbor}}
+\newcommand{\Normal}{\mathrm{Normal}}
+
+\newcommand{\PadLen}{\mathit{PadLen}}
+\newcommand{\Interpr}{\mathit{Interpr}}
+
+\newcommand{\Recovering}{\mathrm{Recovering}}
+\newcommand{\start}{\mathrm{start}}
+\newcommand{\state}{\mathrm{state}}
+\newcommand{\Stem}{\mathrm{Stem}}
+\newcommand{\tape}{\mathrm{tape}}
+\newcommand{\TransferSw}{\mathrm{TransferSw}}
+\newcommand{\Un}{\mathrm{Univ}}
+\newcommand{\Vacant}{\mathrm{Vac}}
+
+\newcommand{\increment}[1]{#1\mathord{+}\mathord{+}}
+\newcommand{\decrement}[1]{#1\mathord{-}\mathord{-}}
+
+
+\newcommand{\ruAddrJmp}{\rul{AddrJmp}}
+\newcommand{\Alarm}{\rul{Alarm}}
+\newcommand{\Comp}{\rul{Compute}}
+%\newcommand{\Vacate}{\rul{Vacate}}
+\newcommand{\Move}{\rul{Move}}
+\newcommand{\ruSwing}{\rul{Swing}}
+\newcommand{\Transfer}{\rul{Transfer}}
+\newcommand{\UsefulComp}{\rul{UsefulComp}}
+\newcommand{\WriteRulesBit}{\rul{WriteRulesBit}}
+\newcommand{\Zigzag}{\rul{Zigzag}}
+
+
+\begin{document}
+
+\title{A reliable Turing machine}
+
+\author{Ilir \c{C}apuni \and Peter G\'acs}
+% \\ Boston University
+% \\ gacs@bu.edu
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+The title says it.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{To be written}
+
+\subsection{Turing machines}\label{sec:TM}
+
+Our contribution uses one of the standard definitions of a Turing
+machine.
+
+    A Turing machine $M$ is defined by a tuple
+        \begin{align*}
+             (\Gamma, \Sigma,\delta, q_{\start},F).
+        \end{align*}
+    Here, $\Gamma$ is a finite set of \df{states},
+    $\Sigma$ is a finite alphabet, and
+        \begin{align*}
+             \delta\colon\Sigma\times \Gamma\to \Sigma\times\Gamma\times\{-1,0,+1\}
+        \end{align*}
+    is the transition function.
+The tape alphabet $\Sigma$ contains at least the distinguished
+symbols $\blank,0,1$ where $\blank$ is called the \df{blank symbol}.
+The state $q_{\start}$ is called the \df{starting state}, and
+there is a set $F$ of \df{final states}.
+
+    The tape is blank at all but finitely many positions.
+
+    A \df{configuration} is a tuple
+        \begin{align*}
+             (q,A,\h),
+        \end{align*}
+    where $q\in\Gamma$ is the \df{current state}, 
+$\h\in\bbZ$ is the current \df{head position}, or \df{observed cell},
+and $A\in\Sigma^{\bbZ}$ is the \df{tape content}: 
+at position \( p \), the tape contains the symbol \( A[p] \).
+If $C=(q,A,\h)$ is a configuration then we will write
+        \begin{align*}
+             C.\state=q,\quad C.\pos=\h, \quad C.\tape=A.
+        \end{align*}
+    Here, $A$ is also called the \df{tape configuration}.
+    The cell at position $\h$ is the  \df{current cell}.
+Though the tape alphabet may contain
+non-binary symbols, we will restrict input and output to binary.
+
+    The transition function $\delta$ tells us how to compute the next
+    configuration from the present one.
+    When the machine is in a state $q$, at tape position $\h$, and
+    observes tape cell with content $a$, then denoting
+         \begin{align*}
+           (a',q',j)=\delta(a,q),
+         \end{align*}
+    it will change the state to $q'$, change the
+    tape content at position \( \h \) to $a'$, and move to tape position to $\h+j$.
+    For $q\in F$ we have $a'=a$, $q'\in F$.
+
+
+\begin{definition}[Fault]\label{def:fault}
+    We say that a \df{fault} occurs at time $t$ if the output $(a',q',j)$ of the
+    transition function at this time is replaced with some other value
+    (which is then used to compute the next configuration).
+\end{definition}
+
+
+\subsection{Codes, and the result}
+
+For fault-tolerant computation, some redundant coding of the information is needed.
+
+\begin{definition}[Codes]\label{def:codes}
+    Let $\Sigma_{1},\Sigma_{2}$ be two finite alphabets.
+    A \df{block code} is given by a positive integer $Q$---called
+    the \df{block size}---and a pair of functions
+    \begin{align*}
+            \psi_{*} :\Sigma_{2}\to\Sigma_{1}^{Q},
+            \quad
+            \psi^{*}:\Sigma_{1}^{Q}\to\Sigma_{2}
+    \end{align*}
+    with the property $\psi^{*}(\psi_{*}(x))=x$.
+It is extended to strings by encoding each letter individually:
+\( \psi_{*}(x_{1},\dots,x_{n})=\psi_{*}(x_{1})\dotsm\psi_{*}(x_{n}) \).
+\end{definition}
+
+For ease of spelling out a result, let us consider only computations whose outcome
+is a single symbol, at tape position 0.
+
+\begin{theorem}\label{thm:main-main}
+There is a Turing machine $M_{1}$ with a 
+function $a\mapsto a.\Output$ defined on its alphabet, 
+such that
+for any Turing machine $G$ with alphabet $\Sigma$ and state set $\Gamma$
+there are $0\le\varepsilon <1$ and \( \alpha_{1},\alpha_{2}>0 \) 
+with the following property.
+
+For each input length \( n=|x| \) a block code
+$(\phi_*, \phi^*)$ of blocksize \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
+such that the following holds.
+
+Let $M_1$ start its work from its initial state,
+and the initial tape configuration \( \xi=(q_{\start},\phi_{*}(x),0) \).
+Assume further that
+during its operation, faults occur independently at random
+with probabilities $\le \varepsilon$.
+
+Suppose that on input $x$ machine $G$ reaches a final state at time $t$ and writes
+value \( y \) at position 0 of the tape.
+Then denoting by \( \eta(u) \) the configuration machine \( M_{1} \) at time \( u \),
+at any time \( t' \) after
+ \begin{align*}
+   t\cdot (\log t)^{\alpha_{2}},
+ \end{align*}
+we have \( \eta(t').\tape[0].\Output= y \)
+with probability at least $1 - O(\varepsilon)$.
+\end{theorem}
+
+We emphasize that the actual
+code \( \phi \) of the construction will depend on \( n \) only in a simple way:
+it will be the ``concatenation'' of one and the same fixed-size
+code with itself, \( O(\log\log n) \) times.
+
+
+\section{Overview of the construction}
+
+A Turing machine that simulates ``reliably'' any other
+Turing machine even when it is subjected to isolated bursts of faults of constant size,
+is given in~\cite{burstyTuring12Conf}.
+By \df{reliably} we mean that the 
+simulated computation can be decoded from the history
+of the simulating machine despite occasional damages.
+
+
+\subsection{Isolated bursts of faults}\label{sec:bursts}
+
+Let us give a brief overview of a machine $M_1$ that
+can withstand isolated bursts of faults, as most of its construction will be reused
+in the probabilistic setting.
+
+Let us break up the task of error correction into several 
+problems to be solved.
+The solution of one problem gives rise to another problem one, 
+but the process converges.
+\begin{flushdescription}
+\item[Redundant information] The tape information of the simulated Turing machine
+will be stored in a redundant form, more precisely in the form of a block code.
+\item[Redundant processing] The block code will be decoded, the retrieved information 
+will be processed, and the result recorded.
+To carry out all this in a way that limits the propagation of faults, the tape will be split
+into tracks that can be handled separately, and the major processing steps will be 
+carried out three times within one work period.
+\item[Local repair] All the above process must be able to recover from a local burst of faults.
+For this, it is organized into a rigid, locally checkable structure
+with the help of local addresses, and some other tools like sweeps and 
+zigging.
+The major tool of local correction, the local recovery procedure, turns out to be the most
+complex part of the construction.
+\item[Disturbed local repair] A careful organization of the recovery procedure
+makes sure that even if a new burst interrupts it (or jumps into its middle),
+soon one or two new invocations of it will finish the job (whenever needed).
+\end{flushdescription}
+
+Here is some more detail.
+
+Each tape cell of the simulated machine \( M_{2} \) will be represented by a block of
+size \( Q \) of the simulating machine \( M_{1} \) called a \df{colony}.
+Each step of \( M_{2} \) will be simulated by a computation of \( M_{1} \) called
+a \df{work period}.
+During this time, the head of \( M_{1} \) makes a number of sweeps over the
+current colony, decodes the represented cell symbol and state,
+computes the new state, and transfers the necessary information to the 
+neighbor colony that corresponds to the new position of the head of \( M_{2} \).
+
+In order to protect information from the propagation of errors,
+the tape of \( M_{1} \) is subdivided into \df{tracks}: each track corresponds to a 
+\df{field} of a cell symbol of \( M_{1} \) viewed as a data record.
+Each stage of computation will be repeated three times.
+The results will be stored in separate tracks, and a final cell-by-cell majority vote
+will recover the result of the work period from them.
+
+All this organization is controlled by a few key fields, for example a field
+called \( \cAddr \) showing the position of each cell in the colony, and a field
+\( \cSweep \) showing the last sweep of the computation (along with its direction)
+that has been performed already.
+The technically most challenging part of the construction is the protection of this
+control information from bursts.
+
+For example, a burst can reverse the head in the middle of a sweep.
+Our goal is that such structural disruptions be discovered locally, so
+we cannot allow the head to go far from the place where it was turned back.
+Therefore the head's movement will not be straight even during a single
+sweep: it will make frequent short switchbacks (zigzags).
+This will trigger alarm, and the start of a recovery procedure if for example
+a turn-back is detected.
+
+It is a significant challenge that the recovery procedure
+itself can be interrupted (or started) by a burst.
+
+
+\subsection{Hierarchical construction}
+
+In order to build a machine that can resist faults 
+occuring independently of each other with some small probability,
+we take the approach suggested in~\cite{Kurd78},
+and implemented in~\cite{Gacs1dim86} and~\cite{GacsSorg01}
+for the case of one-dimensional cellular automata, with some ideas
+from the tiling application of~\cite{DurandRomashShenTiling12}.
+We will build a \df{hierarchy of simulations}:
+machine $M_1$ simulates machine $M_2$ which 
+simulates machine $M_3$, and so on.
+For simplicity we assume all these machines have the same program,
+and all simulations have the same blocksize.
+
+One cell of machine $M_3$ is simulated by one colony of machine $M_2$.
+Correspondingly, one cell of $M_2$ is simulated by
+one colony of machine $M_1$.
+So one cell of $M_3$ is simulated by $Q^2$ cells of $M_1$.
+Further, one step of machine $M_3$ is simulated by one
+work period of $M_2$ of, say, \( O(Q^{2}) \) steps.
+One step of $M_2$ is simulated by one work period of $M_1$,
+so one step of $M_3$ is simulated by $O(Q^{4})$ steps of $M_1$.
+
+Per construction, machine $M_1$ can withstand
+bursts of faults whose size is $\le \beta$ for some constant parameter \( \beta \), that
+are separated by some $O(Q^{2})$ fault-free steps.
+Machines $M_2$, $M_3$, \( \dots \) have the same program, so it
+would be natural to expect that machine
+$M_1$ can withstand also some \emph{additional}, larger bursts
+of size $\le \beta Q$ if those are separated by at least $O(Q^{4})$ steps.
+
+But a new obstacle arises.
+On the first level, damage caused by a big burst spans several colonies.
+The repair mechanism of machine $M_1$ outlined in Section~\ref{sec:bursts} above 
+is too local to recover from such extensive damage.
+This cannot be allowed, since then the whole hierarchy would stop working.
+So we add a new mechanism to \( M_{1} \) that, more modestly,
+will just try to restore a large enough portion of the
+tape, so it can go on with the simulation of $M_2$, even if all 
+original information was lost.
+For this, \( M_{1} \) may need to rewrite an area as large as a few colonies.
+
+This will enable the low-level recovery procedure of 
+machine $M_{2}$ to restore eventually a higher-level order.
+
+All machines above $M_1$ in the hierarchy are
+``virtual'': the only hardware in the construction is machine $M_1$.
+
+A tricky issue is ``forced self-simulation'': while we are constructing machine $M_1$
+we want to give it the feature that it will simulate a machine \( M_{2} \) that
+works just like \( M_{1} \).
+The ``forced'' feature means that this simulation should
+work without any written program (that could be corrupted).
+
+This will be achieved by
+a construction similar to the proof of the Kleene's fixed-point 
+theorem (also called recursion theorem).
+We first fix a (simple) programming language to express the transition
+function of a Turing machine.
+We write an interpreter for it in this same language (just as compilers for the 
+C language are sometimes written in C).
+The program of the transition function of \( M_{2} \)
+(essentially the same as that of \( M_{1} \))
+in this language, is a string that will be
+``hard-wired'' into the transition function of \( M_{1} \), 
+so that \( M_{1} \), at the start of each work period, can write
+it on a working track of the base colony.
+Then the work period will interpret it, 
+applying it to the data found there, resulting
+in the simulation of \( M_{2} \).
+
+In this way, an infinite sequence of simulations arises, in order
+to withstand larger and larger but sparser and sparser bursts of faults.
+
+Since the $M_1$ uses the universal interpreter, which in turns
+simulates the same program, it is natural to ask
+how  machine $M_1$ simulates a given Turing machine $G$ that does the 
+actual useful computation?
+For this task, we set aside a separate track 
+on each machine $M_i$, on which some arbitrary other Turing machine can be
+simulated.
+The higher the level of the machine \( M_{k} \) that performs this
+``side-simulation'', the higher the reliability.
+Thus, only the simulations \( M_{k}\to M_{k+1} \) are forced, without program
+(that is a hard-wired program):
+the side simulations can rely on written programs, since the firm
+structure in the hierarchy \( M_{1},M_{2},\dots \) will support them reliably.
+
+
+
+\subsection{From combinatorial to probabilistic noise}
+
+The construction we gave in the previous subsection
+was related to increasing bursts that are not frequent.
+In essence, that noise model is combinatorial.
+To deal with probabilistic noise combinatorially,
+we stratify the set of faulty times $\Noise$ as follows.
+For a series of parameters \( \beta_{k}, V_{k} \),
+we first remove ``isolated bursts'' of type \( \pair{\beta_{1}}{V_{1}} \) of elements of this set.
+(The notion of ``isolated bursts'' of type \( \pair{\beta}{V} \)
+will be defined appropriately.)
+Then, we remove isolated bursts of type \( \pair{\beta_{2}}{V_{2}} \) from the remaining set,
+and so on.
+It will be shown that with the appropriate choice of parameters, with probability 1,
+eventually nothing is left over from the set $\Noise$.
+
+A composition of two reliable simulations is even more reliable.
+We will see that a sufficiently large hierarchy of such
+simulations resists probabilistic noise.
+
+
+\subsection{Difficulties}\label{sec:novelties}
+
+Let us spell-out some of the main problems that the paper deals with, 
+and some general ways they will be solved or avoided.
+
+
+\begin{bullets}
+
+\item A large burst of $M_1$ can modify the order of
+entire colonies or create new ones with gaps between them.
+
+To overcome this problem conceptually, we 
+introduce the notion of a \df{generalized Turing machine}
+allowing for non-adjacent cells.
+Each such machine has a parameter $\B$ called the \df{cell body size}.
+The cell body size of a Turing machine in Section~\ref{sec:TM} would still remain
+$1$.
+
+    \item What to do when the head is in a middle of an empty area
+       where no structure exists?
+To ensure reliable passage across such areas,
+we will try to keep everything filled with cells, even if these are
+not part of the main computation.
+
+    \item Noise can create areas over
+     which the predictability of the simulated machine is limited.
+     In these islands the (on this level) invisible structure
+     of the underlying simulation may be destroyed.
+     These areas should not simply be considered blank, since
+     blankness implies predictable behavior.
+     They will be called \df{damaged}.
+     When the head is in or near damage then even in the absence of new faults,
+     the predictability of the behavior of the (simulated) machine will be
+     severely limited.
+
+\item Due to limited predictability over damage, the definition of the generalized
+Turing machine stipulates a certain ``magical'' erasure of damage in case the
+head stays long enough on it.
+(Of course, this property needs to be implemented in simulation, which is one of the
+main burdens of the actual construction.)
+Once damage is erased the area will be re-populated with new cells.
+Their content is not important, what matters is the restoration of predictability.
+
+        \item If local repair fails, a special rule will be invoked that reorganizes a
+larger part of the tape (of the size of a few colonies instead of only a few cells).
+This is the mechanism enabling the ``magical'' restoration on the next level.
+
+\end{bullets}
+
+\subsection{A shortcut solution}
+
+A fault-tolerant one-dimensional cellular automaton is constructed
+in~\cite{GacsSorg01}.
+If our Turing machine could just simulate such an automaton, it would become
+fault-tolerant.
+This can indeed almost be done provided that the size of the computation is known in advance.
+The cellular automaton can be made finite, and we could define
+a ``kind of'' Turing machine with a \emph{circular tape} simulating it.
+But this solution requires input size-dependent hardware.
+
+It seems difficult to define a fault-tolerant sweeping 
+behavior on a regular Turing machine needed to 
+simulate cellular automaton, without recreating
+an entire hierarchical construction---as we are doing here.
+
+
+\section{Notational conventions}\label{sec:notational-conventions}
+
+Most notational conventions given here are common; some other ones will
+also be useful.
+
+\begin{flushdescription}
+
+\item [Natural numbers and integers] 
+By $\bbZ$ we denote the set of integers.
+\begin{align*}
+   \bbZ_{>0}&=\setOf{x}{x\in \bbZ,\;  x>0}, \\
+   \bbZ_{\ge 0}&=\bbN=\setOf{x}{x\in \bbZ,\;  x\ge 0}.
+\end{align*}
+
+\item [Intervals]
+We use the standard notation for intervals:
+\begin{align*}
+   \clint{a}{b}&=\setOf{x}{a\le x \le b},\quad \lint{a}{b}=\setOf{x}{a\le x < b}, \\
+   \rint{a}{b}&=\setOf{x}{a< x \le b}, \quad  \opint{a}{b}=\setOf{x}{a< x < b}.
+\end{align*}
+We will also write \( \lint{a}{b} \) in place of \( \lint{a}{b}\cap \bbZ \), 
+whenever this leads to no confusion.
+Instead of \( \lint{x+a}{x+b} \), sometimes we will write 
+\begin{align*}x + \lint{a}{b}.\end{align*}
+
+\item [Ordered pairs]
+Ordered pairs are also denoted by \( \pair{a}{b} \),
+but it will be clear from the context whether we are
+referring to an ordered pair or open interval.
+
+\item [Comparing the order of a number and an interval]
+For a given number $x$ and interval $I$, we
+write
+\begin{align*} x \ge I \end{align*}
+if for every $y\in I$,  $x \ge y$.
+
+\item [Distance]
+The distance between two real numbers $x$ and $y$ is defined
+in a usual way:
+\begin{align*}
+    d(x,y)= |x-y|.
+\end{align*}
+
+The \df{distance of a point $x$ from interval $I$}  is
+\begin{align*}
+    d(x,I)= \min_{y\in I}d(x,y).
+\end{align*}
+
+\item [Ball, neighborhood, ring, stripe]
+A \df{ball of radius $r>0$, centered at $x$} is
+\begin{align*}
+    B(x,r)= \setOf{y}{d(x,y)\le r}.
+\end{align*}
+An \df{$r$-neighborhood of interval } $I$ is
+\begin{align*}
+    \setOf{x}{d(x,I)\le r}.
+\end{align*}
+An \df{$r$-ring} around interval $I$ is
+\begin{align*}
+    \setOf{x}{d(x,I)\le r \txt{ and } x \notin I}.
+\end{align*}
+A \df{$r$-stripe to the right of interval $I$} is
+\begin{align*}
+    \setOf{x}{d(x,I)\le r \txt{ and } x \notin I \txt{ and } x>I}.
+\end{align*}
+
+\item[Logarithms] Unless specified differently,
+the base of logarithms throughout this work is 2.
+
+\end{flushdescription}
+
+
+\section{The model}
+
+Standard Turing machines do not have
+operations like ``creation'' or ``killing'' of cells, nor
+do they allow for cells to be non-adjacent.
+We introduce here a \df{generalized Turing machine}.
+It depends on an integer $\B \ge 1$ that denotes the cell body size,
+and an upper bound $\Tu$ on the transition time.
+These parameters are convenient since they provide the illusion that the different Turing
+machines in the hierarchy of simulations all operate on the same linear space.
+Even if the notions of cells, alphabet
+and state are different for each machine of the hierarchy, 
+at least the notion of a \emph{location
+on the tape} is the same.
+
+
+\begin{definition}[Generalized Turing machine]\label{def:gen-TM}
+    A \df{generalized Turing machine} $M$ is defined by a tuple
+        \begin{align}\label{eq:gen-TM}
+             (\Gamma, \Sigma, \delta, \G, \cDir, q_{\start},F, \B, \Tu),
+       \end{align}
+    where $\Gamma$ and $\Sigma$ are finite sets
+    called the \df{set of states} and the \df{alphabet} respectively,
+        \begin{align*}
+             \delta: \Sigma\times \Gamma
+             \to \Sigma\times \Gamma\times\{-1,0,1\},
+        \end{align*}
+    is the \df{transition function}
+The function (``field'') \( \G\colon\Gamma\to\{\true,\false\} \) of the state will show whether
+the last move was from a non-adjacent cell.
+The function (``field'') \( \cDir\colon\Sigma\to\{-1,0,1\} \) of the cell content
+needs to always point towards the head, so 
+the transition function \( \delta \) is required to have the property that
+if \( (a',q',j)=\delta(a,q) \) then \( a'.\cDir=j \).
+
+The role of starting state $q_{\start}$ and final states in \( F \) is as before.
+The integer $\B\ge 1$ is called the \df{cell body size},
+and the real number $\Tu$ is a bound on the transition time.
+
+Among the elements of the tape alphabet $\Sigma$, 
+we distinguish the elements $0,1,\Bad,\Vacant$.
+The role of the symbols $\Bad$ and \( \Vacant \) will be clarified below.
+\end{definition}
+
+
+\begin{definition}[Configuration]\label{def:config}
+     Consider a generalized Turing machine~\eqref{eq:gen-TM}.
+    A \df{configuration} is a tuple
+        \begin{align*}
+             (q,A,\h,\hc),
+        \end{align*}
+    where $q\in\Gamma$, $\h,\hc\in\bbZ$ and $A\in\Sigma^{\bbZ}$.
+As before, the array \( A \) is the tape configuration.
+The \df{damage set} is defined as
+     \begin{align*}
+          A.\Damage=\setOf{p}{A[p]=\Bad}.
+     \end{align*}
+We say that there is a \df{cell} at position $p\in\bbZ$ if
+$A[p]\notin \set{\Vacant, \Bad}$.
+In this case, we call the interval $p+\lint{0}{\B}$ the \df{body} of this cell.
+Cells must be at distance \( \ge\B \) from each other, that is their
+bodies must not intersect.
+They are called \df{adjacent} if the distance is exactly \( \B \).
+
+For all cells \( p \), the value $A[p].\cDir$ is required to point towards 
+the head \( \h \), that is 
+ \begin{align*}
+   A[p].\cDir=\sign(\h-p).
+ \end{align*}
+Whenever $A[\h]\neq \Bad$ there must be a
+cell at position \( \hc \) called the \df{current cell} with a body 
+within $2.5\B$ from $\h$.
+
+The array \( A \) is $\Vacant$ everywhere but in finitely many positions.
+
+Let
+    \begin{align*}
+         \Configs_{M}
+    \end{align*}
+    denote the set of all possible configurations
+    of a Turing machine $M$.
+\end{definition}
+
+\section{Trajectory, simulation, and the tower}
+
+It is natural to name a sequence of configurations that is conceivable as a computation
+(faulty or not) of a Turing machine as ``history''.
+The histories that obey the transition function then could be called ``trajectories''.
+In what follows we will 
+stretch and generalize this notion to encompass also some limited violations of the
+transition function.
+
+In connection with any underlying Turing machine with a given starting configuration, we will
+denote by
+\begin{align}\label{eq:noise-first}
+   \Noise\subseteq \bbZ\times \bbZ_{\ge 0}
+\end{align}
+the set of space-time points $\pair{p}{t}$, such that
+a fault occurs at time $t$ when the head is at position $p$.
+
+\begin{definition}[History]\label{def:history}
+  \begin{sloppypar}
+    Let us be given a generalized Turing machine~\eqref{eq:gen-TM}.
+    Consider a sequence $\eta = (\eta(0), \eta(1), \dots)$ of configurations with
+    \( \eta(t) = \) \( (q(t), A(t), \h(t), \hc(t)) \), along with a noise set $\Noise$.
+    The \df{switching times} of this sequence 
+are the times when one of the following can change:
+the state, the position \( \hc(t) \) of the current cell, or the state of the current cell.
+The interval between two consecutive switching times is the \df{dwell period}.
+The pair
+      \end{sloppypar}
+    \begin{align*}
+       (\eta,\Noise)
+    \end{align*}
+    will be called a \df{history} of machine $M$ if the following conditions hold.
+        \begin{bullets}
+            \item We have $|\h(t) - \h(t')| \le |t' - t|$.
+
+            \item In two consecutive configurations, the content \( A(t)[p] \) of the positions not in
+                  $\h(t) + \lint{-\B}{\B}$, remains the same:
+                  $A(t+1)[n] = A(t)[n]$ for all $n \notin \h(t) + \lint{-\B}{\B}$.
+
+            \item At each noise-free switching time the head is on the new current cell, that is
+\( \hc(t)=\h(t) \).
+In particular, when at a switching time a current cell becomes
+$\Vacant$, the head must already be on another (current) cell.
+
+            \item The length of any dwell period in which the head does not intersect
+noise or damage, is at most \( \Tu \).
+
+        \end{bullets}
+    Let
+        \begin{align*}
+            \Histories_{M}
+        \end{align*}
+    denote the set of all possible histories of $M$.
+
+We say that a cell \df{dies} in a history it becomes $\Vacant$.
+
+\end{definition}
+
+The transition function $\delta$ of a generalized Turing machine
+imposes constraints on histories: those
+histories obeying the constraints will be called trajectories.
+
+\begin{definition}
+Suppose that the machine is in a state $q$, with current cell $x$, 
+with cell content $a$, let $(a',q',j) = \delta(a,q)$.
+We say that the new content of cell \( x \) (including when it dies),
+the direction of the new position \( y \) from \( x \),
+and the new state are \df{directed by the transition function} if
+the following holds.
+The new content of \( x \) is \( a' \), and
+the direction of \( y \) from \( x \) is \( j \).
+In the new state \( q \) we have \( q.\G=\false \)
+if \( j=0 \) or the new current cell is adjacent, and \( \true \) otherwise.  
+\end{definition}
+
+\begin{definition}[Trajectory]\label{def:traj}
+The definition of a trajectory depends on a constant 
+\begin{align*}
+   c_{1}>0
+ \end{align*}
+to be fixed later.
+
+\begin{sloppypar}
+   A history  $(\eta, \Noise)$ of a generalized Turing 
+machine~\eqref{eq:gen-TM} with \(\eta(t) =\)
+\( (q(t), A(t), \h(t), \hc(t)) \)
+is called a \df{trajectory} of $M$ if the following conditions hold, during any 
+noise-free time interval.
+Denote 
+\begin{align*}
+     (a, q, p) &= (A(t)[\hc(t)], q(t),\hc(t)),
+\\ (a',q',j)   &= \delta(a,q).
+ \end{align*}
+  \end{sloppypar}
+\begin{flushdescription}
+
+\item[Transition function]\label{i:def.traj.transition}
+Suppose that there is a switch, and the shortest interval
+containing the body of the current cell \( x \) and the
+new cell \( y \) is at a distance at least \( 0.5\B \)
+from damage.
+
+Then the new state, the cell content of \( x \) (including when it dies), and
+the direction of \( y \) from \( x \) are directed by the transition function.
+If \( y \) did not exist before then it is adjacent to \( x \).
+
+Further the length of the dwell period is bounded by \( \Tu \).
+
+\item[Spill]\label{i:bound-on-damage}
+  The damage may spill only to at most a distance \( 2\B \) beyond its 
+place at time \( t \).
+
+\item[Attacking damage from outside] \label{i:def.traj.attack-from-outside}
+Suppose that the body of the current cell $x$ is disjoint from damage, 
+and at least $0.5\B$ removed from damage on the left.
+Suppose further that the transition function directs the head towards the right.
+Then whenever the head comes left  of \( x \) again, the  
+damage will recede by a distance at least \( \B \) from the body of \( x \).
+
+A similar property is required when ``left'' and ``right'' are interchanged.
+
+\item[Clearing damage from within] \label{i:def.traj.damage-within}
+Let $ I $ be a space interval of size $ 3\B $.
+If the head spends a total time of at least $ c_{1}\Tu $ inside $ I $ (while possibly
+entering repeatedly), then $ I $ becomes damage-free.
+
+\end{flushdescription}
+\end{definition}
+
+
+Until this moment, we used the term ``simulation'' to denote
+a correspondence between configurations of
+two machines which remains preserved during the computation.
+
+
+\begin{definition}[Simulation] \label{def:simulation-central}
+Let $M_{1},M_{2}$ be two generalized Turing machines, and let
+\begin{align*}
+    \varphi_{*}:\Configs_{M_{2}} \to \Configs_{M_{1}}
+\end{align*}
+be a mapping from configurations of $M_{2}$
+to those of $M_{1}$, such that it maps
+starting configurations into starting configurations.
+We will call such a map a \df{configuration encoding}.
+
+Let
+\begin{align*}
+   \Phi^{*}:\Histories_{M_{1}} \to \Histories_{M_{2}}
+\end{align*}
+be a mapping.
+The pair $(\phi_{*}, \Phi^{*}) $
+is called a \df{simulation} (of $ M_{2} $ by $ M_{1} $) if for every
+trajectory $ (\eta, \Noise) $ with initial
+configuration $ \eta(0)=\phi_{*}(\xi) $,
+the history $ (\eta^{*},\Noise^{*})=\Phi^{*}(\eta,\Noise) $ is
+a trajectory of machine $ M_{2} $.
+
+We say that $M_{1}$ \df{simulates} $M_{2}$ if there is a simulation
+$(\varphi_{*},\Phi^{*})$ of $M_{2}$ by $M_{1}$.
+\end{definition}
+
+
+\section{Hierarchical codes}\label{sec:hier-codes}
+
+Recall the notion of a code in Definition~\ref{def:codes}.
+
+\begin{definition}[Code on configurations]\label{def:configuration-code}
+Consider two generalized Turing macines \( M_{1},M_{2} \) with the corresponding
+state spaces, alphabets and transition functions, and an integer \( Q\ge 1 \).
+We require
+\begin{align}\label{eq:B_2-B_1-Q}
+  \B_{2} = Q \B_{1}.
+\end{align}
+Assume that a block code
+\begin{align*}
+   \psi_{*}:\Sigma_{2}\times(\Gamma_{2}\cup\{\emptyset\})\to\Sigma_{1}^{Q}
+ \end{align*}
+is given, with an appropriate decoding function, $\psi^{*}$.
+With \( \pair{a}{q}\in\Sigma_{2}\times(\Gamma_{2}\cup\{\emptyset\}) \),
+symbol \( a \) is interpreted the content of some tape square.
+The value \( q \) is the state of \( M_{2} \) provided the head is observing this square,
+and \( \emptyset \) if it is not.
+
+Block code $(\psi_{*},\psi^{*})$ gives rise to a 
+\df{code on configurations}, that is a pair of functions
+    \begin{align*}
+        \phi_{*} :\Configs_{M_2} \to \Configs_{M_1},
+        \quad
+        \phi^{*}:\Configs_{M_1} \to \Configs_{M_2}
+    \end{align*}
+    that encodes configurations of $M_2$ into configurations of $M_{1}$.
+
+Let $\xi$ be a configuration of $M_2$.
+We set $\phi_*(\xi).\pos = \xi.\pos$, \(\phi_{*}.\state=  \) 
+the starting state of \( M_{1} \),
+\begin{align*}
+ \phi_*(\xi).\tape[i\B_2, \dots, (i+1)\B_2 - \B_1] = \psi_*(\xi.\tape[i], s)
+ \end{align*}
+where \( s=\xi.\state \) if $i = \xi.\pos$, and $\emptyset$ otherwise, with
+a slight \emph{modification}: 
+$\phi_*(\xi).\tape[i].\cDir$, is set to point towards the head \( \xi.\pos \).
+Decoding is the inverse of this process (need not succeed on all possible configurations
+of \( M_{1} \)).
+ \end{definition}
+
+ Not all configurations can be obtained by encoding.
+ We distinguish those that can.
+
+ \begin{definition}[Code configuration]\label{def:code-config}
+   A configuration $\xi$ is called a \df{code configuration} if 
+it has the form \( \xi=\phi_{*}(\zeta) \).
+ \end{definition}
+
+
+\begin{definition}[Hierarchical code]\label{def:hierarchical-code}
+For $k\ge 1$, let $\Sigma_k$ be an alphabet, $\Gamma_k$ be
+a set of states of a generalized Turing machine $M_k$.
+Let $Q_k>0$ be an integer colony size, let $\phi_k$
+be a code on configurations defined by a block code
+  \begin{align*}
+       \psi_k: \Sigma_{k+1}\times(\Gamma_{k+1}\cup\{\emptyset\})
+       \rightarrow \Sigma_k^{Q_k}
+  \end{align*}
+as in Definition~\ref{def:configuration-code}.
+The sequence of triples $(\Sigma_k,\Gamma_k,  \phi_k)$, ($k\ge 1)$,  is
+called a \df{hierarchical code}.
+For the given hierarchical code, the configuration \( \xi^{1} \) of \( M_{1} \)
+is called a \df{hierarchical code configuration} if a sequence
+of configurations $\xi^{2},\xi^{3},\dots$ of \( M_{2},M_{3},\dots \) exists with
+\begin{align*}
+ \xi^{k}=\phi_{*k}(\xi^{k+1})
+ \end{align*} 
+for all \( k \).
+(Of course, then whole sequence is determined by \( \xi^{1} \).)
+\end{definition}
+
+Let us give a name to the object that we want to construct.
+
+\begin{definition}[A tower]\label{def:tower}
+Let $M_1$, $M_2$, \dots, be a sequence of generalized Turing machines,
+let \( \phi_{1} \), \( \phi_{2} \) , \(\dots \) be a hierarchical code for this sequence,
+let \( \xi^{1} \) be a hierarchical code configuration for it, where \( \xi^{k} \) is an
+initial configuration of \( M_{k} \) for each \( k \).
+Let further be a sequence of mappings \( \Phi_{1} \), \( \Phi_{2} \), \( \dots \) be
+given such that for each \( k \), the pair $(\phi_{k*},\Phi_{k}^{*})$,
+is a simulation of \( M_{k+1} \) by \( M_{k} \).
+Such an object is called a \df{tower}.
+\end{definition}
+
+The main task of the work will be the definition of a tower, since the simulation
+property is highly nontrivial.
+
+
+\section{Layering the noise}\label{sec:noise}
+
+Let us introduce a technique connecting the combinatorial and probabilistic
+noise models.
+
+\begin{definition}[Centered rectangles, isolation]
+Let $\vek{r}=\pair{r_1}{r_2}$, $r_1, r_2\ge 0$,
+be a two-dimensional nonnegative vector.
+An \df{rectangle} of radius $\vek{r}$ \df{centered} at $\vek{x}$ is
+\begin{align}\label{eq:ball1}
+  B(\vek{x},\vek{r}) = \setOf{\vek{y}}{|y_i - x_i| \le r_i, i=1,2}.
+\end{align}  
+Let \( E\subseteq \bbZ^{2} \) be a two-dimensional set.
+A point $\vek{x}$ of \( E \) is \df{$\pair{\vek{r}}{\vek{r}^*}$-isolated} if
+\begin{align*}
+  E \cap B(\vek{x},\vek{r}^*)\subseteq B(\vek{x}, \vek{r}).
+ \end{align*}
+  Let
+\begin{align}
+  D(E,\vek{r}, \vek{r}^*) =
+     \setOf{\vek{x}\in E}{\vek{x} \txt{ is not } (\vek{r}, \vek{r}^*)\txt{-isolated
+  from } E}.
+\end{align}
+\end{definition}
+
+\begin{definition}[Sparsity]
+Let \( \beta\ge 9 \) be a constant, and let 
+\( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \) be 
+sequences of positive integers to be fixed later.
+
+For a two-dimensional set \( E \), let $E^{(1)} = E$.
+For $k>1$ we define recursively:
+\begin{align}\label{eq:noise^k}
+    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \pair{\B_{k+1}}{\Tu_{k+1}}).
+\end{align}
+Set $E^{(k)}$ is called the \df{$k$-th residue} of $E$.
+
+Set $E$ is \df{$(\vek{r}, \vek{r}^*)$-sparse} 
+if $D(E, \vek{r}, \vek{r}^*)=\emptyset$, that is 
+it consists of $(\vek{r}, \vek{r^*})$-isolated points.
+It is \( k \)-\df{sparse} if $E^{(k+1)}=\emptyset$.
+It is simply \df{sparse} if \( \bigcap_{k}E^{(k)}=\emptyset \).
+\end{definition}
+
+The following lemma connects the above defined sparsity notions to the requirement
+of small fault probability.
+
+\begin{lemma}[Sparsity]\label{lem:sparsiness}
+Let $1=\B_{1}\le  \B_{2}\le\dotsm$ and 
+$1=\Tu_{1}<T_{2}<\dotsm$ be sequences of integers with
+$Q_k = B_{k+1}/B_{k}$, $\U_k = \Tu_{k+1}/\Tu_{k}$, and
+\begin{align}\label{eq:assumption}
+  \lim_{k\rightarrow\infty}\frac{\log(\U_{k} Q_k)}{1.5^k}=0,
+\end{align}
+For sufficiently small \( \varepsilon \), for every \( k\ge 1 \) the following holds.
+Let \( E\subseteq \bbZ\times \bbZ_{\ge 0} \)
+be a random set with the property that each pair $\pair{p}{t}$ belongs to \( E \)
+independently from the other ones with probability $\le \varepsilon$.
+
+Then for each point $\vek{x}$  and each \( k \),
+ \begin{align*}
+   \Pbof{B(\vek{x},(\B_k, \Tu_{k}))\cap E^{(k)}\neq\emptyset} <2\varepsilon \cdot 2^{-1.5^{k}}.
+ \end{align*}
+As a consequence, the set \( E \) is sparse with probability 1.
+\end{lemma}
+
+\begin{proof}
+Let \( k=1 \).
+Rectangle \( B(\vek{x},(\B_1, \Tu_{1})) \) is a single point, hence
+the probability of our event is $<\varepsilon$.
+Let us prove the inequality by induction, for \( k+1 \).
+
+Note that our 
+event depends at most on the rectangle \( B(\vek{x},3(\B_{k}, \Tu_{k})) \).
+Let
+\begin{align*}
+   p_{k}=2\varepsilon\cdot 2^{-1.5^{k}}.
+\end{align*}
+Suppose \( \vek{y} \in E^{(k)}\cap B(\vek{x},(\B_{k+1}, \Tu_{k+1})  ) \).
+Then, according to the definition of $E^{(k)}$,  there is a point
+\begin{align}\label{eq:sparse-as}
+ \vek{z} \in
+ B(\vek{y},\Tu_{k+1})\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
+ \end{align}
+Consider a standard partition of the (two-dimensional) space-time into
+rectangles \( K_{p}=\vek{c}_{p}+\lint{-\B_{k}}{\B_k}\times \lint{-\Tu_{k}}{\Tu_{k}} \)
+with centers \( \vek{c}_{1},\vek{c}_{2},\dots \).
+The rectangles \( K_{i},K_{j} \) containing \( \vek{y} \) and \( \vek{z} \)
+respectively intersect \( B(\vek{x}, 2(\B_{k+1}, \Tu_{k+1}) \).
+The triple-size rectangles 
+\( K'_{i}=c_{i} + \lint{-3\B_{k}}{3\B_k}\times \lint{-3\Tu_{k}}{3\Tu_{k}} \) and
+\( K'_{j} \) are disjoint, since \eqref{eq:sparse-as} implies
+ \( |y_1 - z_1|>\beta\B_{k} \) and \( |y_2 - z_2|>\beta\Tu_{k} \).
+
+The set \( E^{(k)} \) must intersect two rectangles \( K_{i} \),
+\( K_{j} \) of size \( 2(\B_{k}, \Tu_{k}) \) separated by at least \( 4(\B_{k}, \Tu_{k}) \),
+of the big rectangle \( B(\vek{x},2(\B_{k+1}, \Tu_{k+1})) \).
+
+By the inductive hypothesis, the event \( \cF_{i} \) that
+\( K_{i} \) intersects \( E_{k} \) has probability bound \( p_{k} \).
+It is independent of the event \( \cF_{j} \), since these events depend
+only on the triple size disjoint rectangles \( K'_{i} \) and \( K'_{j} \).
+
+The probability that both of these events hold is at most \( p_{k}^{2} \).
+The number of possible rectangles
+\( K_{p} \) intersecting \( B(\vek{x},2(\B_{k+1}, \Tu_{k+1})) \) is
+at most
+\( C_{k}:=((2\U_{k} Q_{k})+2)^{2} \), so the number of possible pairs of rectangles
+is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
+ \begin{align*}
+   C_{k}^{2}p_{k}^{2}/2
+    &=
+      2 C_{k}^{2}\varepsilon^{2} 2^{-1.5^{k+1}}\cdot 2^{-0.5\cdot 1.5^{k}}
+   \\ &=2\varepsilon 2^{-1.5^{k+1}} \cdot \varepsilon
+        C_{k}^{2}2^{-0.5\cdot 1.5^{k}}.
+ \end{align*}
+Since $\lim_{k}\frac{\log{(\U_{k} Q_k)}}{1.5^k}=0$,
+the last factor is \( \le 1 \) for sufficiently small  \( \varepsilon \).
+\end{proof}
+
+
+\section{Universal Turing machine}\label{sec:UTM}
+
+We will describe our construction in terms of
+universal Turing machines,
+operating on binary strings as inputs and outputs.
+We define universal Turing machines in a way that allows
+for rather general ``programs''.
+
+ \begin{definition}[Standard pairing]
+For a (possibly empty) binary string \( x=x(1)\dotsm x(n) \) let us introduce the map
+ \[
+   \ang{x} = 0^{|x|}1 x,
+ \]
+Now we encode pairs, triples, and so on, of binary strings as follows:
+ \begin{align*}
+        \ang{s,t} &=\ang{s}t,
+\\ \ang{s,t,u} &= \ang{\ang{s,t},u},
+ \end{align*}
+and so on.
+
+From now on, we will assume that our alphabets \( \Sigma \), \( \Gamma \)
+are of the form \( \Sigma=\{0,1\}^{s} \), \( \Gamma=\{0,1\}^{g} \), that is 
+our tape symbols and machine states are viewed as binary strings of a certain length.
+Also, if we write \( \ang{i,u} \) where \( i \) is some number, it is understood
+that the number \( i \) is represented in a standard way by a binary string.
+\end{definition}
+
+\begin{definition}[Computation result, universal machine]
+ Assume that a Turing machine \( M \) starting on binary \( x \),
+ at some time \( t \)
+ arrives at the first time at some final state.
+ Then we look at the longest (possibly empty)
+ binary string to be found starting at position
+ 0 on the tape, and call it the \df{computation result} \( M(x) \).
+We will write
+ \begin{align*}
+   M(x,y)=M(\ang{x,y}),\quad M(x,y,z)=M(\ang{x,y,z}),
+ \end{align*}
+and so on.
+
+A Turing machine \( U \) is called \df{universal} 
+among Turing machines with
+binary inputs and outputs, if for every Turing machine \( M \),
+there is a binary string \( p_{M} \) such that for all \( x \) we have
+\( U(p_{M},x)=M(x) \).
+(This equality also means that the computation denoted on the left-hand side 
+reaches a final state if and only if the computation on the right-hand side does.)
+\end{definition}
+
+Let us introduce a special kind of universal Turing machines, to be
+used in expressing the transition functions of other Turing machines.
+These are just the Turing machines for which the so-called \( s_{mn} \) theorem
+of recursion theory holds with \( s(x,y)=\ang{x,y} \).
+
+\begin{definition}[Flexible universal Turing machine]\label{def:univ-TM}
+A universal Turing machine will be called \df{flexible} if 
+whenever \( p \) has the form \( p=\ang{p',p''} \) then
+\begin{align*}
+ U(p,x)= U(p',\ang{p'',x}).
+ \end{align*}
+Even if \( x \) has the form \(x =\ang{x',x''} \), this definition chooses
+\( U(p',\ang{p'',x}) \) over \( U(\ang{p,x'},x'') \), that is starts with 
+parsing the first argument
+(this process converges, since \( x \) is  shorter than \( \ang{x,y} \)).
+\end{definition}
+
+It is easy to see that there are flexible universal Turing machines.
+On input \( \ang{p,x} \),
+a flexible machine first checks whether its ``program'' \( p \) 
+has the form \( p=\ang{p',p''} \).
+If yes, then it applies \( p' \) to the pair \( \ang{p'',x} \).
+(Otherwise it just applies \( p \) to \( x \).)
+
+\begin{definition}[Transition program]
+  Consider an arbitrary Turing machine \( M \) with state set \( \Gamma \), alphabet
+\( \Sigma \), and transition function \( \delta \).
+A binary string \( \pi \) will be called a \df{transition program} of \( M \) if
+whenever \( \delta(a,q)=(a',q',j) \) we have
+ \begin{align*}
+ U(\pi,a,q)=\ang{a',q',j}.
+ \end{align*}
+We will also require that the computation induced by the program makes
+\( O(|p|+|a|+|q|) \) left-right turns, over a length tape \( O(|p|+|a|+|q|) \).
+\end{definition}
+
+The transition program just provides a way to compute
+the (local) transition function of \( M \) by the universal machine,
+it does not organize the rest of the simulation.
+
+\begin{remark}
+ In the construction of universal Turing machines provided by the textbooks
+(though not in the original one given by Turing), the program is generally a string
+encoding a table for the transition
+function \( \delta \) of the simulated machine \( M \).
+Other types of program are imaginable: some simple transition functions can
+have much simpler programs.
+However, our fixed machine is good enough (similarly to the optimal machine
+for Kolmogorov complexity).
+If some machine \( U' \) simulates \( M \) via a
+very simple program \( q \), then
+ \begin{align*}
+     M(x)=U'(q,x) = U(p_{U'},\ang{q,x}) = U(\ang{p_{U'},q},x),
+ \end{align*}
+so \( U \) simulates this computation via the program \( \ang{p_{U'},q} \).
+\end{remark}
+
+
+\section{Rule language}\label{sec:language}
+
+In what follows we will describe the generalized Turing machines \( M_{k} \) for all \( k \).
+They are all similar, differing only in the parameter \( k \); the most important activity
+of \( M_{k} \) is to simulate \( M_{k+1} \).
+The description will be uniform, except for the parameter \( k \).
+We will denote therefore \( M_{k} \) simply by \( M \), and \( M_{k+1} \)  by \( M^{*} \).
+Similarly we will denote the block size \( Q_{k} \) of the block code of the 
+simulation simply by \( Q \).
+
+Instead of writing a huge table describing the transition function \( \delta_{k}=\delta \),,
+we present the transition function as a set of \df{rules}.
+It will be then possible to write one \emph{interpreter} program that carries
+out these rules; that program can be written for some fixed flexible 
+universal machine $\Un$.
+
+Each rule consists of some (nested) conditional statements,
+similar to the ones seen in an ordinary program:
+ ``\textbf{if} \textit{condition} \textbf{then} \textit{instruction}
+\textbf{else} \textit{instruction}'', 
+where the condition
+is testing values of some fields of the state and the observed cell, and
+the instruction can either be elementary, or itself a conditional statement. 
+The elementary instructions are an \df{assignment} of a value to a field
+of the state or cell symbol, or a command to move the head.
+Rules can call other rules, but these calls will never form a cycle.
+Calling other rules is just a shorthand for nested conditions.
+
+Even though rules are written like procedures of a program,
+they describe a single transition.
+When several consecutive statements are given, then they
+%(almost always)
+change different fields of the state or
+cell symbol, so they can be executed simultaneously.
+% Otherwise and in general, even if a field is updated in
+% some previous statement, in all following statements that use
+% this field, its old value is considered.
+
+Assignment of value $x$ to a field $y$ of the state or cell symbol will
+be denoted by $y \gets x$.
+We will also use some conventions introduced by the C language:
+namely,
+$x\gets x+1$ and $x\gets x-1$ are abbreviated to $\increment{x}$ and
+$\decrement{x}$ respectively.
+
+Rules can also have parameters, like $\ruSwing(a,b,u,v)$.
+Since each rule is called only a constant number of times in the whole program,
+the parametrized rule can be simply seen as a shorthand.
+
+Mostly we will describe
+the rules using plain English, but it should always be clear that they
+are translatable into such rules.
+
+
+\section{Fields}\label{sec:fields}
+
+\begin{sloppypar}
+For the machine \( M \) we are constructing, each state will 
+be a tuple \( q=(q_{1},q_{2},\dots,q_{k}) \),
+where the individual elements of the tuple will be called \df{fields}, and will
+have symbolic names.
+For example, we will have fields \( \Addr \) and \( \Drift \),
+and may write \( q_{1} \) as \( q.\Addr \) or just \( \Addr \), 
+\( q_{2} \) as \( q.\Drift \) or \( \Drift \), and so on.
+\end{sloppypar}
+
+Similarly for tape symbols.
+In order to distinguish fields of tape symbols from fields of the state,
+we will always start the name of a field of the tape symbols by the letter \( c \).
+We have seen already one example of this, the field \( \cDir \) of tape symbols
+in the definition of a generalized Turing machine.
+
+In what follows we describe some of the most important fields we will use;
+others will be introduced later.
+
+A properly formatted configuration of \( M \) splits the tape into blocks of \( Q \)
+consecutive cells called \df{colonies}.
+One colony of the tape of the simulating
+machine represents one cell of the simulated machine.
+The colony that corresponds to the cell that the
+simulated machine is scanning is called the \df{base colony}
+(a precise definition will be based on the actual history of the work of \( M \)).
+Once the drift is known, the union of the base colony with the neighbor colony in
+the direction of the drift is called the \df{extended base colony} (this notion will 
+need to be defined more carefully later).
+
+The states of machine \( M \) will have a field called 
+ \begin{align*}
+   \Mode\in\{ \Normal,\Recovering, \Healing \}.
+ \end{align*}
+It shows whet her the machine is engaged in the regular business of simulation 
+or in the repair of its own structure.
+The normal mode corresponds to the states
+where \( M \) is performing the simulation of \( M^{*} \).
+The recovery mode tries to correct some perceived fault.
+The \( \Healing \) mode turns on when recovery fails.
+
+Similarly, each cell of the tape of \( M \) consists of several fields.
+Some of these have names identical to fields of the state.
+In describing the transition rule of \( M \) we will write, for example,
+\( q.\Addr \) simply as \( \Addr \), and for the corresponding field of the
+observed cell symbol \( a \) we will write \( a.\cInfo \), or just \( \cInfo \).
+The array of values of the same field of the cells will be called a \df{track}.
+Thus, we will talk about the \( \cHold \) track of the tape, corresponding to the
+\( \cHold \) field of cells.
+
+% The basic fields of the state and of cells are listed in Section~\ref{sec:fields-list}
+% with some hints of
+% their function (this does not replace our later definition of the transition function).
+Each field of a cell has also a possible value
+\( \emptyset \) whose approximate meaning is ``undefined''.
+
+Some fields and parameters are important enough to introduce them right away.
+The 
+\begin{align*}
+   \cInfo,\cState
+ \end{align*}
+track of a colony of \( M \)
+contain the strings that encode the content of the simulated cell of \( M^{*} \) and
+its simulated state respectively.
+\begin{align*}
+ \cProg
+ \end{align*}
+track stores the program of \( M^{*} \), in an appropriate form 
+to be interpreted by the simulation.
+The field 
+ \begin{align*}
+  \cAddr
+ \end{align*}
+of the cell shows the position of the cell in its colony.
+There is a corresponding \( \Addr \) field of the state.
+The
+ \begin{align*}
+ \Sweep
+ \end{align*}
+field counts the sweeps that the head makes during the work period.
+There is a corresponding \( \cSweep \) field in the cell.
+The direction \( d\in\{-1,0,1\} \) in which the 
+simulated head moves will be denoted by
+ \begin{align*}
+   \Drift.
+ \end{align*}
+There is a corresponding field \( \cDrift \).
+The number of the last sweep of the work period will depend on the drift \( d \), 
+and will be denoted by 
+\begin{align}\label{eq:Last}
+   \Last(d).
+ \end{align}
+Cells will be designated as belonging to a number of possible \df{kinds}, signaled by the
+field 
+\begin{align*}
+     \cKind
+ \end{align*}
+with values
+       \begin{align*}
+          \Member, \Neighbor, \Bridge, \Stem, \Vacant.
+       \end{align*}
+The role of cell kinds will be explained later.
+
+It is useful to group some of the fields especially important for the simulation structure into
+a ``super'' field,
+    \begin{align}\label{eq:Core}
+       \Core=(\Addr, \Sweep, \Drift, \Kind), 
+        \cCore=(\cAddr, \cSweep, \cDrift, \cKind). %, \cVisSw).
+    \end{align}
+%(where the field \( \cVisSw \) will also be explained later).
+
+%     \item $\Af$ field of a cell will be set to true if
+%     this cell belongs to a colony that ``represents'' a cell
+%     that wants to become ``vacant''.
+%     (We will explain  this notion later.)
+
+
+%     The fields used in recovery mode are all
+%     collected as subfields of the field
+%     $\Rec$ of the state, and the field $\cRec$ of the cell state.
+%     They will be introduced in the definition of the recovery rule.
+
+%     In particular, when the field
+%      \begin{align}\label{eq:cRecCore}
+%       \cRec.\Core
+%      \end{align}
+%     is not $0$, we will call the cell \df{marked for recovery}.
+
+%     Similarly, the fields used in rebuild mode are all
+%     gathered as subfields of the field $\Arb$ of the state,
+%     and the field $\cArb$ of the cell state.
+%     We will use them in the definition of the rebuild rule.
+
+%     Finally, when the field
+%     In particular, when the field
+%      \begin{align}\label{eq:cArbCore}
+%       \cArb.\Core
+%      \end{align}
+%     is not $0$, we will call the cell \df{marked for rebuild}.
+
+%     \item\label{i:fields.zigging}
+%     The sweep-through is interrupted by switchbacks
+%     called \df{zigging}.
+%     While in the normal mode, the process depends
+%     on two fixed parameters
+%     \begin{equation}\label{eq:Z}
+%      \begin{aligned}
+%       &\Z \\
+%       &\Z_b, \;\;\; \Z_b<\Z,
+%      \end{aligned}
+%      \end{equation}
+%     that we will define later.
+% %    where $\beta$ is the bound on the size of bursts.
+%     This process is controlled by the fields $\ZigDepth$ and $\ZigDir$.
+
+%     We assume that $Q$ is a multiple of $\Z - \Z_b$, that is
+%     \begin{align}\label{eq:constraint-on-Z}
+%         \Z - \Z_b \; | \; Q.
+%     \end{align}
+%     Every $\Z-\Z_b$ forward steps are accompanied by $\Z$ steps
+%     backward and forward, for a total of  $3\Z-\Z_b$
+%     steps.
+
+
+
+\section{Error-correcting configuration code}\label{sec:coding}
+
+Let us add error-correcting features to block codes introduced in
+Definition~\ref{def:codes}.
+
+\begin{definition}[Error-correcting code]\label{def:err-code}
+A block code is $(\beta,t)$-\df{burst-error-correcting},
+if for all $x\in\Sigma_{2}$, $y\in\Sigma_{1}^{Q}$ we
+have $\psi^{*}(y)=x$ whenever $y$ differs from
+$\psi_{*}(x)$ in at most $t$ intervals of size $\le\beta$.
+\end{definition}
+
+\begin{example}[Repetition code]\label{xmp:tripling}
+  Suppose that $Q\ge 3\beta$ is divisible by 3,
+  $\Sigma_{2}=\Sigma_{1}^{Q/3}$, $\psi_{*}(x)=xxx$.
+  Let $\psi^{*}(y)$ be obtained as follows.
+  If $y=y(1)\dots y(Q)$, then $x=\psi^{*}(y)$ is defined as follows:
+    $x(i)=\maj(y(i),y(i+Q/3),y+2Q/3)$.
+    For all $\beta\le Q/3$, this is a
+    $(\beta,1)$-burst-error-correcting code.
+
+    If we repeat 5 times instead of 3, we get a $(\beta,2)$-burst-error-correcting
+    code.
+    Let us note that there are much more efficient such codes than just repetition.
+ \end{example}
+
+Let us assume that a generalized Turing machine
+\begin{align*}
+    M = (\Gamma, \Sigma, \delta, \G, \cDir, q_{\start},F, \B, \Tu)
+\end{align*}
+is used to simulate a generalized Turing machine
+\begin{align*}
+M^* = (\Gamma^{*}, \Sigma^{*}, \delta^{*}, \G^{*}, \cDir^{*}, q^{*}_{\start},F^{*}, \B^{*}, \Tus).
+\end{align*}
+We will assume that $\Gamma^*\cup\set{\emptyset}$,
+and the alphabet $\Sigma^*$ are subsets of the set of  binary strings
+$\{0,1\}^{\ell}$ for some $\ell<Q$ (we can always ignore some states or tape
+symbols, if we want).
+
+We will store the coded information at distance 
+\begin{align}\label{eq:penLen}
+    \PadLen
+\end{align}
+from the end of our colony of size \( Q \).
+So let $(\upsilon_{*}, \upsilon^{*})$ be a $(\beta,2)$-burst-error-correcting block code
+\begin{align*}
+  \upsilon_{*}: \{0,1\}^{\ell} \cup \set{\emptyset}
+   \to\{0,1\}^{(Q-2\cdot\PadLen)\B}.
+\end{align*}
+We could use, for example, the repetition code of Example~\ref{xmp:tripling}.
+Other codes are also appropriate, but we require that they have some fixed
+programs $p_{\encode}$, $p_{\decode}$
+on the universal machine $\Un$, in the following sense:
+ \begin{align*}
+   \upsilon_{*}(x)=\Un(p_{\encode},x),\quad
+   \upsilon^{*}(y)=\Un(p_{\decode}, y).
+ \end{align*}
+Also, these programs must work in quadratic time and
+linear space on a one-tape Turing machine (as the repetition code certainly does).
+
+Let us now define the block code $(\psi_*, \psi^*)$ used in the
+definition of the configuration code $(\phi_*, \phi^*)$ as 
+outlined in Section~\ref{sec:hier-codes}.
+We define
+\begin{equation}\label{eq:psi}
+   \psi_*(a)  = 0^{\PadLen}\upsilon_{*}(a)0^{\PadLen}.
+\end{equation}
+The decoded value \( \psi^{*}(x) \) is obtained by first removing \( \PadLen \) symbols
+from both ends of \( x \) to get \( x' \), and then computing \( \upsilon^{*}(x') \).
+
+To compute the configuration code \( \phi_{*} \) from \( \psi_{*} \) we proceed first as
+done in Section~\ref{sec:hier-codes}, and then add the following initializations:
+In cells of the base colony and its left neighbor  colony,
+the $\cSweep$ and $\cDrift$ fields are set 
+to $\Last(+1)-1$,  $1$, and $\Last(+1)$,  $1$ respectively.
+In the right neighbor colony, these values are $\Last(-1)$ and $-1$ respectively.
+In all other cells, these values are empty.
+The $\cAddr$ fields of each colony are filled properly:
+the $\cAddr$ of the $j$th cell of a colony
+is $j \bmod \B^*$.
+
+Decoding of configurations will be defined later, 
+when defining the map \( \Phi^{*} \) of the simulation.
+It is more complex since 
+the location of the base colony must be found also in
+configurations that are not in the range of the encoding
+function, but arise as a result of a lot of noise.
+
+
+\section{Simulation structure and coordination}
+
+The first task of each simulation step is to check if the state
+of the machine and the current cell are in a certain relationship.
+When this condition is breached (due to some burst), machine calls
+$\Alarm$ --- a rule that will initiate the recovery.
+Below, we will specify these conditions, and
+aggregate them into one, that we call the \df{coordination}.
+
+
+The sketch of the main rule of machine $M$ is given in
+Rule~\ref{alg:main1}, where the $\Comp$ and $\Transfer$ rules will be
+outlined below.
+
+\begin{algorule}[!ht] \caption{\textbf{Main rule}\label{alg:main1}}
+  \If{\( \Mode=\Normal \)}{
+    \lIf{\algNot \( \Coordinated \)}{\( \Alarm \)}\;
+    \lElseIf{\( 1 \le \Sweep < \TransferSw(1) \)}{ \( \Comp \)
+    }\;
+    \lElseIf{\( \TransferSw(1) \le \Sweep < \Last \)}{ \( \Transfer \) 
+    }\;
+   \lElseIf{\( \Last \le \Sweep  \)}{move the head to the new base.}
+  }
+\end{algorule}
+
+
+\section{Sweep counter and direction}\label{sec:sweep}
+
+The global sweeping movement of the head will be
+controlled by the parametrized rule
+\begin{align*}
+\ruSwing(a,b,u,v).
+\end{align*}
+This rule makes the head swing between two extreme points $a,b$,
+while the counter $\Sweep$ increases from value $u$ to value $v$.
+The $\Sweep$ value is incremented at the ``turns'' $a,b$ (and is
+also recorded on the track $\cSweep$).
+
+%\subsection{Yarding}%\label{sec:yarding}
+%
+%    For reasons that we will explain later, at certain sweeps,
+%    the head will step outside of the current colony for certain
+%    number of cells.
+%    This property of our machine will be called the \df{yarding} property.
+%
+%    If when the head steps outside it does not find a cell,
+%    it will create one.
+%    While the head is on the cells that are outside,
+%    it will save the current $\Sweep$ value
+%    in the $\cVisSw$ and the current $\Addr$ modulo $Q$ in
+%    $\cVisAddr$.
+%
+%    The range of penetration of the head in the right (resp., the left)
+%    neighbor colony for each sweep that is greater than 1
+%    is the number of trailing zeroes in a
+%    binary notation of the $\Sweep - 1$ (resp., $\Sweep$), multiplied
+%    by $\Z-4\beta$.
+
+
+    The sweep direction $\delta$ of the simulating head is derived from
+    $\Sweep$, $\Addr$ and the current value \( \Dir \) in the following way.
+    On arrival of the head to an endpoint (that is
+    when $\Dir \neq 0$ and $\Addr\in\{a,b\}$), the values
+    $\Sweep$ and $\cSweep$ are incremented and $\Dir$ is set to 0.
+    In all other cases, the sweep direction is determined
+    using the formula
+     \begin{align}\label{eq:sweep-dir}
+       \dir(s)=(-1)^{s + 1}
+     \end{align}
+as follows: 
+    \begin{equation}\label{eq:Dir}
+    \delta =
+      \begin{cases}
+         0 & \text{ if $\Addr\in\{a,b\}$ and $\Dir\neq 0$},  \\
+           \dir(\Sweep) &\text{otherwise}.
+         \end{cases}
+    \end{equation}
+As we mentioned, each sweep will be broken up into zigzags to
+allow the detection of premature turn-back.
+At each non-zigging step, \( \Addr \gets \Addr+\delta \).
+
+As an example of rules, we present the the zigging rule.
+It uses the following parameters:
+
+\begin{definition}\label{def:Z}
+Let \( \Z=22\beta \), \( \Z_{b}=4\beta \).  %?
+\end{definition}
+
+Certain bursts may turn back the head prematurely,
+causing a skip in the simulation.
+We want to prevent this, since we 
+would like the size of the structural repairs to be comparable to the burst size.
+Zigging is introduced for this purpose.
+Rule~\ref{alg:Zigzag}, itself uses the rule \( \Move(d) \), which 
+we will defined later.  %?
+A characteristic of this rule is that it changes nothing on the tape:
+all its control information is in the state.
+The rule repeats the following cycle: first it moves forward \( \Z-\Z_{b} \),
+moving ahead the \df{front}, and performing all necessary operations
+of the computation.
+Then it moves backward and forward by \( \Z \) steps, not changing anything
+on the tape (but as we will see, some consistencies will be checked).
+The field \( \ZigDepth \) of the state measures the distance from the front
+during the switchback.
+From now on, we will assume that \( Q \) is a multiple of \( \Z-4\beta \).
+
+% \begin{algorule}[!ht]\caption{\( \Move(d) \)}\label{alg:Move}
+
+%   \( \Dir\gets d \)\Comment*[f]{\( d\in\{-1,0,1\} \).}\;
+
+%   \lIf{\( \Mode=\Normal \)}{\( \Addr\gets\cAddr\gets\Addr+d \)}\;
+%   \lElse{\( \Rec.\Addr\gets\Rec.\Addr+d \)}\;
+%   Move in direction \( d \).
+% \end{algorule}
+
+
+\begin{algorule}[!ht]\caption{\( \Zigzag(d) \)}\label{alg:Zigzag}
+  \Comment{\( d\in\{-1,1\} \) is the direction of progress.}
+  \If{\( \ZigDir=-1 \) \algAnd ((\( \ZigDepth=0 \) \algAnd \( (\Z-4\beta)|\Addr \))
+    \\ \algOr \( 0<\ZigDepth<\Z \))}{
+    \( \increment{\ZigDepth} \)\;
+    \lIf{\( \ZigDepth = \Z-1 \) %\algOr \( \cAddr\in\{-Q+1,2Q-2\} \)
+    }{\( \ZigDir=1 \)}\;
+    \( \Move(-d) \)
+  }
+  \ElseIf{\( \ZigDir=1 \) \algOr (\( \ZigDepth=0 \) \algAnd \( (\Z-4\beta)\not|\Addr \))}{
+    \lIf{\( \ZigDepth>0 \)}{\( \decrement{\ZigDepth} \)}
+    \lElse{\( \ZigDir\gets -1 \)}\;
+    \( \Move(d) \)
+  }
+\end{algorule}
+
+\section{Computation phase}\label{sec:computation-phase}
+
+As shown in Rule~\ref{alg:main1} descibing a top-down view of the simulation,
+the first phase of the simulation computes new values for state of the 
+simulated machine \( M^{*} \)
+represented on track $\cState$, the direction of the move of the head of  \( M^{*} \)
+(represented in the $\cDrift$ field of each cell of the colony of \( M \)), and
+the simulated cell state of \( M^{*} \) represented on the track $\cInfo$.
+During this rule, the head sweeps the base colony.
+
+The rule \( \Comp \) essentially repeats five times the following \df{stages}:
+decoding, applying the transition, encoding, checking for destruction.
+
+Due to the possibility of encountering a much larger burst of faults than
+this rule can handle, some extra rules will then be applied that we will specify later:
+$\UsefulComp$.  %?
+
+In more detail:
+\begin{enumerate}
+     \item   In the first sweep of the work period, set
+      $\cAddr \gets \cAddr\bmod{Q}$ and $\cKind \gets \Member$.
+
+      \item For every $j=1,\dots,5$, if $\Addr \in \set{0, \dots, Q-1}$ do
+
+       \begin{enumerate}
+
+          \item Calling by $g$ the  string found on the $\cState$ track of
+            the base colony between addresses $\PadLen$
+            and $Q-\PadLen$, decode it into string $\tilde g=\upsilon^{*}(g)$
+            (this should be the current state of the simulated machine), and
+            store it on some auxiliary track in the base colony.
+            Do this by simulating the universal machine on the $\cProg$ track,
+            $\tilde g = \Un(p_{\decode}, g)$.
+
+            Proceed similarly with the string $a$ found on the $\cInfo$
+            track of the base colony, between addresses $\PadLen$
+            and $Q-\PadLen$, to get $\tilde a = \upsilon^{*}(a)$
+            (this should be the observed tape symbol of the simulated machine).
+
+          \item \label{i:comp.trans}
+           Compute the value \( (a',g',d)=\delta^{*}(\tilde a, \tilde g) \).
+Since the neither the table nor any program of the transition 
+function \( \delta^{*} \) is written explicitly anywhere, this ``self-simulation'' step needs
+some elaboration, see Section~\ref{sec:self-simulation}.
+
+            \item\label{i:comp.write}
+              Write the encoded new state $\upsilon_{*}(g')$ onto the
+              $\cHold[j].\State$ track of the base colony between positions
+              $\PadLen\B$ and $Q-\PadLen\B$.
+              Similarly, write the encoded new observed cell
+              content $\upsilon_{*}(a')$ onto the $\cHold[j].\Info$ track.
+              Write $d$ into the $\cHold[j].\Drift$ field of \emph{each cell} of
+              the base colony.
+
+              Special action needs to be taken in case 
+              the new state \( g' \) is a vacant one, that is 
+              \( g'.\Kind^{*}=\Vacant^{*} \).
+              In this case, write \( 1 \) onto the \( \cHold[j].\Doomed \) track (else 0).
+
+        \end{enumerate}
+
+      \item Repeat the following twice (hoping that at least
+        one repetition will be burst-free):
+
+          \begin{quote}
+            Sweeping through the base colony,
+            at each cell compute the majority of \( \cHold[j].\Info \), \( j=1,\dots,5 \),
+            and write into the field \( \cInfo \).
+            Proceed similarly, and simultaneously, with \( \State \) and \( \Drift \).
+          \end{quote}
+
+       \item Call the rule $\UsefulComp$ that we will specify later.
+  \end{enumerate}
+
+It can be arranged---and we assume so---that the total number of sweeps of this
+phase, and thus the starting sweep number of the next phase,
+depends only on \( Q \).
+
+\section{Self-simulation}\label{sec:self-simulation}
+
+In describing the rule of the computation phase,
+in the step~\ref{i:comp.trans} of Section~\ref{sec:computation-phase},
+we said that machine $M$ writes the code \( p^{*} \)
+of \( M^{*} \) onto the $\cProg$ track, without saying how this is done.
+Here we give the details.
+
+\subsection{New primitives}
+
+We will make use of a special track
+\begin{align*}
+   \cWork
+ \end{align*}
+of the cells and the special field
+\begin{align*}
+   \Index
+ \end{align*}
+of the state of machine \( M \) that can store a certain address of a colony.
+
+Recall from Section~\ref{sec:language} that the program
+of our machine is a list of nested
+``\textbf{if} \emph{condition} \textbf{then} \emph{instruction}
+\textbf{else} \emph{instruction}''
+statements.
+As such, it can be represented as a binary string 
+ \begin{align*}
+   R.
+ \end{align*}
+If one writes out all details of the construction of the present paper, this string \( R \)
+becomes completely explicit, an absolute constant.
+But in the reasoning below, we treat it as a parameter.
+
+There is a couple of \df{extra primitives} in the rules.
+First, they have access to the parameter \( k \) of machine \( M=M_{k} \), 
+to define the transition function
+ \begin{align*}
+            \delta_{R,k}(a,q).
+ \end{align*}
+The other, more important, new primitive is a special instruction
+ \begin{align*}
+   \WriteRulesBit
+ \end{align*}
+in the rules.
+When called, this instruction makes the assignment \( \cWork\gets R(\Index) \).
+This is the key to self-simulation: \emph{the program has
+access to its own bits}.
+If \( \Index=i \) then it writes \( R(i) \) onto the current position of the \( \cWork \) track.
+
+
+\subsection{Simulating the rules}
+
+By convention, in our fixed flexible universal machine \( \Un \),
+program \( p \) and input \( x \) produce an output \( \Un(p,x) \).
+Since the structure of all rules is very simple, they can be read and
+interpreted by \( \Un \) in reasonable time:
+
+\begin{theorem}
+There is a constant string called \( \Interpr \) with the property that for
+all positive integers \( k \), strings \( R \), \( a,q \) where \( R \) is a
+sequence of rules, and bit strings \( a\in\Sigma_{k} \), \( q\in \Gamma_{k} \):
+ \begin{align*}
+  \Un(\Interpr,R,0^{k},a,q)=\delta_{R,k}(a,q).
+ \end{align*}
+The computation on \( \Un \) takes time \( O(|R|\cdot (|a|+|q|)) \).
+\end{theorem}
+
+The proof parses and implements the rules in the string \( R \); each of these rules
+checks and writes a constant number of fields.
+
+Implementing the \( \WriteRulesBit \) instruction is straightforward:
+Machine \( \Un \) determines the number \( i \)
+represented by the simulated \( \Index \) field, 
+looks up \( R(i) \) in \( R \), and writes it into the simulated \( \cWork \) field.
+
+Note that there is no circularity in these definitions:
+  \begin{itemize}
+  \item 
+The instruction \( \WriteRulesBit \) is written \emph{literally}
+in \( R \) in the appropriate place, as ``\(\WriteRulesBit \)''.
+The string \( R \) is \emph{not part} of the rules (that is of itself).  
+  \item On the other hand, the computation in
+\( \Un(\Interpr,R,0^{k},a, q) \) 
+has \emph{explicit} access to the string \( R \) as one of the inputs.
+  \end{itemize}
+
+Let us show the computation step invoking the ``self-simulation'' in detail.
+In the earlier outline, step~\ref{i:comp.trans} of Section~\ref{sec:computation-phase},
+just said to compute \( \delta^{*}(\tilde a, \tilde g) \)
+(for the present discussion, we will just consider computing 
+\( \delta^{*}(a,q)=\delta_{k+1}(a,q) \)), where \( \delta=\delta_{k} \),
+where it is assumed that \( a \) and \( q \) are available on two appropriate
+auxiliary tracks.
+We give more detail now of how to implement this step:
+
+\begin{enumerate}[1.]
+\item Onto the \( \cWork \) track, write the string \( R \).
+To do this, for \( \Index \) running from 1 to \( |R| \), 
+execute the instruction \( \WriteRulesBit \) and move right.
+Now, on the \( \cWork  \) track, replace it with \( \ang{\Interpr,0^{k+1},R,a,q} \).
+Here, string \( \Interpr \) is a constant, so it is just hardwired.
+String \( R \) already has been made available.
+String \( 0^{k+1} \) can be written since the parameter \( k \) is available.
+Strings \( a,q \) are available on the tracks where they were stored.
+\begin{sloppypar}
+ \item Simulate the universal automaton \( \Un \) on track \( \cWork \):
+   it computes \( \delta_{R,k+1}(a,q)=\Un(\Interpr,R,0^{k+1}, a,q) \)
+as needed.  
+\end{sloppypar}
+\end{enumerate}
+
+This achieves the forced simulation.
+Note what we achieved:
+
+\begin{itemize}
+  \begin{sloppypar}
+\item On level 1, the transition function \( \delta_{R,1}(a,q) \) is defined completely
+when the rule string \( R \) is given.
+It has the forced simulation property by definition, and
+string \( R \) is \emph{``hard-wired''} into it in the following way.
+If \( (a',q',d)=\delta_{R,1}(a,q) \), then
+\begin{align*}
+  a'.\cWork=R(q.\Index)
+\end{align*}
+whenever \( q.\Index \) represents a number between 1 and \( |R| \).
+and the values \( q.\Sweep \), \( q.\Addr \) satisfy the conditions
+under which the instruction \( \WriteRulesBit \) is 
+called in the rules (written in \( R \)).
+      \end{sloppypar}
+
+      \begin{sloppypar}
+\item The forced simulation property of the \emph{simulated}
+transition function \( \delta_{R,k+1}(\cdot,\cdot) \) is 
+achieved by the above defined computation 
+step---which \emph{relies on} the forced simulation property of \( \delta_{R,k}(\cdot,\cdot) \).
+              \end{sloppypar}
+\end{itemize}
+
+\begin{remark}
+This construction resembles the proof of Kleene's fixed-point theorem.
+\end{remark}
+
+
+
+\section{Transfer phase}\label{sec:TransferPhase}
+
+If the simulated machine head moves left or right, then another phase will
+be added to the simulation: transferring the simulated state information to the
+neighbor colony, and to move there.
+Let us call the direction of the transfer the \df{drift}.
+
+During this phase, the range of the head
+includes the base colony and the neighbor colony
+determined by the drift, including a possible ``bridge'' between them.
+
+The sweep in which we start transferring in direction \( \delta \) is called
+\( \TransferSw(\delta) \), the \df{transfer sweep}.
+We have \( \TransferSw(-1) =\TransferSw(1)+1 \).
+
+\subsection{General structure of the phase}\label{sec:TransferPhase.general-struc}
+
+We will make use of some extra rules that we will
+specify in more detail later, but whose role is spelled out here.
+
+The phase consists of the following actions.
+\begin{enumerate}[1.]
+\item
+  Spread the value \( \delta \) found in the cells of the \( \cDrift \) track
+  (they should all be the same)
+  onto the neighbor colony in direction \( \delta \).
+
+There are some details to handle in case the neighbor colony is not adjacent:
+see Section~\ref{sec:adjacency}.
+
+\item\label{i:transfer-state} For \( i=1,2,3 \):
+        \begin{quote}
+          Copy the content of \( \cState \) track of the base colony
+            to the \( \cHold[i].\State \) track of the neighbor colony.
+        \end{quote}
+
+\item Repeat the following twice:
+  \begin{quote}
+ Assign the field majority: \( \cState\gets \maj(\cHold[1 \dots  3].\State) \)
+in all cells of the neighbor colony.    
+  \end{quote}
+  
+\item If \( \Drift = 1 \), then move right to the left endcell of the neighbor colony
+(else you are already there).
+
+        \begin{sloppypar}
+          \item In the last sweep (possibly identical with the move step above), in the base colony,
+            if the majority of \( \cHold[j].\Doomed \), \( j=1,\dots,5 \), is 1 then
+            turn the scanned cell into a stem cell, setting \( \Kind\gets\Stem \): in other
+            words, carry out the destruction.            
+          \end{sloppypar}
+
+
+\end{enumerate}
+
+\subsection{Transfer to a non-adjacent colony}\label{sec:adjacency}
+
+Let us address the situation when the neighbor colony is not adjacent.
+
+\begin{definition}[Adjacency of cells]\label{def:adjacent}
+  Cells $a$ and $b$ are \df{adjacent} if $|a-b|=\B$.
+  Otherwise, if $\B < | a- b| < 2\B$, then
+  $a$ and $b$ are two \df{non-adjacent neighbor cells}.
+For the sake of the present discussion, a \df{colony} is a sequence of \( Q \) adjacent
+cells whose \( \cAddr \) value runs from \( 0 \) to \( Q-1 \).
+
+If the bodies of two cells are not adjacent, but are at a distance \( <\B \) then the space
+between them is called a \df{small gap}.
+We also call a small gap such a space between the bodies of two colonies.
+On the other hand, if the distance of the bodies of two colonies is \( >\B \) 
+but \( <Q\B \) then the space between them is called a \df{large gap}.
+\end{definition}
+
+In the transfer phase, in order to know in a robust local way where the head is,
+the \( \cKind \) field of the cells visited will be set as follows.
+The base colony has cells of kind \( \Member \) to begin with.
+The kind of the cells of the neighbor colony, the target of the transfer, will be set
+as \( \Neighbor \) for the duration of the transfer.
+If there is a large gap between the base and the neighbor colony then it will be
+filled with cells of the kind \( \Bridge \), forming a contiguous area of adjacent cells
+with the base colony.
+The bridge has its own addresses, starting from 0 if it extends to the right,
+and from \( Q-1 \) if it extends to the left.
+
+If while forming a bridge, an existing, non-adjacent 
+cell of kind \( \Bridge \) or \( \Stem \)
+is encountered, then this cell will be killed before an adjacent bridge cell is created.
+(We will show later the rule implementing such a step.) %?
+This process is called \df{realignment}.
+
+If after forming a bridge,
+it turns out that no neighbor colony exists (the bridge grows to length \( Q\B \)), 
+we turn the bridge into an adjacent neighbor colony on the way back.
+
+    Here are the details.
+
+    \begin{flushdescription}
+    \item [Assumptions]
+      During the first sweep of transfer, in direction \( \delta \), 
+      when we step onto a neighbor cell, this cell must either one of the following:
+      (1) a stem cell (2) a member of a neighbor colony with or a cell of an old bridge: in
+both cases, it must have $\cSweep = \Last(-\delta)$ and $\cDrift=-\delta$.
+      Otherwise, $\Alarm$ will be called.
+
+     \item [Extending a bridge]
+       Here is how a bridge is extended from the base colony, in 
+transfer direction \( \delta \).
+Recall that the field \( \Kind \) of the state shows the kind of the cell visited
+before the current one, whild \( \cKind \) is the kind of the cell being visited right now.
+
+\begin{enumerate}[1.]
+
+\item
+  \begin{sloppypar}
+ (Active part.)
+  Suppose that $\cKind \in \{\Member,\Bridge\}$, \( \G=\true \).
+Suppose further that either \( \Sweep=\cSweep+1 \) 
+and \( \Kind\in\{\Member,\Bridge\} \) (the usual case)
+or \( \Sweep=\cSweep \) and $\Kind  = \Vacant$.
+(The case when the head presumably just returned from the cell it killed.
+Normally \( \Sweep=\cSweep \) would trigger alarm, but not now.)    
+  \end{sloppypar}
+
+ Then, we move in direction $\delta$, with \( \Kind=\cKind \).
+
+\item(Passive part.)
+ Suppose that 1) \( \cKind =\Bridge \) and \( \cSweep=\Last(-\delta) \),
+or \( \cKind=\Stem \), and 2) $\Kind  \in \set{\Member, \Bridge}$.
+
+ \begin{enumerate}[a.]
+ \item Suppose $\G = \false$.
+Then $\cKind \gets \Bridge$, \( \cAddr\gets\Addr+\delta \).
+
+If moving in direction \( \delta \) does not get outside the colony determined by \( \cAddr \)
+then do it.
+Else switch back onto a next sweep, and start turning the colony of \( Q \) 
+bridge cells just created cells of kind \( \Neighbor \).
+
+ \item Suppose \( \G=\true \).
+Then kill this cell (that is $\cKind,\Kind \gets \Vacant$), 
+and move in direction $-\delta$.
+(Thus, we kill a non-adjacent bridge or stem cell and move back (in order 
+to create an adjacent bridge cell).
+\end{enumerate}
+
+\item (The neighbor colony is reached.) 
+  Suppose that $\Kind \in \{\Member,\Bridge \}$, $\cKind = \Member$, 
+  $\cAddr = 0$ in case \( \delta=1 \) and $\cAddr =  Q-1$ in case \( \delta=-1 \).
+  Then $\cKind, \Kind \gets \Neighbor$, $\Addr \gets \cAddr$.
+
+  \end{enumerate}
+
+  \item[Creating a neighbor colony]
+    Suppose that $\cKind = \Member$, $\Kind  =\Neighbor$.
+Let $\cKind \gets \Neighbor$.
+
+    \begin{enumerate}[1.]
+    \item Suppose that we have not reached the end of the first transfer sweep: that is 
+if \( \delta=1 \) then \( \Addr<Q-1 \) (this is the address from where we are coming), 
+and if \( \delta=-1 \) then \( \Addr>0 \).
+Then move on in direction \( \delta \).
+    \item Otherwise switch back, with \( \Sweep\gets\Sweep+1 \).
+    \end{enumerate}
+
+  \item[The rest of the transfer phase]
+Once the bridge and the neighbor colony have been marked out the transfer phase
+works as outlined at the beginning of the section.
+But to pass between the base colony and the neighbor colony, the head always travels
+through the bridge.
+
+    \end{flushdescription}
+
+Recall that the $\G$ field of the state determines
+if the current cell is not adjacent to the cell  where the head came from.
+After the transfer stage, we update the $\G^{*}$ field encoded in the
+$\cState$ track of the neighbor colony: it becomes 1 if either there is a nonempty bridge,
+or there is a gap (found with the help of the \( \G \) field) between the base colony
+and the neighbor colony.
+
+This is done in part~\ref{i:transfer-state} 
+of Section~\ref{sec:TransferPhase.general-struc}
+again three times, storing candidate values into $\cHold[j].\G$
+and repeated with everything else.
+
+ \subsection{Notes on zigging}\label{sec:zigging}
+
+The zigging rule was introduced in Section~\ref{sec:sweep}.
+We add now the following refinements to it.
+
+When the head steps outside of the extended base colony and
+does not find a cell, then it creates a stem cell whose
+$\cDrift$ is set to $-\Dir$, where $\Dir$ is the field
+of the state storing the direction of the last step (see~\ref{sec:fields}).
+While zigging outside the extended base colony in normal mode,
+we allow one small gap, next to the extended base colony
+(other situations cause alarm).
+
+% Later, in our analysis,
+% we will need to estimate the number of steps needed
+% to sweep a certain interval of cells where zigging is used.
+% For this purpose we introduce  the
+% function
+% \begin{align}\label{eq:Zg}
+%    \Zg(a,\Z, \Z_b),
+% \end{align}
+% where $a$ is the length of the interval, that is divisible by $\Z-\Z_b$.
+% For example, $\Zg(Q,\Z, \Z_b)$ bounds the number of steps
+% needed to sweep a colony with a zigging that
+% occurs every $\Z - \Z_b$ steps.
+% A simple bound on the values is
+% \begin{align}\label{eq:Zg-bound}
+%    \Zg(a,\Z, \Z_b) \leq \frac{a}{\Z - \Z_b}(3\Z - \Z_b).
+% \end{align}
+
+
+
+\bibliographystyle{plain}
+\bibliography{reli,publ}
+
+\end{document}
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 
