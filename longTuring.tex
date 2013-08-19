@@ -117,7 +117,7 @@
 \newcommand{\ZigDepth}{\fld{ZigDepth}}
 \newcommand{\ZigDir}{\fld{ZigDir}}
 
-\newcommand{\Bridge}{\mathrm{Bridge}}
+%\newcommand{\Bridge}{\mathrm{Bridge}}
 \newcommand{\Coordinated}{\mathrm{Coordinated}}
 \newcommand{\decode}{\mathrm{decode}}
 \newcommand{\dir}{\mathrm{dir}}
@@ -808,8 +808,8 @@ machine represents one cell of the simulated machine.
 The colony that corresponds to the cell that the
 simulated machine is scanning is called the \df{base colony}
 (a precise definition will be based on the actual history of the work of \( M \)).
-Once the drift is known, the union of the base colony with the neighbor colony in
-the direction of the drift is called the \df{extended base colony} (this notion will 
+Once the drift is known, the union of the base colony with the target colony in
+the direction of the drift is called the \df{workspace} (this notion will 
 need to be defined more carefully later).
 
 A field of the state will be called the \df{mode}.
@@ -854,7 +854,10 @@ The field
   \cAddr
  \end{align*}
 of the cell shows the position of the cell in its colony:
-it takes values in \( \lint{0}{Q} \).
+it takes values in \( \lint{-Q}{2Q} \), since the addresses in a bridge (see later)
+will be continuations of those in the colony (which run from \( 0 \) to \( Q-1 \)).
+The colony along with the adjacent cells that continue its addresses will be called
+an \df{extended colony}.
 There is a corresponding \( \Addr \) field of the state.
 The
  \begin{align*}
@@ -880,7 +883,7 @@ field
  \end{align*}
 with values
        \begin{align*}
-          \Member, \Target, \Bridge, \Stem, \Vacant.
+          \Member, \Target, \Stem, \Vacant.
        \end{align*}
 Here is a description of the role of these cell kinds.
 Normally, cells will have the kind \( \Member \).
@@ -888,7 +891,13 @@ During the simulation, however, the elements of the colony that is to become
 the next base colony, will be made to have the kind \( \Target \).
 If the neighbor colony 
 is not adjacent, then the cells in the structure during simulation
-that connects the base colony to it will be made to have kind \( \Bridge \).
+that connects the base colony to it will get addresses extending the those of the base
+colony,  to become a \df{bridge}, and such a bridge creates from the colony a
+so-called extended colony.
+Thus, bridge cells are member cells with addresses outside \( \lint{0}{Q} \).
+Though they have the kind \( \Member \), they will frequently be treated
+differently from the other member cells.
+
 When the simulation kills a represented cell, then the constituent members
 of its colony will not be killed, they will get the kind \( \Stem \).
 The reason is that even the ``vacuum'' taking the place of the colony needs some
@@ -1655,8 +1664,8 @@ this rule can handle, some extra rules will then be applied that we will specify
 
 In more detail:
 \begin{enumerate}
-     \item   In the first sweep of the work period, set
-      \( \cAddr \gets \cAddr\bmod{Q} \) and \( \cKind \gets \Member \).
+     % \item   In the first sweep of the work period, set
+     %  \( \cAddr \gets \cAddr\bmod{Q} \) and \( \cKind \gets \Member \).
 
       \item For every \( j=1,\dots,5 \), if \( \Addr \in \set{0, \dots, Q-1} \) do
 
@@ -1923,6 +1932,8 @@ Let us address the situation when the neighbor colony is not adjacent.
   \( a \) and \( b \) are two \df{non-adjacent neighbor cells}.
 For the sake of the present discussion, a \df{colony} is a sequence of \( Q \) adjacent
 cells whose \( \cAddr \) value runs from \( 0 \) to \( Q-1 \).
+It may be extended by a bridge of length up to \( Q-1 \) on left or right,
+whose addresses continue those of the colony.
 
 If the bodies of two cells are not adjacent, but are at a distance \( <\B \) then the space
 between them is called a \df{small gap}.
@@ -1936,13 +1947,11 @@ the \( \cKind \) field of the cells visited will be set as follows.
 The base colony has cells of kind \( \Member \) to begin with.
 The kind of the cells of the neighbor colony, the target of the transfer, will be set
 as \( \Target \) for the duration of the transfer.
-However, in the first transfer sweep, the cells adjacent to the base colony get the
-kind \( \Bridge \).
-A bridge can be extended over an opposite old bridge (``old'' meaning 
+However, in the first transfer sweep, the cells adjacent to the base colony form a
+bridge, continuing the colony's addresses.
+A bridge can override an opposite old bridge (``old'' meaning 
 that its \( \Sweep \) is maximal) or 
 into an empty area, killing opposite bridge cells or stem cells in the process.
-The bridge has its own addresses, starting from 0 if it extends to the right,
-and from \( Q-1 \) if it extends to the left.
 If while forming a bridge, another colony is encountered before
 the bridge grows to length \( Q\B \)), then this new colony's cells will get the 
 kind \( \Target \), and add it all to the workspace.
@@ -2046,13 +2055,12 @@ and repeated with everything else.
 The zigging rule was introduced in Section~\ref{sec:sweep}.
 We add now the following refinements to it.
 
-When the head steps outside of the extended base colony and
+When the head steps outside of the workspace and
 does not find a cell, then it creates a stem cell whose
 \( \cDrift \) is set to \( -\Dir \), where \( \Dir \) is the field
 of the state storing the direction of the last step (see~\ref{sec:language}).
-While zigging outside the extended base colony in normal mode,
-we allow one small gap, next to the extended base colony
-(other situations cause alarm).
+While zigging outside the workspace in normal mode,
+we allow one small gap, next to the workspace (other situations cause alarm).
 
 % Later, in our analysis,
 % we will need to estimate the number of steps needed
@@ -2107,8 +2115,10 @@ stem cells (this will be called a \df{desert}).
 Its \df{left end} is the left edge of its first cell, and its \df{right end} is 
 the right edge of its last cell.
 
-It is a \df{colony} if the addresses grow from \( 0 \) to \( Q-1 \).
-It is a \df{bridge} if it consists of bridge cells, a \df{target} if it consists of target cells.
+It is a \df{colony} if the addresses grow from \( 0 \) to \( Q-1 \), possibly continued
+by a bridge on one side.
+It is a % \df{bridge} if it consists of bridge cells, a 
+\df{target} if it consists of target cells.
 
 A boundary is called \df{rigid} if its address is the end 
 address of a colony in the same direction.
@@ -2143,8 +2153,13 @@ Recall the definition of the \df{transfer sweep}
 \( \TransferSw(\delta) \) in Section~\ref{sec:TransferPhase}, if \( \delta \ne 0 \).
 (There is no transfer sweep if \( \delta = 0 \).)
 
-\begin{definition}[Healthy configuration]
-\label{def:healthy}
+\begin{definition}[Healthy configuration]\label{def:healthy}
+Health of a configuration should strictly speaking be defined only 
+locally, saying when a configuration \( \xi \)
+is healthy over a certain interval \( A \).
+But since it will be obvious how to localize the properties in question,
+for simplicity we omit the mention of the underlying interval.
+
     A configuration \( \xi \) of a generalized Turing machine \( M \),
     is \df{healthy}, if the mode is normal, and the following conditions hold.
     Let \( \delta = \Drift \).
@@ -2159,19 +2174,22 @@ Recall the definition of the \df{transfer sweep}
            and after~\eqref{eq:cArbCore}, respectively).
 
 \item[Segments]
-    All cells can be grouped into the following:
+        The \df{base} is defined by counting back from \( \Addr \) such that, if the head
+        passes from a target cell to a member, 
+        % or from a bridge to a member 
+        we set \( \Addr \) to \( \cAddr \).
+        The cell closer to the base where the \( \Addr \) is adjusted during
+        this count-back is called the \df{address jump}.
+
+    All cells can be grouped into full extended colonies,
+with possibly some stem cells between these.
+In more detail:
   \begin{bullets}
-  \item A segment of the \df{base colony} consisting of member cells.
+  \item A segment of the \df{extended base colony} consisting of member cells.
   \item \df{Outer colonies}, consisting of outer member cells.
-  \item A possible bridge of size \( <Q \).
    \item A segment of a possible target, defined by the value of \( \cSweep \) in its cells.
     \item Desert filling out the gaps between these other parts.
   \end{bullets}
-        The \df{base} is defined by counting back from \( \Addr \) such that, if the head
-        passes from a target cell to a bridge or member, 
-        or from a bridge to a member cell, we set \( \Addr \) to \( \cAddr \).
-        The cell closer to the base where the \( \Addr \) is adjusted during
-        this count-back is called the \df{address jump}.
 
         The colony starting at the base is the base colony, and it consists of member cells.
         To describe the other segments, we consider several cases.
@@ -2185,16 +2203,17 @@ Recall the definition of the \df{transfer sweep}
           If its distance from the base colony is \( \ge\B \) then there is a 
           bridge adjacent to the base colony filling the gap between the 
           base colony and the target colony.
-          We define the \df{extended base colony} by extending the base colony
-          by the target colony, with the possible bridge in between.
+          % We define the \df{extended base colony} by extending the base colony
+          % by the target colony, with the possible bridge in between.
 
-        \item If \( \Sweep = \TransferSw(\delta) \) then the above described situation is in the making, as
+        \item If \( \Sweep = \TransferSw(\delta) \) then the above 
+          described situation is in the making, as
           a bridge segment is being built up in direction \( \delta \), or after that,
           a target segment is being built in direction \( \delta \), converting member cells into target cells.
           
         \item If \( \Sweep = \TransferSw(\delta) +1 \) and there is still not a complete target colony,
-          then this can only happen if the whole bridge is being converted into a target, as the head travels
-          in direction \( -\delta \).
+          then this can only happen if the whole bridge is being converted into a target, 
+          as the head travels in direction \( -\delta \).
 
          \item In the last sweep, the target cells are being converted into member cells.
         \end{bullets}
@@ -2214,7 +2233,7 @@ Recall the definition of the \df{transfer sweep}
      \item[Workspace]
 
        \begin{sloppypar}
-          Suppose that \( \front(\xi) \) is inside the extended base colony.
+          Suppose that \( \front(\xi) \) is inside the extended base colony or the target.
           The \df{workspace} is an interval of non-outer cells, such that:         
        \end{sloppypar}
 
@@ -2233,7 +2252,7 @@ Recall the definition of the \df{transfer sweep}
                   \( \front(\xi) \) on the side of the base colony.
 
             \item If \( \TransferSw(-1) < \Sweep < \Last(\delta) \),
-                  then it is equal to the extended base colony.
+                  then it is equal to the union of the extended base colony and the target.
             \item When \( \Sweep = \Last(\delta) \), it is
                   the smallest interval including the future
                   base colony and \( \front(\xi) \).
@@ -2380,14 +2399,26 @@ referring to the properties listed above.
    \end{flushdescription}
  \end{definition}
 
-Based on the above, let us classify the boundary pairs possible in a healthy configuration.
+In a healthy configuration, the possibility of finding non-adjacent neighbor
+cells is limited.
+
+\begin{lemma}\label{lem:two-domains}
+  An interval of size \( <Q \) over which the configuration \( \xi \) is healthy
+contains at most two maximal sequences of adjacent non-stem neighbor cells.
+\end{lemma}
+\begin{proof}
+Indeed, by definition a healthy configuration consists of full extended colonies, with 
+possibly stem cells between them.
+An interval of size \( <Q \) contains the segments from at most two full extended colonies.
+\end{proof}
+
+Let us classify the boundary pairs possible in a healthy configuration.
 Rigid pairs:
 
 \begin{enumerate}[(r1)]
 \item\label{i:rigid.base-bridge} Between a base colony and its extension bridge.
 \item\label{i:rigid.outer-workspace}
-Between an outer colony (possibly extended by an old bridge)
-or a desert, and the workspace: base colony or target.
+Between an outer extended colony or a desert, and the workspace: base colony or target.
 \item\label{i:rigid.bridge-target} Between a bridge and the target or an outer colony.
 \end{enumerate}
 
@@ -2572,6 +2603,7 @@ A violation of the health requirements can sometimes be noted immediately:
 Configurations that have been affected by noise in a limited way only, can be ``annotated'',
 adding some information showing some of the affected parts. 
 
+
 We will make use of a new parameter \( \E \) which approximately measures the work 
 area needed for eliminating the damage caused by a couple of bursts.
 Let:
@@ -2634,8 +2666,8 @@ Let:
           At most 2 islands intersect the workspace.
 
           There are at most 2 islands in each colony or bridge
-            that do not intersect the workspace and the extended
-            workspace.
+            that do not intersect the workspace.
+            % and the extended workspace.
             If there is more than one, then one of them is within
             a distance \( \PenetrationLen\cdot\B \) from the boundary of the neighbor colony
             towards the base colony.
@@ -2737,9 +2769,16 @@ such a configuration can be obtained.
 
 In this section we show that an admissible configuration of machine \( M \)
 can be locally corrected.
-We will also show that in case the configuration is damage-free then this correction
+Moreover, in case the configuration is damage-free then this correction
 can be carried out by the machine \( M \) itself.
 We will deal with the elimination of damage later.
+
+The lemma below shows that local correction can be carried out.
+For use in the recovery procedure to be define later, we added a feature
+whose usefulness will be explaine later: the final left and right boundaries
+of the locally corrected are will have addresses that are near multiples
+of a certain constant \( \E \).
+This will counteract certain exotic possibilites of creeping damage.
 
 % Before  spelling out the main lemma of this section,
 % we need to introduce some notation, that will be used throughout this work.
@@ -2785,20 +2824,25 @@ We will deal with the elimination of damage later.
 % Is this the correct definition of \( \Delta \)?
 
 \begin{definition}\label{def:Delta}
-  Let \( \Delta=35\beta\B \).
+We will call a homogenous segment of \( \xi \) \df{substantial} if it has size 
+at least \( 5\beta\B \).
+  Let
+ \begin{align*}
+ \Delta=35\beta,\quad \Delta'=\Delta+5\beta.
+ \end{align*}
 \end{definition}
 
 
 \begin{lemma}[Patching]\label{lem:patching}
-    Let  \( \R=\lint{a}{b} \) be an interval containing \( 2\E \) cells.
+    Let  \( \R=\lint{a}{b} \) be an interval of length at least \( 2\E\B \).
     Consider an
-annotated configuration \(  (\xi, \chi, \cI, \D) \)  with the property that the ends of \( R \) are
-at a distance of at least \( \E/2 \) from any colony end.
+annotated configuration \(  (\xi, \chi, \cI, \D) \)  with the property that in the left half 
+or the right half of \( \R \), there are at least \( E-3\beta \) non-stem cells.
 
    Then it is possible to compute from \( \xi.\cCore(\R) \) and the additional information telling
 which neighbor cells are adjacent,  an interval
 \begin{align*}
-   \hat \R =\lint{\hat a}{\hat b} \subseteq \R
+   \hat \R =\lint{\hat a}{\hat b}
  \end{align*}
     and a local configuration \( \zeta = \zeta(\hat \R) \)
     such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
@@ -2816,12 +2860,22 @@ which neighbor cells are adjacent,  an interval
         of passes over \( \R \), and a constant number
         of fields containing values of size \( \le Q \).
 
-     \item\label{i:patching.inside}
-       We have \( \hat a = a  \), \( a+\Delta \) or \( a+3\Delta \).
-       If \( \chi.\pos < a + 2\Delta\) then \( \hat a = a+3\Delta \).
-       The same conditions define \( \hat b \), interchanging left and right.
+       \item\label{i:patching.align}
+       We have \( a-\E \le \hat a \le a \).
+       Consider the leftmost homogenous segment of \( \xi(\hat\R) \).
+       Extending its addresses to the left to \( \hat a \) gives
+ \begin{align*}
+   |\cAddr(\hat a) \amod \E|\le \Delta'\B.
+ \end{align*}
+  
+   \item\label{i:patching.inside}
+       If \( \chi.\pos < \hat a +\Delta'\B \) then it is \( \le \hat a - \Delta'\B \).
+       Similarly with \( \hat b \) and the rightmost homogenous segment of \( \xi(\hat\R) \).
+
 
     \end{enumerate}
+The computation can be carried out by the machine \( M \) using only the configuration
+\( \xi\lint{\hat a-\Delta\B}{\hat b+\Delta\B} \).
 \end{lemma}
 
 \begin{Proof}
@@ -2829,24 +2883,14 @@ which neighbor cells are adjacent,  an interval
 Let us consolidate segments.
 \end{step+}
 \begin{prooofi}
-We will call a homogenous segment of \( \xi \) \df{substantial} if it has size 
-at least \( 5\beta\B \).
 (There are at most 4 islands in the area to be considered, so this is a segment 
 larger than all of them combined.)
-We extend the notion of substantial segment somewhat, as follows: 
-if a base colony is continued by a bridge 
-in its drift direction, in the same sweep, then they will be said to
-belong to the same substantial segment.
-It is convenient to 
-introduce also a \df{virtual address} \( \cAddr' \) for a bridge cell,
-as \( \cAddr'=\cAddr+Q\cdot\cDrift \).
-For all other cells, \( \cAddr'=\cAddr \).
 The area between two neighboring substantial segments will be called \df{ambiguous}.
 
 How large can be the ambiguous areas?
 There are at most 3 boundary pairs at a total size of \( 3\B \), 
 further 4 islands of size \( \le\beta\B \), with non-substantial segments of sizes \( < 5\beta\B \)
-between them: this adds up to \( \le (34\beta+3)\B<35\beta\B=\Delta \) 
+between them: this adds up to \( \le (34\beta+3)\B<35\beta\B=\Delta\B \) 
 by Definition~\ref{def:Delta}.
 
 Let us call two substantial  segments \( \lint{a_{1}}{b_{1}} \) and \( \lint{a_{2}}{b_{2}} \)
@@ -2862,7 +2906,6 @@ Machine \( M \) can recognize mergeable substantial segments and can merge them,
 right, one-by-one.
 
 Let us merge also two substantial segments if they are adjacent and form a boundary of type
-% (r\ref{i:rigid.base-bridge}) 
 (r\ref{i:rigid.outer-workspace}), (r\ref{i:rigid.bridge-target}) (this would be rare),
 (nr\ref{i:nonrigid.sweep}).
 \end{prooofi} % step:substantial
@@ -2873,13 +2916,14 @@ that fall into ambiguous areas.
 \end{step+}
 \begin{prooofi}
 Consider a boundary of type~(r\ref{i:rigid.outer-workspace}): for example
-a left outer colony, possibly extended by an old bridge,
-followed by the workspace on the right: base colony or target.
+a left extended outer colony, followed by the workspace on the right: base colony or target.
 Then extend the base colony into the ambiguous area
 to the left until the left colony end is reached
 (erasing and replacing any cells that are in the way).
-After that, extend the left outer colony and bridge combination to the right, until
-the left end of the colony is met.
+Now if there is a left outer extended colony, extend it to the right, until
+the left end of the base colony is met.
+If there is only the desert on the left then replace it with stem cells that extend the base
+colony to the left.
 
 In case of a boundary of type~(r\ref{i:rigid.bridge-target}),
 again we extend the target or colony side first towards the separation,
@@ -2899,27 +2943,60 @@ Consider a boundary of type~(nr\ref{i:nonrigid.bridge-bridge}), where a new brid
 meets either an old bridge, a target, an old colony or desert.
 If it is meeting an old bridge or desert, then
 extend the new bridge end into the ambiguous area until it reaches the
-other bridge or a colony end, and then extend the old bridge or desert to meet it.
+other bridge or a colony.
 If it is meeting an old colony or a target then first extend the colony to its maximum,
 then extend the new bridge to meet it.
+If there is an old bridge to meet it, then extend the old bridge as much as possible.
+If it is meeting a desert then extend replace the desert with adjacent 
+stem cells that extend the bridge.
 \end{prooofi} % step:boundaries1
 
-\begin{step+}{step:patching.finish}
-Let us complete the algorithm.
+\begin{step+}{step:patching.extend}
+  Let us extend the ends of \( \R \) to satisfy the requirement~\eqref{i:patching.align}.
 \end{step+}
 \begin{prooofi}
-In case that we started from an admissible configurations, the above operations
+In case that we started from an admissible configuration, the above operations
 created a sequence of substantial segments adjacent to each other, satisfying the 
 requirements of a healthy configuration.
-There may still be ambiguous areas left on the ends.
-If there is such an area on for example the left side then we cut off \( \Delta \) 
-from the left end.
+After they were merged, then according to Lemma~\ref{lem:two-domains},
+they must form at most two \df{domains} consisting of adjacent cells, that extend
+to within \( \Delta\B \) of the boundaries \( a,b \).
+Let \( a' \) be the left end of the left one of these domains, and let \( \alpha=\cAddr(a') \).
 
-The operations we performed shifted the head of the healthy configuration by at most
-\( \Delta \).
-If by this or by the above cutting off the end, the head got closer than \( \Delta \) to the
-end then we cut off another \( \Delta \) length from that end.
+Now we perform the following iteration, until the following condition holds:
+ \begin{align}\label{eq:patching.terminate}
+   a'\le a \text{ and }    |\cAddr \amod \E| \le \Delta'.
+ \end{align}
+ \begin{bullets}
+\item
+Set \( \hat a\gets a-\Delta'\B \), perform the consolidation operation on the 
+new interval \( \lint{\hat a}{b} \), and 
+compute a new value of \( a' \) as the left end of the new leftmost domain.
+ \end{bullets}
+Note that this iteration can be speeded up significantly in most cases.
+For example if there were two domains then the above operation cannot 
+change the leftmost domain,
+and therefore instead of iterating, we could just compute the final value
+\( \hat a = a'-(a'\bmod \E) \).
+But if there was just one domain then (under some conditions) extending the examined area to the
+left could bring in a new substantial segment that is not mergeable with the old domain.
+In this case the final value of \( \hat a \) must be determined using the new value of \( a' \).
+Also in a recovery procedure that can be interrupted by a new burst,
+it will be safer to proceed gradually.
 \end{prooofi} % step:patching.finish
+
+\begin{step+}{step:patching.cutoff}
+Finally, we satisfy the requirement~\eqref{i:patching.inside}.
+\end{step+}
+\begin{prooofi}
+There may still be ambiguous areas left on the ends.
+If there is such an area for example on the left side then we cut off \( \Delta'\B \) 
+from the left end.
+The operations we performed shifted the front of the healthy configuration by at most
+\( \Delta'\B \).
+If by this or by the above cutting off the end, the head got closer than \( \Delta'\B \) to the
+end then we cut off another \( \Delta'\B \) length from that end.
+\end{prooofi} % step:patching.cutoff
 
 It should be clear that all these operations can be accomplished by a constant number of
 passes on machine \( M \).
@@ -2976,6 +3053,86 @@ passes on machine \( M \).
 %         have an address jump.
 %   \end{bullets}
 % \end{definition}
+
+
+
+\section{The recovery procedure}\label{sec:recovery}
+
+Structure repair will be split into two procedures.
+The first onem called \df{recovery}, performs
+only local repairs of the structure: for a given locally admissible configuration,
+it will attempt to compute a satisfying healthy configuration.
+If it fails---having encountered a configuration that is not admissible, or
+a new burst---then a so-called \df{rebuilding} procedure is called, which is designed
+to repair a larger interval.
+On a higher level of simulation, 
+this corresponds to the implementation of the trajectory properties
+in which damage ``magically'' disappears.
+
+As we will see below, the recovery procedure runs in \( O(\beta^{2}) \) \Pnote{was \( \beta \)}
+steps, whereas the rebuild procedure needs \( O(Q) \) steps.
+
+As we describe the rules,
+throughout this chapter, it will look as if we assumed that the there is no noise or damage.
+We will see later that the rules described in this chapter remove the damage under the 
+appropriate conditions.
+
+The recovery procedure opens an interval \( \R = \lint{a}{b} \) to which it applies the
+patching algorithm of the proof of the Patching Lemma~\ref{lem:patching}.
+The algorithm will be modified in the following way.
+
+
+% For controlling the details, after the interval \( \R \) 
+% has been computed, the procedure uses the field \( \Rec.\Addr \) to measure
+% the distance from point \( z_1 \), and a field \( \Rec.\Sweep \)
+% to measure the progress, just as in the main program.
+
+% There are corresponding \( \cRec.\Addr \) and \( \cRec.\Sweep \)
+% fields in the cells.
+
+% According to the values of \( \Rec.\Sweep \), we distinguish \df{stages},
+% and introduce the \emph{pseudofield} \( \Stage \) (it is just a function of
+% \( \Rec.\Sweep \)), with values
+%  \begin{align*}
+%    \Stage\in\{\Marking,\Planning_{j}\; (j=1,2), \Mopping_{j} (i=1,2)\}.
+%  \end{align*}
+
+
+% The process makes use of a number of rules:
+% \( \Alarm \), \( \Purge \), \( \Mark \), \( \Plan(j) \), \( \Mop(j) \) for \( j=1,2 \), and
+% \( \GiveUp \).
+% Whenever we say that a rule ``checks'' something,
+% it is understood that if the check fails, \( \Alarm \) is called.
+% Recovery may ``fail'' for
+% the following two reasons:
+% the recovery interval contains cells
+% marked for rebuilding procedure,
+% or the patching algorithm given in Sec.~\ref{sec:patching}
+% fails.
+% Both of these cases indicate a ``bigger mess'', and
+% they are followed by a call to
+% the rule \( \GiveUp \) that we will specify later.
+
+% From Definition~\ref{def:healthy1} it is easy to see
+% that outside of islands, in an interval of \( 2\E\B \) cells, at most
+% 1 small gap may exist.
+% Further, the recovery interval can stretch over
+% a portion of the tape where no cell structure exists.
+% For these reasons, we devise the rule  \( \Purge \) that
+% builds a cell structure where there is no such structure.
+% Once this rule completes its work over an annotated configuration,
+% at most one pair of non-adjacent cells remains in the recovery interval,
+% hence,
+% condition on the single cut of Patching Lemma~\ref{lem:patching}
+% is satisfied.
+
+% In all rules of the recovery but in \( \Mop \), wherever the head steps,
+% it walks on marked cells or it marks them,
+% that is,  it sets \( \cRec.\Core \neq 0 \).
+% The rule \( \Mop \) is devoted to unmarking.
+
+
+
 
 
 
