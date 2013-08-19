@@ -1,0 +1,706 @@
+\ProvidesPackage{gacs}[2008/11/25]
+ % my header file for articles.  Peter Gacs
+% Use \usepackage{fullpage} normally.
+ % If you want very full page in tenpoint, write \textwidth 6.5in,
+ % \oddsidemargin 0in in articles, 0.25in in letters.
+ % The latter sets the margin to 1in on both sides of the page.
+ % \topmargin?
+
+%\RequirePackage{amsmath}
+\RequirePackage{mathtools}
+\mathtoolsset{mathic} % Math italic correction (say in theorems).
+\RequirePackage{amsthm}
+\RequirePackage{enumerate}
+%\RequirePackage{fullpage}
+\RequirePackage{graphicx}
+
+\pdfpagewidth=8.5in     % paper size of the pdf output (letter in this case)
+\pdfpageheight=11in
+
+% I you use it, use the a4paper option, too.
+% \pdfpagewidth=210mm     % paper size of the pdf output (letter in this case)
+% \pdfpageheight=297mm
+
+\setlength{\vfuzz}{4pt} % to ignore trivial vertical overfull boxes.
+%\sloppy  % To get fewer overfull boxes.
+\clubpenalty=1000
+%\widowpenalty=1000
+
+\newcommand{\myCentury}{
+\usepackage{lmodern} % T1 encoded cmr
+\usepackage{fouriernc}
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareSymbolFontAlphabet{\math@bb}{AMSb}
+}
+\newcommand{\myTimes}{
+  \usepackage{newtxtext} 
+  \usepackage{newtxmath} 
+  % Replace some bad-looking fonts of newtxmath.
+  \renewcommand{\sfdefault}{cmss}
+  \DeclareMathAlphabet{\mathsf}{OT1}{cmss}{m}{n}
+  \SetMathAlphabet{\mathsf}{bold}{OT1}{cmss}{b}{n}
+  \renewcommand{\ttdefault}{cmtt}
+  \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
+  \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
+
+  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
+  % Somewhat big, but better looking:
+  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+}
+\newcommand{\myLibertine}{
+%  \usepackage[T1]{fontenc}
+
+%\usepackage{mathspec}
+\usepackage{libertine}
+% \setmathsfont[ItalicFont={LinLibertine_RI.otf}]{LinLibertine_R.otf}
+% \setmathrm{LinLibertine_R.otf}
+% \setboldmathrm{LinLibertine_RB.otf}
+
+% The above two lines with the regular TeX engine.
+%  \usepackage{libertineotf} 
+% OTF fonts, XeTeX or LuaTeX engine needed, some things are even better this way.
+% Now the libertine package seems also OK.
+  \usepackage[libertine]{newtxmath} 
+  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
+  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+}
+
+% Use with enumerate.sty, to delete annoying warnings.
+\def\@@enum@[#1]{%
+  \@enLab{}\let\@enThe\@enQmark
+  \@enloop#1\@enum@
+%   \ifx\@enThe\@enQmark\@warning{The counter will not be printed.%
+%    ^^J\space\@spaces\@spaces\@spaces The label is: \the\@enLab}\fi
+  \expandafter\edef\csname label\@enumctr\endcsname{\the\@enLab}%
+  \expandafter\let\csname the\@enumctr\endcsname\@enThe
+  \csname c@\@enumctr\endcsname7
+  \expandafter\settowidth
+            \csname leftmargin\romannumeral\@enumdepth\endcsname
+            {\the\@enLab\hspace{\labelsep}}%
+  \@enum@}
+
+% For enumerate.sty:
+\newenvironment{bullets}{\begin{enumerate}[\textbullet]}{\end{enumerate}}
+\newenvironment{dashes}{\begin{enumerate}[\bfseries\textendash]}{\end{enumerate}}
+
+\newenvironment{flushdescription}{\leftmargini=1em\renewcommand
+{\descriptionlabel}[1]{\hspace\labelsep \textit{##1.}}\begin{description}}
+{\end{description}}
+
+\newenvironment{alphenum}
+ {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+
+\newenvironment{cjenum}
+ {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+\newenvironment{djenum}
+ {\begin{enumerate}[{\upshape (1)}]}{\end{enumerate}}
+ 
+
+% definitions, can be redefined to boldface or \textit\textbf, if desired.
+% \newcommand{\df}[1]{\emph{#1}}
+ \newcommand{\df}[1]{\textit{\textbf{#1}}}
+
+ \let\paragraphname\@empty  % an amsart bug
+
+% amsthm bug: put \ after \begin{proof}, if you want to write
+% \paragraph{..}.
+
+% To have pagenumber 1 suppressed:
+\newcommand{\@hideone}[1]{\ifnum #1=1\else\@arabic#1\fi}
+\pagenumbering{hideone}
+
+ \newcommand{\Pageno}{\c@page}
+% \newcommand{\Oddhead}{\@oddhead}
+
+ \newcommand{\Line}[1]{\makebox[\textwidth]{#1}}
+
+% In amsmath:
+% \numberwithin{equation}{section}
+% \numberwithin{figure}{section}
+
+ \setcounter{tocdepth}{2}
+
+
+\newtheoremstyle{sfdefinition}% name
+  {5pt}%      Space above
+  {5pt}%      Space below
+  {}%         Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {\sffamily\bfseries\upshape}% Thm head font
+  {.}%        Punctuation after thm head
+  {.5em}%     Space after thm head: " " = normal interword space;
+        %       \newline = linebreak
+  {}%         Thm head spec (can be left empty, meaning `normal')
+%
+\newtheoremstyle{sftheorem}% name
+  {5pt}%      Space above
+  {5pt}%      Space below
+  {\itshape}% Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {\sffamily\bfseries\upshape}% Thm head font
+  {.}%        Punctuation after thm head
+  {.5em}%     Space after thm head: " " = normal interword space;
+        %       \newline = linebreak
+  {}%         Thm head spec (can be left empty, meaning `
+
+% For sf section headings:
+
+\newcommand{\sfHeadings}{
+\renewcommand\section{\@startsection {section}{1}{\z@}%
+                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                   {2.3ex \@plus.2ex}%
+                                   {\normalfont\sffamily\Large\bfseries}%
+%                                   {\normalfont\sffamily\Large}%
+                                 }
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\sffamily\large\bfseries}%
+%                                     {\normalfont\sffamily\large}%
+                                   }
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {1.5ex \@plus .2ex}%
+                                     {\normalfont\sffamily\normalsize\bfseries}%
+                                   }
+\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
+                                    {3.25ex \@plus1ex \@minus.2ex}%
+                                    {-1em}%
+                                    {\normalfont\sffamily\normalsize\bfseries}}
+\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
+                                       {3.25ex \@plus1ex \@minus .2ex}%
+                                       {-1em}%
+                                      {\normalfont\sffamily\normalsize\bfseries}}
+\renewcommand{\descriptionlabel}[1]{\hspace\labelsep \upshape\mdseries
+   \sffamily ##1.}
+% \if@titlepage
+%   \renewenvironment{abstract}{%
+%       \titlepage
+%       \null\vfil
+%       \@beginparpenalty\@lowpenalty
+%       \begin{center}%
+%         \bfseries\sffamily \abstractname
+%         \@endparpenalty\@M
+%       \end{center}}%
+%      {\par\vfil\null\endtitlepage}
+% \else
+  \renewenvironment{abstract}{%
+      \if@twocolumn
+        \section*{\abstractname}%
+      \else
+        \small
+        \begin{center}%
+          {\bfseries\sffamily\abstractname\vspace{-.5em}\vspace{\z@}}%
+        \end{center}%
+        \quotation
+      \fi}
+      {\if@twocolumn\else\endquotation\fi}
+%\fi
+\def\@maketitle{%
+  \newpage
+  \null
+  \vskip 2em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE\sffamily % My addition. Gacs.
+ \@title \par}%
+    \vskip 1.5em%
+    {\large
+      \lineskip .5em%
+      \begin{tabular}[t]{c}%
+        \@author
+      \end{tabular}\par}%
+    \vskip 1em%
+    {\large \@date}%
+  \end{center}%
+  \par
+  \vskip 1.5em}
+} % sfHeadings
+
+\newcommand{\customqed}[1]{{\renewcommand{\qedsymbol}{#1}\qed}}
+\newcommand{\varqed}{\customqed{\hbox{$\lrcorner$}}}
+%\newcommand{\varqed}{\customqed{\hbox{$\diamondsuit$}}}
+
+\newcommand{\intheoremstyle}{
+ \newtheorem{lemma}{Lemma}[section]
+
+%\newtheorem{theorem}{Theorem}[section]
+% Sometimes we want to number theorems independently of sections.
+% But this should be decided in the paper itself.
+\newtheorem{theorem}{Theorem}
+ \newtheorem{proposition}[lemma]{Proposition}
+ \newtheorem{fact}[lemma]{Fact}
+ \newtheorem{claim}[lemma]{Claim} % same as theorems
+ \newtheorem*{claimnonumber}{Claim} % 
+ \newtheorem{corollary}[lemma]{Corollary}
+ \newtheorem{axiom}[lemma]{Axiom}
+ \newtheorem{conjecture}[lemma]{Conjecture}
+ \newtheorem{question}{Question}
+}
+
+\newcommand{\indefinitionstyle}{
+\newtheorem{Definition}[lemma]{Definition}
+\newenvironment{definition}{\begin{Definition}}{\varqed\end{Definition}}
+
+ \newtheorem{Notation}[lemma]{Notation}
+  \newenvironment{notation}{%
+   \begin{Notation}}{\varqed\end{Notation}}
+
+ \newtheorem{Condition}[lemma]{Condition}
+ \newenvironment{condition}{%
+   \begin{Condition}}{\varqed\end{Condition}}
+
+ \newtheorem{exercise}{Exercise}[section]
+ \newtheorem{HwExercise}{Exercise}
+ \newtheorem{problem}{Problem}
+ 
+ \newtheorem{arule}{Rule}[section]
+
+ \newtheorem{Remark}[lemma]{Remark}
+ \newtheorem{Remarks}[lemma]{Remarks}
+ 
+ \newenvironment{remark}{%
+   \begin{Remark}}{\varqed\end{Remark}}
+ \newenvironment{remarks}{%
+   \begin{Remarks}}{\varqed\end{Remarks}}
+
+ \newtheorem{Example}[lemma]{Example}
+ \newtheorem{Examples}[lemma]{Examples}
+
+ \newenvironment{example}{%
+   \begin{Example}}{\varqed\end{Example}}
+ \newenvironment{examples}{%
+   \begin{Examples}}{\varqed\end{Examples}}
+
+ \theoremstyle{remark}
+}
+
+\newcommand{\standardTheorems}{
+\theoremstyle{plain}
+\intheoremstyle
+\theoremstyle{definition}
+\indefinitionstyle
+}
+
+\newcommand{\sfTheorems}{
+\theoremstyle{sftheorem}
+\intheoremstyle
+\theoremstyle{sfdefinition}
+\indefinitionstyle
+}
+\newcommand{\restofTheorems}{} %othertheorems
+
+ \newcounter{program}
+ \newcounter{progpart}
+ \def\theHprogpart{\theprogram\pfdot\arabic{progpart}} 
+ \newcommand{\proglb}[1]{\refstepcounter
+  {progpart}\label{#1}\`
+  \makebox[0mm][r]{\makebox[\textwidth][l]{\upshape\mdseries
+                                 (\arabic{progpart})\hfill}}}
+
+ \newenvironment{program}{
+ \refstepcounter{program}
+\setcounter{progpart}{0}\ttfamily
+  \def\1##1{\+ \{ \\##1 \}\-}
+  \def\0##1{\+ \{ ##1 \}\-}
+  \def\2##1{\+ ##1 \-}
+  \def\3##1{\+\> ##1 \-}
+ \begin{tabbing}
+ beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\=beg\+\kill
+  }{\end{tabbing}}
+
+  % Redefinition of built-in operators so as they find their argument like
+ % the defined ones, without expanding it first.
+ \newcommand\ol[1]{\overline{#1}}
+ \newcommand\olol[1]{\overline{\overline{#1}}}
+ \newcommand\ul[1]{\underline{#1}}
+ 
+ % fonts
+ \newcommand\cl[1]{\mathcal{#1}}
+ \newcommand\Bf[1]{{\bf #1}}
+ 
+ % Greek characters
+ \newcommand \ag{\alpha}
+ \newcommand \bg{\beta}
+% \renewcommand\gg{\gamma} % temporary, since it conflicts with `>>'.
+ \newcommand \gm{\gamma}
+ \newcommand \Gg{\Gamma}
+ \newcommand \dg{\delta}
+ \newcommand \Dg{\Delta}
+ \newcommand \eps{\varepsilon}
+ \newcommand \fg{\varphi}
+ \newcommand \Fg{\Phi}
+ \newcommand \hg{\chi}
+ \newcommand \ig{\iota}
+ \newcommand \kg{\kappa}
+ \renewcommand \lg{\lambda} % it conflicts with lg (this is not serious).
+ \newcommand \Lg{\Lambda}
+ \newcommand \og{\omega}
+ \newcommand \Og{\Omega}
+ \newcommand \rg{\varrho}
+ \newcommand \sg{\sigma}
+ \newcommand \Sg{\Sigma}
+ \newcommand{\thg}{\vartheta}
+ \newcommand \Thg{\Theta}
+ \newcommand \tg{\tau}    % avoid, not worth it
+ \newcommand{\zg}{\zeta}
+
+\newcommand{\vek}[1]{\boldsymbol{#1}}
+
+ \newcommand{\bA}{\mathbf{A}}
+ \newcommand{\bB}{\mathbf{B}}
+ \newcommand{\bC}{\mathbf{C}}
+ \newcommand{\bD}{\mathbf{D}}
+ \newcommand{\bE}{\mathbf{E}}
+ \newcommand{\bF}{\mathbf{F}}
+ \newcommand{\bG}{\mathbf{G}}
+ \newcommand{\bH}{\mathbf{H}}
+ \newcommand{\bI}{\mathbf{I}}
+ \newcommand{\bJ}{\mathbf{J}}
+ \newcommand{\bK}{\mathbf{K}}
+ \newcommand{\bL}{\mathbf{L}}
+ \newcommand{\bM}{\mathbf{M}}
+ \newcommand{\bN}{\mathbf{N}}
+ \newcommand{\bO}{\mathbf{O}}
+ \newcommand{\bP}{\mathbf{P}}
+ \newcommand{\bQ}{\mathbf{Q}}
+ \newcommand{\bR}{\mathbf{R}}
+ \newcommand{\bS}{\mathbf{S}}
+ \newcommand{\bT}{\mathbf{T}}
+ \newcommand{\bU}{\mathbf{U}}
+ \newcommand{\bV}{\mathbf{V}}
+ \newcommand{\bW}{\mathbf{W}}
+ \newcommand{\bX}{\mathbf{X}}
+ \newcommand{\bY}{\mathbf{Y}}
+ \newcommand{\bZ}{\mathbf{Z}}
+
+  \newcommand{\bsA}{\vek{A}}
+%%  \newcommand{\bsB}{\vek{B}}
+%%  \newcommand{\bsC}{\vek{C}}
+%%  \newcommand{\bsD}{\vek{D}}
+%%  \newcommand{\bsE}{\vek{E}}
+%%  \newcommand{\bsF}{\vek{F}}
+  \newcommand{\bsG}{\vek{G}}
+  \newcommand{\bsH}{\vek{H}}
+  \newcommand{\bsI}{\vek{I}}
+%%  \newcommand{\bsJ}{\vek{J}}
+  \newcommand{\bsK}{\vek{K}}
+%%  \newcommand{\bsL}{\vek{L}}
+%%  \newcommand{\bsM}{\vek{M}}
+%%  \newcommand{\bsN}{\vek{N}}
+%%  \newcommand{\bsO}{\vek{O}}
+  \newcommand{\bsP}{\vek{P}}
+%%  \newcommand{\bsQ}{\vek{Q}}
+%%  \newcommand{\bsR}{\vek{R}}
+%%  \newcommand{\bsS}{\vek{S}}
+%%  \newcommand{\bsT}{\vek{T}}
+%%  \newcommand{\bsU}{\vek{U}}
+%%  \newcommand{\bsV}{\vek{V}}
+%%  \newcommand{\bsW}{\vek{W}}
+%%  \newcommand{\bsX}{\vek{X}}
+  \newcommand{\bsY}{\vek{Y}}
+%%  \newcommand{\bsZ}{\vek{Z}}
+
+ \newcommand{\cA}{\mathcal{A}}
+ \newcommand{\cB}{\mathcal{B}}
+ \newcommand{\cC}{\mathcal{C}}
+ \newcommand{\cD}{\mathcal{D}}
+ \newcommand{\cE}{\mathcal{E}}
+ \newcommand{\cF}{\mathcal{F}}
+ \newcommand{\cG}{\mathcal{G}}
+ \newcommand{\cH}{\mathcal{H}}
+ \newcommand{\cI}{\mathcal{I}}
+ \newcommand{\cJ}{\mathcal{J}}
+ \newcommand{\cK}{\mathcal{K}}
+ \newcommand{\cL}{\mathcal{L}}
+ \newcommand{\cM}{\mathcal{M}}
+ \newcommand{\cN}{\mathcal{N}}
+ \newcommand{\cO}{\mathcal{O}}
+ \newcommand{\cP}{\mathcal{P}}
+ \newcommand{\cQ}{\mathcal{Q}}
+ \newcommand{\cR}{\mathcal{R}}
+ \newcommand{\cS}{\mathcal{S}}
+ \newcommand{\cT}{\mathcal{T}}
+ \newcommand{\cU}{\mathcal{U}}
+ \newcommand{\cV}{\mathcal{V}}
+ \newcommand{\cW}{\mathcal{W}}
+ \newcommand{\cX}{\mathcal{X}}
+ \newcommand{\cY}{\mathcal{Y}}
+ \newcommand{\cZ}{\mathcal{Z}}
+
+ \newcommand{\bbB}{\mathbb{B}}
+ \newcommand{\bbE}{\mathbb{E}}
+ \newcommand{\bbF}{\mathbb{F}}
+ \newcommand{\bbG}{\mathbb{G}}
+ \newcommand{\bbK}{\mathbb{K}}
+ \newcommand{\bbL}{\mathbb{L}}
+ \newcommand{\bbC}{\mathbb{C}}
+ \newcommand{\bbM}{\mathbb{M}}
+ \newcommand{\bbN}{\mathbb{N}}
+ \newcommand{\bbP}{\mathbb{P}}
+ \newcommand{\bbQ}{\mathbb{Q}}
+ \newcommand{\bbR}{\mathbb{R}}
+ \newcommand{\bbS}{\mathbb{S}}
+ \newcommand{\bbT}{\mathbb{T}}
+ \newcommand{\bbV}{\mathbb{V}}
+ \newcommand{\bbZ}{\mathbb{Z}}
+
+ \newcommand{\dA}{\mathbb{A}}
+ \newcommand{\dB}{\mathbb{B}}
+ \newcommand{\dF}{\mathbb{F}}
+ \newcommand{\dG}{\mathbb{G}}
+ \newcommand{\dK}{\mathbb{K}}
+ \newcommand{\dL}{\mathbb{L}}
+ \newcommand{\dC}{\mathbb{C}}
+ \newcommand{\dM}{\mathbb{M}}
+ \newcommand{\dN}{\mathbb{N}}
+ \newcommand{\dP}{\mathbb{P}}
+ \newcommand{\dQ}{\mathbb{Q}}
+ \newcommand{\dR}{\mathbb{R}}
+ \newcommand{\dS}{\mathbb{S}}
+ \newcommand{\dT}{\mathbb{T}}
+ \newcommand{\dV}{\mathbb{V}}
+ \newcommand{\dZ}{\mathbb{Z}}
+
+ % delimiters
+\newcommand{\verythinmathskip}{\mskip 1mu}
+\newcommand{\nats}[1]{\mathopen[#1\mathclose]} % \{1,\dots,n\}
+ \newcommand\Eventof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+% \newcommand\Eventof[1]{\bigl[\verythinmathskip#1\verythinmathskip\bigr]}
+ \newcommand\Evof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+% \newcommand\Evof[1]{\bigl[\verythinmathskip#1\verythinmathskip\bigr]}
+ \newcommand\eventof[1]{\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\eventof[1]{\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\evof[1]{\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\set[1]{\mathopen\{#1\mathclose\}}
+ \newcommand\setof[1]{\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+ \newcommand\Setof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+ \newcommand\setOf[2]{\mathopen\{\verythinmathskip#1 : #2\verythinmathskip\mathclose\}}
+ \newcommand\tupof[1]{\mathopen(\verythinmathskip#1\verythinmathskip\mathclose)}
+ \newcommand\tupOf[2]{\mathopen(\verythinmathskip#1: #2\verythinmathskip\mathclose)}
+% \newcommand\tupof[1]{\mathopen\langle\verythinmathskip#1\verythinmathskip\mathclose\rangle}
+ \newcommand\tup[1]{( #1)}
+% \newcommand\tup[1]{\mathopen\langle #1\mathclose\rangle}
+%\newcommand{\pair}[2]{\mathopen\langle #1,#2\mathclose\rangle}
+\newcommand{\pair}[2]{(#1,#2)}
+\newcommand{\bigpair}[2]{\bigl(#1,#2\bigr)}
+ \newcommand\ang[1]{{\mathopen\langle #1\mathclose\rangle}}
+ \newcommand\Ang[1]{{\left\langle #1\right\rangle}}
+ \newcommand\bra[1]{{\langle #1|}}
+ \newcommand\ket[1]{{| #1 \rangle}}
+ \newcommand\braket[2]{{\mathopen\langle #1 | #2 \mathclose\rangle}}
+ \newcommand\bigvert[1]{{\bigl|\verythinmathskip#1\verythinmathskip\bigr|}}
+ \newcommand\Verti[1]{{\left|\verythinmathskip#1\verythinmathskip\right|}}
+ \newcommand\bigparen[1]{{\bigl(\verythinmathskip#1\verythinmathskip\bigr)}}
+ \newcommand\Bigparen[1]{{\Bigl(\verythinmathskip#1\verythinmathskip\Bigr)}}
+ \newcommand\biggparen[1]{{\biggl(#1\biggr)}}
+ \newcommand\paren[1]{( #1)}
+ \newcommand\Paren[1]{{\left( #1\right)}}
+ \newcommand\bigbrace[1]{{\bigl\{ #1\bigr\}}}
+ \newcommand\biggbrace[1]{{\biggl\{ #1\biggr\}}}
+ \newcommand\Brace[1]{{\left\{ #1\right\}}}
+ \newcommand\sqbr[1]{{[ #1]}}
+ \newcommand\Sqbr[1]{{\left[ #1\right]}}
+ \newcommand\bigsq[1]{{\bigl[ #1\bigr]}}
+ \newcommand\Bigsq[1]{{\Bigl[ #1\Bigr]}}
+ \newcommand{\cei}[1]{{\lceil #1\rceil}}
+ \newcommand{\flo}[1]{{\lfloor #1\rfloor}}
+ \newcommand{\Cei}[1]{{\left\lceil #1\right\rceil}}
+ \newcommand{\Flo}[1]{{\left\lfloor #1\right\rfloor}}
+ \newcommand{\nm}[1]{{\| #1\|}} % stands for ``norm''
+ \newcommand{\norm}[1]{{\| #1\|}} % stands for ``norm''
+
+% \newcommand\frto[2]{#1\mathinner{\ldotp\ldotp\/}#2}
+
+ \DeclareMathOperator{\Prob}{\mathbb{P}}
+ \newcommand\Pbof[1]{\Prob\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\Pbof[1]{\Prob\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\Expv{\mathbf{E}\mskip 1mu}
+ \newcommand\Expvof[1]{\mathbf{E}\mskip 1mu\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\Vari{\mathrm{Var}\mskip 1mu}
+ \newcommand\Variof[1]{\mathrm{Var}\mskip 1mu\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\Cov{\mathbf{Cov}\mskip 1mu}
+ \newcommand\Maj{\mathop{\operator@font Maj}\nolimits}
+ \newcommand\nor{\mathbin{\operator@font NOR}}
+ \newcommand\lcm{\mathrm{lcm}}
+ \newcommand\ord{\mathrm{ord}}
+ \newcommand{\NP}{\mathrm{NP}}
+ \newcommand{\RP}{\mathrm{RP}}
+ \newcommand{\BPP}{\mathrm{BPP}}
+ \newcommand{\co}{\text{co-}}
+% \newcommand\ker{\txt{ker}}
+ \let\imp=\Rightarrow
+ \newcommand\Imp{\mathbin{\;\Longrightarrow\;}}
+ \let\eqv=\Leftrightarrow
+ \let\ded=\vdash % The sign |-.
+ \let\ua=\uparrow
+ \let\da=\downarrow
+ \let\ot=\leftarrow
+
+% Improved versions of exists and forall, with spacing. 
+\newcommand{\pexists}[1]{(\exists\, #1)\;}
+\newcommand{\pforall}[1]{(\forall\, #1)\;}
+\newcommand{\pexistsun}[1]{(\exists!\, #1)\;}
+\newcommand{\pnexists}[1]{(\not\exists\, #1)\;}
+% Replace the following with the above, if possible:
+\newcommand{\exist}[1]{\exists\, #1\;}
+\newcommand{\existun}[1]{\exists!\, #1\;}
+\newcommand{\nexist}[1]{\not\exists\, #1\;}
+\newcommand{\foralls}[1]{\forall\, #1\;}
+
+ % relation symbols, needs amssymb.
+  \renewcommand{\le}{\leqslant}
+  \renewcommand{\ge}{\geqslant}
+  \newcommand{\pmid}{\parallel} 
+  \newcommand{\getseq}{\mathrel{\vcentcolon=}}
+  \newcommand{\eqgets}{\mathrel{=\vcentcolon}}
+ 
+\newcommand{\lea}{\stackrel{{}_+}{<}}
+\newcommand{\gea}{\stackrel{{}_+}{>}}
+\newcommand{\eqa}{\stackrel{{}_+}{=}}
+
+\newcommand{\lem}{\stackrel{{}_*}{<}}
+\newcommand{\gem}{\stackrel{{}_*}{>}}
+\newcommand{\eqm}{\stackrel{{}_*}{=}}
+
+ % symbols
+ \newcommand{\on}{\upharpoonright}
+ \let\et=\wedge
+ \let\Et=\bigwedge
+ % \let\v=\vee % conflicts with hacek.
+ \let\V=\vee
+ \newcommand \true{\hbox{\sffamily true}}
+ \newcommand \false{\hbox{\sffamily false}}
+ \newcommand {\sbs}{\subset}
+ \newcommand {\sbsq}{\subseteq}
+ \newcommand {\sbsnq}{\subsetneq}
+ \newcommand {\sps}{\supset}
+ \newcommand {\spsq}{\supseteq}
+ \newcommand {\spsnq}{\supsetneq}
+ \newcommand {\eset}{\emptyset}
+%  \newcommand {\xcpt}{\mathbin{\raise0.15ex\hbox{$\smallsetminus$}}}
+ \newcommand {\xcpt}{\setminus}
+
+ % Writing something both above and below a relation symbol.
+\def\Stackrel#1#2#3{\mathrel{\mathop{#2}\limits^{#1}_{#3}}}
+
+% The title of a bibliography is \refname.
+% I am not sure the commands below are needed: there are packages now for
+% this. 
+% If you want to use several bibliographies, with arbitrary names, but
+% their items consecutively numbered, write \manybibs first.
+% Then for each bibliography, with, e.g., 2-digit labels,
+% write \begin{biblike}{10}{Bibliography name}
+%  \bibitem{}...
+%  ...
+%  \end{biblike}
+% If you want to restart the numbering say \setcounter{bibno}{0}
+ \def\manybibs{
+   \newcounter{bibno}
+   \def\reusecounter##1{\@nmbrlisttrue\def\@listctr{##1}}
+   \def\@bibitem##1{\item\if@filesw \immediate\write\@auxout
+       {\string\bibcite{##1}{\the\c@bibno}}\fi\ignorespaces}
+   }
+ \newenvironment{biblike}[2]{\subsubsection*{#2\@mkboth {#2}{#2}}\begin{list}
+   {[\arabic{bibno}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+   \advance\leftmargin\labelsep
+   \reusecounter{bibno} }
+   \def\newblock{\hskip .11em plus .33em minus -.07em}
+   \sloppy
+   \sfcode`\.=1000\relax}{\end{list}}
+
+% I use sometimes Lamport's pf.sty, which redefines the proof env, and uses kwfont.
+\let\kwfont\itshape
+
+\newenvironment{solution}{\begin{proof}[Solution]\renewcommand
+  {\qedsymbol}{}}{\end{proof}}
+
+\@ifundefined{stepsep}{}{\setlength{\stepsep}{1ex}}  
+% space above and below prooof step
+ 
+\@ifundefined{pfshortnumbers}{}{\pfshortnumbers{4}}
+% Use short step numbers for all levels >= 3
+
+%\newcommand{\underscore}{\lower0.6ex\hbox{-}}
+\newcommand{\underscore}{\lower0.63ex\hbox{-}} % for mathpazo
+ \newcommand{\HyphConv}{\def\tempc{0}%
+      \expandafter\HyphConvFirst\HyphConvDelim}
+ \newcommand{\HyphConvDelim}[1]{#1\%}
+ \newcommand{\HyphConvFirst}{\futurelet\tempa\HyphConvCond}
+ \newcommand{\HyphConvCond}{%
+    \def\tempb{\HyphConvSubst\tempa}%
+    \if\tempa\%\let\tempb\HyphConvStop%
+    \else\if\tempc0\let\tempc1\if\tempa-\let\tempa\underscore\fi\fi%
+%    \else\if\tempa-\let\tempa\underscore\fi
+    \fi
+    \tempb
+  }
+ \newcommand{\HyphConvStop}[1]{}
+ \newcommand{\HyphConvSubst}[2]{#1\HyphConvFirst}
+
+% \txt does not change font in changing environments.
+ \newcommand{\txt}[1]{\text{\rmfamily\mdseries\upshape{#1}}}
+% We need \textrm, for example since - otherwise comes out long.
+% Also, \upshape is needed since we do not want a change of shape within
+% an italic environment, like the statement of a theorem.
+% \newcommand{\var}[1]{\ensuremath{\mathord{\textrm{\upshape\HyphConv{#1}}}}}
+ \newcommand{\var}[1]{\ensuremath{\mathord{\textrm{\upshape{#1}}}}}
+
+% array with custom column separation
+\newenvironment{arraycs}[2]{\setlength{\arraycolsep}{#1}
+\begin{array}{#2}}{\end{array}}
+
+\newenvironment{parray}[1]{\setlength{\arraycolsep}{0.2em}
+\left(\hskip-\arraycolsep\begin{array}{#1}}{\end{array}
+\hskip-\arraycolsep\right )}
+
+% equations in an array with less column separation
+\newenvironment{arreqs}[1]{\setlength{\arraycolsep}{0.1em}
+\begin{array}{#1}}{\end{array}}
+
+\newcommand{\killtext}[1]{}
+
+ \newcommand{\smallfrac}[2]{{\scriptstyle \frac{#1}{#2}}}
+ \newcommand{\half}{{\scriptstyle \frac{1}{2}}}
+\newcommand{\third}{{\scriptstyle \frac{1}{3}}}
+ \newcommand{\fourth}{{\scriptstyle \frac{1}{4}}}
+ \newcommand{\threefourth}{{\scriptstyle \frac{3}{4}}}
+ \newcommand{\seveneighth}{{\scriptstyle \frac{7}{8}}}
+
+\newenvironment{spmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+
+\newcommand{\opint}[2]{(#1,#2)}
+\newcommand{\clint}[2]{[#1,#2]}
+\newcommand{\lint}[2]{[#1,#2)}
+\newcommand{\biglint}[2]{\bigl[#1,#2\bigr)}
+\newcommand{\Lint}[2]{\left[#1,#2\right)}
+\newcommand{\rint}[2]{(#1,#2]}
+
+\newcommand\amod{\mskip-\medmuskip\mkern5mu\mathbin
+  {\operator@font amod}\penalty900
+  \mkern5mu\mskip-\medmuskip}
+ % why is the spacing erased after amod in inline math mode?
+
+ % \gluesep stops glue-eating macros.
+ % Example: \begin{theorem}\gluesep \begin{itemize} etc.
+ % Now the first item begins on a new line.
+ \newcommand{\gluesep}{\rule{0pt}{0pt}}
+ % \<space> also works.
+
+% two dots
+\newcommand{\ldts}{\mathinner{\ldotp\ldotp}}
+
+\newcommand{\sfOption}{0}
+\DeclareOption{plain}{\let\sfOption0} 
+\DeclareOption{sf}{\let\sfOption1} 
+\ExecuteOptions{plain}
+\ProcessOptions\relax
+
+\if\sfOption0\standardTheorems\restofTheorems\else
+  \sfHeadings\sfTheorems\restofTheorems\fi
+
+\endinput

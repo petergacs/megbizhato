@@ -1,0 +1,125 @@
+% for the algorithm2e package.  I call it as follows:
+%\usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
+%You may need to install the newest version if the current one gives you some
+%crashes.
+%Then you create, for example, a rule by \begin{algorule}...\end{algorule}.
+\SetAlgoSkip{medskip}
+\SetAlCapHSkip{0.5em}
+\SetAlgoInsideSkip{smallskip}
+\IncMargin{0.5em}
+\SetArgSty{textrm}
+\SetNlSty{textrm}{(}{)}
+\SetNlSkip{0.5em}
+\SetAlgoNlRelativeSize{-2}
+
+\SetCommentSty{textrm}
+\SetKwComment{Comment}{/\hspace{-0.05em}/ }{}
+% \SetKwComment{Comment}{/*~}{~*/}
+% These will make sure that for example parentheses outside $$ are not italic.
+
+\DontPrintSemicolon
+\SetEndCharOfAlgoLine{} % Needed in \lIf()
+\setlength{\interspacetitleruled}{1ex}
+\setlength{\interspacealgoruled}{0pt}
+
+\newcommand{\Cmt}[1]{\Comment{#1}}
+\newcommand{\cmt}[1]{\Comment*[f]{#1}}
+% C++ style comment on end of line, you must terminate the line.
+
+\newcommand{\algosfOption}{0}
+\DeclareOption{sf}{\let\algosfOption1
+\renewcommand{\KwSty}[1]{\textnormal{\sffamily\textbf{#1}}\unskip}
+}
+\ProcessOptions\relax
+\newcommand{\algoNameFont}{\if\algosfOption0\else\sffamily\fi}
+
+%\def\@algocf@pre@tworuled{\hrule height\algoheightrule depth0pt\kern\interspacetitleruled}%
+%\def\@algocf@post@tworuled{\kern\interspacealgoruled\hrule height\algoheightrule\relax}%
+
+\renewcommand{\@algocf@pre@tworuled}{\hrule height.6pt depth0pt
+\hbox to\hsize{\vrule height0ex depth0.8ex width0.6pt\hfil\vrule
+ height0ex depth0.8ex width0.6pt}\vskip-0.5ex\kern\interspacetitleruled}%
+\renewcommand{\@algocf@post@tworuled}{\kern\interspacealgoruled\hbox
+to\hsize{\vrule height0.8ex depth0ex width0.6pt\hfil\vrule
+ height0.8ex depth0ex width0.6pt}\hrule height0.6pt depth0pt\relax}%
+
+%\newcommand{\algocf@caption@tworuled}{\box\algocf@capbox\kern\interspacetitleruled}%
+%\renewcommand{\algocf@caption@tworuled}{\box\algocf@capbox\kern-\interspacetitleruled}
+\newenvironment{algo}[1][htb]{\begin{algorithm2e}[#1]\advance\lineskip
+by 2pt}{\end{algorithm2e}}
+
+\newenvironment{func}[1][htb]{\renewcommand{\algorithmcfname}{%
+\hbox{\vrule height2ex depth1ex width0pt}%
+Function}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
+
+\newenvironment{algorule}[1][htb]{\renewcommand{\algorithmcfname}{%
+Rule}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
+
+\SetKwIF{If}{ElseIf}{Else}{if}{then}{else if}{else}{}
+
+\SetKwBlock{Indent}{}{}
+\SetKwBlock{Cond}{cond}{}
+\SetKwFor{cFor}{cfor}{do}{}
+\SetKwFor{For}{for}{do}{}
+\SetKwFor{pFor}{pfor}{do}{}
+\SetKwFor{pRepeat}{repeat}{times}{}
+\SetKwInOut{pInput}{input}
+\SetKwInOut{pOutput}{output}
+
+\newcommand{\mykeyword}[1]{\text{\KwSty{#1} }}
+
+\newcommand{\fFor}{\mykeyword{for}}
+
+\newcommand{\pAnd}{\mykeyword{and}}
+\newcommand{\pBreak}{\mykeyword{break}}
+\newcommand{\pElse}{\mykeyword{else}}
+\newcommand{\pIf}{\mykeyword{if}}
+\newcommand{\pLet}{\mykeyword{let}}
+\newcommand{\pNot}{\mykeyword{not}}
+\newcommand{\pOr}{\mykeyword{or}}
+\newcommand{\pOtherwise}{\mykeyword{otherwise}}
+\newcommand{\pWhile}{\mykeyword{while}}
+
+\SetKw{KwDownto}{downto}
+\SetKw{KwAnd}{and}
+\SetKw{KwOr}{or}
+\SetKw{KwNot}{not}
+\SetKw{KwLet}{let}
+\SetKw{KwGoto}{goto}
+
+\newcommand{\algOr}{\mykeyword{or}}
+\newcommand{\algAnd}{\mykeyword{and}}
+\newcommand{\algNot}{\mykeyword{not}}
+\newcommand{\algLet}{\mykeyword{let}}
+
+\newskip\captionskip
+\captionskip=-2ex
+
+% Redefined just to add the captionskip between caption and body.
+\renewcommand{\algocf@makethealgo}{%
+  \vtop{%
+    % place caption above if needed  bye the style
+    \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{above}}%
+    {\csname algocf@caption@\algocf@style\endcsname}{}%
+    %
+    % precommand according to the style
+    \csname @algocf@pre@\algocf@style\endcsname%
+    % place caption at top if needed  bye the style
+     \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{top}}%
+     {\csname algocf@caption@\algocf@style\endcsname}{}%
+    % Gacs: The next line, decreases the space below the caption.
+     \vspace{\captionskip}
+    \box\algocf@algobox% the algo
+    % place caption at bottom if needed  bye the style
+     \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{bottom}}%
+     {\csname algocf@caption@\algocf@style\endcsname}{}%
+    % postcommand according to the style
+    \csname @algocf@post@\algocf@style\endcsname%
+    % place caption under if needed  bye the style
+     \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{under}}%
+     {\csname algocf@caption@\algocf@style\endcsname}{}%
+  }%
+}%
+
+
+\endinput %?
