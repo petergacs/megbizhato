@@ -109,6 +109,7 @@
 \newcommand{\cProg}{\fld{cProg}}
 \newcommand{\Rec}{\fld{Rec}}
 \newcommand{\cRec}{\fld{cRec}}
+\newcommand{\Stage}{\fld{Stage}}
 \newcommand{\State}{\fld{State}}
 \newcommand{\cState}{\fld{cState}}
 \newcommand{\Sweep}{\fld{Sw}}
@@ -126,7 +127,11 @@
 \newcommand{\Healing}{\mathrm{Healing}}
 \newcommand{\Histories}{\mathrm{Histories}}
 \newcommand{\Last}{\mathrm{Last}}
+\newcommand{\Marking}{\mathrm{Marking}}
 \newcommand{\Member}{\mathrm{Member}}
+\newcommand{\Committing}{\mathrm{Committing}}
+\newcommand{\patch}{\mathrm{patch}}
+\newcommand{\Planning}{\mathrm{Planing}}
 \newcommand{\Target}{\mathrm{Target}}
 \newcommand{\Normal}{\mathrm{Normal}}
 
@@ -148,9 +153,13 @@
 
 \newcommand{\ruAddrJmp}{\rul{AddrJmp}}
 \newcommand{\Alarm}{\rul{Alarm}}
+% \newcommand{\Commit}{\rul{Commit}}
 \newcommand{\Comp}{\rul{Compute}}
+\newcommand{\GiveUp}{\rul{GiveUp}}
 %\newcommand{\Vacate}{\rul{Vacate}}
+% \newcommand{\Mark}{\rul{Mark}}
 \newcommand{\Move}{\rul{Move}}
+% \newcommand{\Plan}{\rul{Plan}}
 \newcommand{\ruSwing}{\rul{Swing}}
 \newcommand{\Transfer}{\rul{Transfer}}
 \newcommand{\UsefulComp}{\rul{UsefulComp}}
@@ -2774,11 +2783,7 @@ can be carried out by the machine \( M \) itself.
 We will deal with the elimination of damage later.
 
 The lemma below shows that local correction can be carried out.
-For use in the recovery procedure to be define later, we added a feature
-whose usefulness will be explaine later: the final left and right boundaries
-of the locally corrected are will have addresses that are near multiples
-of a certain constant \( \E \).
-This will counteract certain exotic possibilites of creeping damage.
+We add some more explanations after stating it.
 
 % Before  spelling out the main lemma of this section,
 % we need to introduce some notation, that will be used throughout this work.
@@ -2834,23 +2839,25 @@ at least \( 5\beta\B \).
 
 
 \begin{lemma}[Patching]\label{lem:patching}
-    Let  \( \R=\lint{a}{b} \) be an interval of length at least \( 2\E\B \).
+    Let  \( \R=\lint{a}{b} \) be an interval of length at least \( \E\B \).
     Consider an
 annotated configuration \(  (\xi, \chi, \cI, \D) \)  with the property that in the left half 
-or the right half of \( \R \), there are at least \( E-3\beta \) non-stem cells.
+or the right half of \( \R \), there are at least \( \E/2-4\beta \) non-stem cells.
 
    Then it is possible to compute from \( \xi.\cCore(\R) \) and the additional information telling
 which neighbor cells are adjacent,  an interval
 \begin{align*}
    \hat \R =\lint{\hat a}{\hat b}
  \end{align*}
-    and a local configuration \( \zeta = \zeta(\hat \R) \)
-    such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
+with \( a-\E\B\le\hat a \), \( \hat b \le b+\E\B \),
+and a local configuration \( \zeta = \zeta(\hat \R) \)
+such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
 
     \begin{enumerate}[\upshape (a)]
      \item
         The states of nonempty cells of \( \xi \) can differ from the corresponding cells
-        of \( \zeta \) only in \( O(\beta) \) cells, and in the interval \( \D \).
+        of \( \zeta \) only in \( c_{\patch}\beta \) cells for a certain constant
+        \( c_{\patch} \)  to be specified below, and in the interval \( \D \).
 
      \item
         If \( \xi \) is damage-free then the 
@@ -2860,23 +2867,32 @@ which neighbor cells are adjacent,  an interval
         of passes over \( \R \), and a constant number
         of fields containing values of size \( \le Q \).
 
-       \item\label{i:patching.align}
-       We have \( a-\E \le \hat a \le a \).
-       Consider the leftmost homogenous segment of \( \xi(\hat\R) \).
-       Extending its addresses to the left to \( \hat a \) gives
- \begin{align*}
-   |\cAddr(\hat a) \amod \E|\le \Delta'\B.
- \end{align*}
-  
    \item\label{i:patching.inside}
        If \( \chi.\pos < \hat a +\Delta'\B \) then it is \( \le \hat a - \Delta'\B \).
-       Similarly with \( \hat b \) and the rightmost homogenous segment of \( \xi(\hat\R) \).
+       Similarly with \( \hat b \).
 
-
-    \end{enumerate}
+       \item\label{i:patching.align}
+         Assume that \( \R \) contains at least \( E/2-4\beta \) workspace cells of \( \xi \).
+       Assume \( \Drift(\xi)=1 \).
+       Then we will have \( \hat a-a\ge\E\B/2 \); moreover, extending the addresses of the 
+       rightmost homogenous segment of \( \xi(\hat\R) \) to \( \hat b \) 
+       (in case it did not reach), will give
+ \begin{align*}
+   |\cAddr(\hat b) \amod \E|\le \Delta'\B.
+ \end{align*}
+ The analogous statement holds interchanging left and right if \( \Drift(\xi)=-1 \).
+      \end{enumerate}
 The computation can be carried out by the machine \( M \) using only the configuration
 \( \xi\lint{\hat a-\Delta\B}{\hat b+\Delta\B} \).
 \end{lemma}
+
+The feature~\eqref{i:patching.align} is added for two reasons, both of which 
+will only become important in a recovery procedure possibly interrupted by
+a burst.
+The alignment property of the front end of \( \hat R \) will prevent 
+a creeping deposit of more and more islands just beyond the front end.
+The property \( \hat b-b\ge \E\B/2 \) helps make sure that no marked cells are left
+behind when an interrupting new burst triggers new recovery.
 
 \begin{Proof}
 \begin{step+}{step:patching.substantial}
@@ -2904,14 +2920,15 @@ having addresses growing from \( \cAddr(b_{1}) \) to \( \cAddr(a_{2})-1 \).
 While doing this, \emph{no cells outside the islands need be changed}.
 Machine \( M \) can recognize mergeable substantial segments and can merge them, going from left to 
 right, one-by-one.
+We will call this operation, and others to come later, \df{stitching}.
 
-Let us merge also two substantial segments if they are adjacent and form a boundary of type
+Let us stitch also two substantial segments if they are adjacent and form a boundary of type
 (r\ref{i:rigid.outer-workspace}), (r\ref{i:rigid.bridge-target}) (this would be rare),
 (nr\ref{i:nonrigid.sweep}).
 \end{prooofi} % step:substantial
 
 \begin{step+}{step:patching.boundaries1}
-Let us restore some boundaries between substantial segments,
+The following stitching operation restores some boundaries between substantial segments,
 that fall into ambiguous areas.
 \end{step+}
 \begin{prooofi}
@@ -2961,28 +2978,25 @@ requirements of a healthy configuration.
 After they were merged, then according to Lemma~\ref{lem:two-domains},
 they must form at most two \df{domains} consisting of adjacent cells, that extend
 to within \( \Delta\B \) of the boundaries \( a,b \).
-Let \( a' \) be the left end of the left one of these domains, and let \( \alpha=\cAddr(a') \).
+We can also determine a value \( \delta \).
+If there is any substantial segment belonging to the workspace
+ then it is be the majority value of its \( \cDrift \), otherwise it is 
+the majority value of \( \cDrift \) over all non-stem segments (these are not outer cells).
 
-Now we perform the following iteration, until the following condition holds:
+Assume \( \delta=1 \).
+Let \( b' \) be the right end of the rightmost one of these domains,
+and let \( \alpha=\cAddr(b') \).
+Consider the following operation:
+ \begin{itemize}
+\item[(*)] 
+Set \(  b'\gets b+\Delta'\B \), perform the needed stitching operations on the 
+new interval \( \lint{a}{b'} \), and 
+compute a new value of \( b' \) as the right end of the rightmost domain.
+ \end{itemize}
+Perform the operation (*) until the condition below holds:
  \begin{align}\label{eq:patching.terminate}
-   a'\le a \text{ and }    |\cAddr \amod \E| \le \Delta'.
+   b'\ge b+\E/2 \text{ and }    |\cAddr(b') \amod \E| \le \Delta'.
  \end{align}
- \begin{bullets}
-\item
-Set \( \hat a\gets a-\Delta'\B \), perform the consolidation operation on the 
-new interval \( \lint{\hat a}{b} \), and 
-compute a new value of \( a' \) as the left end of the new leftmost domain.
- \end{bullets}
-Note that this iteration can be speeded up significantly in most cases.
-For example if there were two domains then the above operation cannot 
-change the leftmost domain,
-and therefore instead of iterating, we could just compute the final value
-\( \hat a = a'-(a'\bmod \E) \).
-But if there was just one domain then (under some conditions) extending the examined area to the
-left could bring in a new substantial segment that is not mergeable with the old domain.
-In this case the final value of \( \hat a \) must be determined using the new value of \( a' \).
-Also in a recovery procedure that can be interrupted by a new burst,
-it will be safer to proceed gradually.
 \end{prooofi} % step:patching.finish
 
 \begin{step+}{step:patching.cutoff}
@@ -3000,12 +3014,14 @@ end then we cut off another \( \Delta'\B \) length from that end.
 
 It should be clear that all these operations can be accomplished by a constant number of
 passes on machine \( M \).
-
-
 \end{Proof}
 
-
-
+\begin{definition}\label{def:patching-failure}
+If any of the stitching operations described in the above proof
+does not lead to the required result then we
+declare that the patching \df{failed}, since this is 
+a proof that the configuration \( \xi \) we started from is not admissible.
+\end{definition}
 
 % Later we will see that the procedures that use
 % the algorithm from Patching Lemma~\ref{lem:patching}
@@ -3059,7 +3075,7 @@ passes on machine \( M \).
 \section{The recovery procedure}\label{sec:recovery}
 
 Structure repair will be split into two procedures.
-The first onem called \df{recovery}, performs
+The first one, called \df{recovery}, performs
 only local repairs of the structure: for a given locally admissible configuration,
 it will attempt to compute a satisfying healthy configuration.
 If it fails---having encountered a configuration that is not admissible, or
@@ -3068,75 +3084,133 @@ to repair a larger interval.
 On a higher level of simulation, 
 this corresponds to the implementation of the trajectory properties
 in which damage ``magically'' disappears.
+The recovery procedure runs in \( O(\beta^{2}) \) \Pnote{was \( \beta \)}
+steps, whereas rebuilding needs \( O(Q) \) steps.
 
-As we will see below, the recovery procedure runs in \( O(\beta^{2}) \) \Pnote{was \( \beta \)}
-steps, whereas the rebuild procedure needs \( O(Q) \) steps.
-
-As we describe the rules,
-throughout this chapter, it will look as if we assumed that the there is no noise or damage.
-We will see later that the rules described in this chapter remove the damage under the 
-appropriate conditions.
+Throughout this chapter, it will look as if we assumed that the there is no noise or damage.
+As it turns out later, the rules described in this chapter remove the damage under the 
+appropriate conditions, and will also work under the appropriate noise conditions.
 
 The recovery procedure opens an interval \( \R = \lint{a}{b} \) to which it applies the
 patching algorithm of the proof of the Patching Lemma~\ref{lem:patching}.
-The algorithm will be modified in the following way.
 
+\subsection{Recovery addresses}\label{sec:rec-addr}
 
-% For controlling the details, after the interval \( \R \) 
-% has been computed, the procedure uses the field \( \Rec.\Addr \) to measure
-% the distance from point \( z_1 \), and a field \( \Rec.\Sweep \)
-% to measure the progress, just as in the main program.
+Since the number and position of some cells may change during recovery, 
+we ill use the address field
+ \begin{align*}
+ \cRec.\Addr 
+ \end{align*}
+in a more complicated way than the main simulation.
+It will count the number of cells 
+from the left end of the recovery interval to the current cells if it is positive,
+and from the right end if it is negative.
+In the cells to the left of the head, \( \cRec.\Addr \) decrease to 0 towards the left, 
+and in the cells to the right of the head, it increases to 0 towards the right.
+The trick of two counts instead of one helps keeping track of the position,
+even though the number of cells may change.
+Indeed, though at the head occasionally a cell will be replaced with two cells, this does not
+necessitate rewriting the values of \( \cRec.\Addr \) elsewhere.
 
-% There are corresponding \( \cRec.\Addr \) and \( \cRec.\Sweep \)
-% fields in the cells.
+The updating will also use the fields
+\( \Rec.\Addr_{-1} \) and \( \Rec.\Addr_{1} \) of the state.
+When moving in direction \( j \), field \( \Rec.\Addr_{-j} \) remembers the last
+value of \( \cRec.\Addr \) set, and field \( \Rec.\Addr_{j} \) the last one seen 
+before setting.
+We also set \( \cRec.\Addr\gets\Rec.\Addr_{-j}+j \).
+(Some modification will be needed for the case when one of the fields is 0.) \Pnote{!}
 
-% According to the values of \( \Rec.\Sweep \), we distinguish \df{stages},
-% and introduce the \emph{pseudofield} \( \Stage \) (it is just a function of
-% \( \Rec.\Sweep \)), with values
-%  \begin{align*}
-%    \Stage\in\{\Marking,\Planning_{j}\; (j=1,2), \Mopping_{j} (i=1,2)\}.
-%  \end{align*}
+\subsection{Recovery stages}\label{sec:rec-stages}
 
+The field \( \Rec.\Sweep \) 
+measures the progress, just as \( \Sweep \) in the main program.
+There is a corresponding \( \cRec.\Sweep \) field in the cells.
+According to the values of \( \Rec.\Sweep \), we distinguish \df{stages}.
+It is convenient to 
+introduce a \df{pseudofield} \( \Stage \) (just a function of
+\( \Rec.\Sweep \)), with the following possible values:
+ \begin{align*}
+   \Stage\in\{\Planning,\Committing\}.
+ \end{align*}
+Whenever we say that a rule ``checks'' something,
+it is understood that if the check fails, \( \Alarm \) is called, restarting the 
+recovery from scratch.
+This will be judged insufficient in some cases: for example if 
+the recovery interval contains cells marked for rebuilding procedure,
+or the patching algorithm given in Section~\ref{sec:patching} fails in a way
+indicating that the underlying configuration is not admissible.
+This indicates a ``bigger mess'', and is followed by a call to
+the rule \( \GiveUp \) that we will specify later.
 
-% The process makes use of a number of rules:
-% \( \Alarm \), \( \Purge \), \( \Mark \), \( \Plan(j) \), \( \Mop(j) \) for \( j=1,2 \), and
-% \( \GiveUp \).
-% Whenever we say that a rule ``checks'' something,
-% it is understood that if the check fails, \( \Alarm \) is called.
-% Recovery may ``fail'' for
-% the following two reasons:
-% the recovery interval contains cells
-% marked for rebuilding procedure,
-% or the patching algorithm given in Sec.~\ref{sec:patching}
-% fails.
-% Both of these cases indicate a ``bigger mess'', and
-% they are followed by a call to
-% the rule \( \GiveUp \) that we will specify later.
-
-% From Definition~\ref{def:healthy1} it is easy to see
-% that outside of islands, in an interval of \( 2\E\B \) cells, at most
-% 1 small gap may exist.
-% Further, the recovery interval can stretch over
+% The recovery interval can stretch over
 % a portion of the tape where no cell structure exists.
 % For these reasons, we devise the rule  \( \Purge \) that
 % builds a cell structure where there is no such structure.
 % Once this rule completes its work over an annotated configuration,
 % at most one pair of non-adjacent cells remains in the recovery interval,
-% hence,
-% condition on the single cut of Patching Lemma~\ref{lem:patching}
+% hence, condition on the single cut of Patching Lemma~\ref{lem:patching}
 % is satisfied.
 
-% In all rules of the recovery but in \( \Mop \), wherever the head steps,
-% it walks on marked cells or it marks them,
-% that is,  it sets \( \cRec.\Core \neq 0 \).
-% The rule \( \Mop \) is devoted to unmarking.
+In the planning stages, wherever the head steps, it walks over marked cells.
+In the committing stages it may set or remove marks.
 
+Each committing stage is \( \beta \) steps long.
+Even if more would need to be accomplished at that stage, a new plannig stage
+is called which decides again what to do.
+This limits the possible effect of any burst interrupting recovery.
+On the other hand, we make 
+each planning stage is \( \beta \) \emph{sweeps} long.
+The cause is not evident here, since it seems  that a couple of sweeps should
+be sufficient to gather information.
+However, we want to make our recovery procedure eventually to work even
+in the presence of \emph{damage in the islands}.
+And damage can in principle kick back the recovery sweeps repeatedly, 
+while retreating only one cell at a time.
+So it may take \( \beta \) sweeps to pass through an island.
 
+Suppose that \( \Alarm \) is called at some position \( z_{1} \).
+Then it sets  \( \Mode\gets\Recovering \),  \( \Stage\gets\Marking \),
+\( \Rec.\Sweep \gets 1 \), and \( \Rec.\Addr = 0 \).
 
+During planning stages, the following \df{consistency check} will be running
+all the time: (some modification may be needed when an address is 0): \Pnote{!}
+        \begin{bullets}
+                  \item Check if \( \cRec.\Addr = \Rec_{j}.\Addr + j \), where
+                        \( j = \pm 1 \) is the direction of the sweep.
+                  \item 
+                        Check if \( \cRec.\Sweep = \Rec.\Sweep -1 \).
+              \end{bullets}
 
+  Recovery starts by marking out the initial recovery area \( \R \).
+  It marks every cell it passes, and alarms if any of the cells
+  along the way that it expects to be marked is not.
+  First, we mark \( \E \) cells on the right of \( z_{1} \), then further \( \E \) cells on the left.
+  Whenever the head steps on a stem cell or just creates a new cell, 
+  \( \cDrift \) is set to point to \( z_{1} \).
+  All this process is broken up into planning and commitment stages as outlined above.
 
+Next, in each planning stage 
+the recovery area is surveyed to gather information needed to carry out the
+operations outlined in the proof of the Patching Lemma~\ref{lem:patching}.
+A bounded number of substantial segments are found, (using some working track and working
+field which we do not give a name to), and it is determined what needs to be done
+to each of the boundaries between them.
+The first up to \( \beta \) steps of such a stitching operation are carried out in the
+next commitment stage, and then the process will be repeated.
+If at any point, it is determined that the configuration in question is not admissible
+then the \( \GiveUp \) rule is called.
 
-
+The planning-commitment stages are iterated enough times (just a large absolute constant)
+to make sure that the goals of the Patching Lemma have been
+achieved.
+Then the marks are removed (again alternating planning and committing stages)
+in the following manner.
+If the front of the new configuration is to the left of \( \hat R \), then the marks 
+are removed starting from the right.
+If it is on the right, then they are removed starting from the left.
+If it is inside then first remove the marks starting from the left end, up to the front, 
+then from the right end, up to the front.
+This way, the head recovery area shrinks to the front.
 
 \bibliographystyle{plain}
 \bibliography{reli,publ}
