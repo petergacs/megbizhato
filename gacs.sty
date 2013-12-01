@@ -39,9 +39,10 @@
   \renewcommand{\sfdefault}{cmss}
   \DeclareMathAlphabet{\mathsf}{OT1}{cmss}{m}{n}
   \SetMathAlphabet{\mathsf}{bold}{OT1}{cmss}{b}{n}
-  \renewcommand{\ttdefault}{cmtt}
-  \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
-  \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
+  % Does not help, still too wide:
+ \renewcommand{\ttdefault}{cmtt}
+ \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
+ \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
 
   \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
   \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
@@ -49,25 +50,29 @@
   \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
   \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
 }
+
+\newcommand{\myCharter}{
+  \usepackage[bitstream-charter]{mathdesign} 
+  % Replace some bad-looking fonts.
+  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
+  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
+}
+
 \newcommand{\myLibertine}{
-%  \usepackage[T1]{fontenc}
-
-%\usepackage{mathspec}
+\usepackage[T1]{fontenc} 
 \usepackage{libertine}
-% \setmathsfont[ItalicFont={LinLibertine_RI.otf}]{LinLibertine_R.otf}
-% \setmathrm{LinLibertine_R.otf}
-% \setboldmathrm{LinLibertine_RB.otf}
 
-% The above two lines with the regular TeX engine.
-%  \usepackage{libertineotf} 
-% OTF fonts, XeTeX or LuaTeX engine needed, some things are even better this way.
-% Now the libertine package seems also OK.
-  \usepackage[libertine]{newtxmath} 
+  \renewcommand{\ttdefault}{cmtt}
+  \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
+  \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
+
+  \usepackage[libertine,liby,libaltvw,bigdelims]{newtxmath} 
+
   \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
   \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
   \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
   \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
-}
+ }
 
 % Use with enumerate.sty, to delete annoying warnings.
 \def\@@enum@[#1]{%
@@ -98,6 +103,29 @@
  {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
 \newenvironment{djenum}
  {\begin{enumerate}[{\upshape (1)}]}{\end{enumerate}}
+
+\newcommand{\BUhead}{
+  {\renewcommand{\sfdefault}{phv}%
+    \newlength{\widthdiff}
+    \newlength{\leftshift}
+    \setlength{\widthdiff}{6in}
+    \addtolength{\widthdiff}{-\textwidth}
+
+    \vspace*{-1in}
+    \noindent\hspace{-0.5\widthdiff}
+    \makebox[6in]{
+      \raise-4ex\hbox{\includegraphics[scale=0.3]{boston_univ_cmyk}}
+      \hfil
+      \begin{tabular}{r@{}}\hspace{1em}
+        \sffamily {\bfseries College of Arts} \& {\bfseries Sciences}
+        \hspace{0.5em} Department of Computer Science
+        \\\footnotesize\sffamily 111 Cummington Street, Boston, MA 02215-2411, (617) 353-8919
+        \\ \footnotesize\sffamily gacs@bu.edu
+      \end{tabular}
+    }
+    \vspace{0.5in}
+  }
+}
  
 
 % definitions, can be redefined to boldface or \textit\textbf, if desired.
@@ -301,6 +329,15 @@
   {progpart}\label{#1}\`
   \makebox[0mm][r]{\makebox[\textwidth][l]{\upshape\mdseries
                                  (\arabic{progpart})\hfill}}}
+
+% This version of the problem and solution environment is needed if you want to
+% float around some figure: list environments are not tolerated 
+% for example in the package floatflt.
+\newcounter{probl}
+\newenvironment{noListProblem}{\refstepcounter{probl}\par\medskip\noindent
+  \textbf{Problem \arabic{probl}~}}{\varqed}
+\newenvironment{noListSolution}{\par\medskip\noindent\textit{Solution.}}{}
+
 
  \newenvironment{program}{
  \refstepcounter{program}
@@ -520,9 +557,9 @@
  \newcommand\Pbof[1]{\Prob\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
 % \newcommand\Pbof[1]{\Prob\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
  \newcommand\Expv{\mathbf{E}\mskip 1mu}
- \newcommand\Expvof[1]{\mathbf{E}\mskip 1mu\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\Expvof[1]{\mathbf{E}\mskip 1mu\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
  \newcommand\Vari{\mathrm{Var}\mskip 1mu}
- \newcommand\Variof[1]{\mathrm{Var}\mskip 1mu\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\Variof[1]{\mathrm{Var}\mskip 1mu\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
  \newcommand\Cov{\mathbf{Cov}\mskip 1mu}
  \newcommand\Maj{\mathop{\operator@font Maj}\nolimits}
  \newcommand\nor{\mathbin{\operator@font NOR}}

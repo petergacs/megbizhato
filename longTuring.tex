@@ -7,6 +7,7 @@
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{2}
 \counterwithout{section}{chapter}
+\counterwithin{equation}{section}
 %\counterwithout{figure}{chapter}
 
 \makeatletter
@@ -19,7 +20,7 @@
 \firmlists
 
 % Not with mathdesign.  Before hyperref, otherwise AucTex is in trouble:
-% \usepackage{amssymb}
+\usepackage{amssymb}
 
 \usepackage[backref,hyperindex,colorlinks,citecolor=blue]{hyperref}
 
@@ -40,16 +41,18 @@
 % After gacs.sty
 %\numberwithin{equation}{section} % in amsmath
 
-%\myLibertine % defined in gacs.sty
-\myTimes % defined in gacs.sty
+\myLibertine % defined in gacs.sty
+%\myTimes % defined in gacs.sty
+%\myCharter % defined in gacs.sty
+%\usepackage[noBBpl]{mathpazo}
  
 \hyphenation{com-plex-ity des-tin-at-ion co-lon-ies}
 
 \newcommand{\shownotes}{1}
 \ifnum\shownotes=1
 \newcommand{\authnote}[3]
-{{ \textcolor{#3}{$\langle\hspace{-0.2em}\langle$\textsf{\footnotesize #1: #2}$\rangle\hspace{-0.2em}\rangle$}}}
-%{ {$\langle\hspace{-0.2em}\langle$ \textsf{\footnotesize #1:}\par{#2}$\rangle\hspace{-0.2em}\rangle$}}
+{{ \textcolor{#3}{\( \langle\hspace{-0.2em}\langle \)\textsf{\footnotesize #1: #2}\( \rangle\hspace{-0.2em}\rangle \)}}}
+%{ {\( \langle\hspace{-0.2em}\langle \) \textsf{\footnotesize #1:}\par{#2}\( \rangle\hspace{-0.2em}\rangle \)}}
 \else
 \newcommand{\authnote}[2]{}
 \fi
@@ -87,8 +90,8 @@
 
 \newcommand{\Addr}{\fld{Addr}}
 \newcommand{\cAddr}{\fld{cAddr}}
-\newcommand{\Arb}{\fld{Arb}}
-\newcommand{\cArb}{\fld{cArb}}
+\newcommand{\Rebd}{\fld{Rebd}}
+\newcommand{\cRebd}{\fld{cRebd}}
 \newcommand{\Core}{\fld{Core}}
 \newcommand{\cCore}{\fld{cCore}}
 \newcommand{\Dir}{\fld{Dir}}
@@ -124,7 +127,7 @@
 \newcommand{\dir}{\mathrm{dir}}
 \newcommand{\encode}{\mathrm{encode}}
 \newcommand{\front}{\mathrm{front}}
-\newcommand{\Rebuilding}{\mathrm{Healing}}
+\newcommand{\Rebuilding}{\mathrm{Rebuilding}}
 \newcommand{\Histories}{\mathrm{Histories}}
 \newcommand{\Last}{\mathrm{Last}}
 \newcommand{\Marking}{\mathrm{Marking}}
@@ -166,6 +169,18 @@
 \newcommand{\WriteRulesBit}{\rul{WriteRulesBit}}
 \newcommand{\Zigzag}{\rul{Zigzag}}
 
+\newcommand{\mrk}{\mathrm{mrk}}
+\newcommand{\K}{K}
+\newcommand{\loc}{\ell_\mrk}
+\newcommand{\N}{\mathbf{N}}
+\newcommand{\Zg}{\mathcal{Z}_g}
+
+\newcommand{\cns}[1]{c_{\textrm{\upshape #1}}}
+\newcommand{\cDamFreeEsc}{\cns{dam-free-esc}}
+\newcommand{\cDamClearS}{\cns{dam-clear-s}}
+\newcommand{\cDamClearT}{\cns{dam-clear-t}}
+\newcommand{\cDamDist}[1]{\cns{dam-dist-\if#111\else\if#122\fi\fi}}
+\newcommand{\cSpill}{\cns{spill}}
 
 \begin{document}
 
@@ -181,6 +196,8 @@
 \begin{abstract}
 The title says it.
 \end{abstract}
+
+\tableofcontents
 
 \section{Introduction}
 
@@ -274,11 +291,11 @@ there are \( 0\le\varepsilon <1 \) and \( \alpha_{1},\alpha_{2}>0 \)
 with the following property.
 
 For each input length \( n=|x| \) a block code
-\( (\phi_*, \phi^*) \) of blocksize \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
+\( (\varphi_*, \varphi^*) \) of blocksize \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
 such that the following holds.
 
 Let \( M_1 \) start its work from its initial state,
-and the initial tape configuration \( \xi=(q_{\start},\phi_{*}(x),0) \).
+and the initial tape configuration \( \xi=(q_{\start},\varphi_{*}(x),0) \).
 Assume further that
 during its operation, faults occur independently at random
 with probabilities \( \le \varepsilon \).
@@ -295,7 +312,7 @@ with probability at least \( 1 - O(\varepsilon) \).
 \end{theorem}
 
 We emphasize that the actual
-code \( \phi \) of the construction will depend on \( n \) only in a simple way:
+code \( \varphi \) of the construction will depend on \( n \) only in a simple way:
 it will be the ``concatenation'' of one and the same fixed-size
 code with itself, \( O(\log\log n) \) times.
 
@@ -625,7 +642,7 @@ the base of logarithms throughout this work is 2.
 \end{flushdescription}
 
 
-\section{Desribing a Turing machine}\label{sec:describing}
+\section{Describing a Turing machine}\label{sec:describing}
 
 Let us introduce the tools allowing to describe the reliable Turing machine.
 
@@ -821,15 +838,16 @@ Once the drift is known, the union of the base colony with the target colony in
 the direction of the drift is called the \df{workspace} (this notion will 
 need to be defined more carefully later).
 
-A field of the state will be called the \df{mode}.
-in the \df{normal} mode, the the machine is engaged 
-in the regular business of simulation.
-The \df{healing} mode tries to correct some local fault due to a couple of neighboring
-bursts, while the \df{healing}, or \df{rebuilding} mode attempts restoring the colony structure
-on the scale of a couple of colonies:
+There will be a field of the state called the \df{mode}:
  \begin{align*}
    \Mode\in\{ \Normal,\Healing, \Rebuilding \}.
  \end{align*}
+In the \df{normal} mode, the the machine is engaged 
+in the regular business of simulation.
+The \df{healing} mode tries to correct some local fault due to a couple of neighboring
+bursts, while the \df{rebuilding} mode attempts to restore the colony structure
+on the scale of a couple of colonies.
+
 The content of each cell of the tape of \( M \) also has several fields.
 Some of these have names identical to fields of the state.
 In describing the transition rule of \( M \) we will write, for example,
@@ -917,12 +935,12 @@ stem cells.
 % The reason is that even the ``vacuum'' taking the place of the colony needs some
 % structure allowing the head to traverse it later in a reliable way.
 
-It is useful to group some of the fields especially important for the simulation structure into
-a ``super'' field,
-    \begin{align}\label{eq:Core}
-       \Core=(\Addr, \Sweep, \Drift, \Kind), 
-        \cCore=(\cAddr, \cSweep, \cDrift, \cKind). %, \cVisSw).
-    \end{align}
+% It is useful to group some of the fields especially important for the simulation structure into
+% a ``super'' field,
+%     \begin{align}\label{eq:Core}
+%        \Core=(\Addr, \Sweep, \Drift, \Kind), 
+%         \cCore=(\cAddr, \cSweep, \cDrift, \cKind). %, \cVisSw).
+%     \end{align}
 %(where the field \( \cVisSw \) will also be explained later).
 
 %     \item \( \Af \) field of a cell will be set to true if
@@ -930,23 +948,20 @@ a ``super'' field,
 %     that wants to become ``vacant''.
 %     (We will explain  this notion later.)
 
-  The fields used in healing mode are all collected as subfields of the field
-    \( \Heal \) of the state, and the field \( \cHeal \) of the cell state.
-    They will be introduced in the definition of the healing rule.
+  % The fields used in healing mode are all collected as subfields of the field
+  %   \( \Heal \) of the state, and the field \( \cHeal \) of the cell state.
+  %   They will be introduced in the definition of the healing rule.
 
-    In particular, when the field
-     \begin{align}\label{eq:cHealCore}
-      \cHeal.\Core
-     \end{align}
-    is not \( 0 \), we will call the cell \df{marked for healing}.
-
-    Similarly, the fields used in healing mode are subfields of the field \( \Arb \) of the state,
-    and the field \( \cArb \) of the cell state.
-    In particular, when the field
-     \begin{align}\label{eq:cArbCore}
-      \cArb.\Core
-     \end{align}
-    is not \( 0 \), we will call the cell \df{marked for rebuild}.
+During healing, some special fields of the state and cell are used, they will be subfields of 
+the fields
+ \begin{align}\label{eq:Heal}
+   \Heal
+ \end{align} 
+and \( \cHeal \) respectively.
+In particular, there will be \( \Heal.\Sweep \) and \( \cHeal.\Sweep \) fields.
+We will say that a cell is \df{marked for healing} if \( \cHeal.\Sweep\ne 0 \).
+Similarly, during rebuilding we will work with subfields of the field \( \Rebd \) and
+\( \cRebd \), and a cell will be called \df{marked for rebuilding} if \( \cRebd.\Sweep\ne 0 \).
 
 %     \item\label{i:fields.zigging}
 %     The sweep-through is interrupted by switchbacks
@@ -998,7 +1013,7 @@ A point \( \vek{x} \) of \( E \) is \df{\( \pair{\vek{r}}{\vek{r}^*} \)-isolated
 \end{align}
 \end{definition}
 
-\begin{definition}[Sparsity]
+\begin{definition}[Sparsity]\label{def:sparsity}
 Let \( \beta\ge 9 \) be a constant, and let 
 \( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \) be 
 sequences of positive integers to be fixed later.
@@ -1015,6 +1030,8 @@ if \( D(E, \vek{r}, \vek{r}^*)=\emptyset \), that is
 it consists of \( (\vek{r}, \vek{r^*}) \)-isolated points.
 It is \( k \)-\df{sparse} if \( E^{(k+1)}=\emptyset \).
 It is simply \df{sparse} if \( \bigcap_{k}E^{(k)}=\emptyset \).
+
+When \( E=E^{(k)} \) and \( k \) is know then we will denote \( E^{(k+1)} \) simply by \( E^{*} \).
 \end{definition}
 
 The following lemma connects the above defined sparsity notions to the requirement
@@ -1094,6 +1111,7 @@ the last factor is \( \le 1 \) for sufficiently small  \( \varepsilon \).
 \end{proof}
 
 
+
 \subsection{Error-correcting code}\label{sec:coding}
 
 Let us add error-correcting features to block codes introduced in
@@ -1157,33 +1175,17 @@ Also, these programs must work in quadratic time and
 linear space on a one-tape Turing machine (as the repetition code certainly does).
 
 Let us now define the block code \( (\psi_*, \psi^*) \) used in the
-definition of the configuration code \( (\phi_*, \phi^*) \) as 
+definition of the configuration code \( (\varphi_*, \varphi^*) \) as 
 outlined in Section~\ref{sec:hier-codes}.
 We define
 \begin{equation}\label{eq:psi}
    \psi_*(a)  = 0^{\PadLen}\upsilon_{*}(a)0^{\PadLen}.
 \end{equation}
+It will be easy to compute the configuration code from \( \psi_{*} \),
+once we know what fields there are which ones need initialization.
+
 The decoded value \( \psi^{*}(x) \) is obtained by first removing \( \PadLen \) symbols
 from both ends of \( x \) to get \( x' \), and then computing \( \upsilon^{*}(x') \).
-
-To compute the configuration code \( \phi_{*} \) from \( \psi_{*} \) we proceed first as
-done in Section~\ref{sec:hier-codes}, and then add the following initializations:
-In cells of the base colony and its left neighbor  colony,
-the \( \cSweep \) and \( \cDrift \) fields are set 
-to \( \Last(+1)-1 \),  \( 1 \), and \( \Last(+1) \),  \( 1 \) respectively.
-In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
-In all other cells, these values are empty.
-The \( \cAddr \) fields of each colony are filled properly:
-the \( \cAddr \) of the \( j \)th cell of a colony
-is \( j \bmod \B^* \).
-
-Decoding of configurations will be defined later, 
-when defining the map \( \Phi^{*} \) of the simulation.
-It is more complex since 
-the location of the base colony must be found also in
-configurations that are not in the range of the encoding
-function, but arise as a result of a lot of noise.
-
 
 
 \section{The model}
@@ -1269,9 +1271,11 @@ Let
     \end{align*}
     denote the set of all possible configurations
     of a Turing machine \( M \).
-\end{definition}
 
-% \subsection{Trajectory, simulation, and the tower}
+It is clear that all the above definition can be localized to define a configuration
+\df{over a space interval} \( I \), where it is always understood that \( \h\in I \), that is 
+\( I \) contains the head.
+\end{definition}
 
 It is natural to name a sequence of configurations that is conceivable as a computation
 (faulty or not) of a Turing machine as ``history''.
@@ -1327,6 +1331,11 @@ noise or damage, is at most \( \Tu \).
 
 We say that a cell \df{dies} in a history if it becomes \( \Vacant \).
 
+It is clear that all the above definition can be \df{localized} to define a history
+\df{over a space-time rectangle} \( I\times J \), 
+where it is always understood that \( \h\in I \) for all times \( t\in J \),
+that is \( I \) contains the head throughout the time interval considered.
+
 \end{definition}
 
 The transition function \( \delta \) of a generalized Turing machine
@@ -1347,12 +1356,6 @@ if \( j=0 \) or the new current cell is adjacent, and \( \true \) otherwise.
 \end{definition}
 
 \begin{definition}[Trajectory]\label{def:traj}
-The definition of a trajectory depends on a constant 
-\begin{align*}
-   c_{1}>0
- \end{align*}
-to be fixed later.
-
 \begin{sloppypar}
    A history  \( (\eta, \Noise) \) of a generalized Turing 
 machine~\eqref{eq:gen-TM} with \(\eta(t) =\)
@@ -1370,8 +1373,11 @@ Denote
 \item[Transition function]\label{i:def.traj.transition}
 Suppose that there is a switch, and the shortest interval
 containing the body of the current cell \( x \) and the
-new cell \( y \) is at a distance at least \( 0.5\B \)
-from damage.
+new cell \( y \) is at a distance at least \( \cDamDist1 \B \)
+from damage, where 
+ \begin{align}\label{eq:cns.dam-dist-1}
+  \cDamDist1 =0.5
+ \end{align}
 
 Then the new state, the cell content of \( x \) (including when it dies), and
 the direction of \( y \) from \( x \) are directed by the transition function.
@@ -1379,32 +1385,97 @@ If \( y \) did not exist before then it is adjacent to \( x \).
 
 Further the length of the dwell period is bounded by \( \Tu \).
 
+% \item[Escape]\label{i:escape}
+% For constant
+% \begin{align}\label{eq:cns.dam-unit}
+%    \cns{dam-unit}=6,
+%  \end{align}
+% during any noise-free time interval, the head does not remain longer than 
+% \( 2.1\cns{dam-unit}\Tu \) in any interval of size \( \cns{dam-unit}\B \).
+
 \item[Spill]\label{i:bound-on-damage}
-  The damage may spill only to at most a distance \( 2\B \) beyond its 
-place at time \( t \).
+For constant
+\begin{align}\label{eq:cns.spill}
+   \cSpill =4,
+ \end{align}
+during any noise-free time interval, 
+the damage may spill to at most a total distance of \( \cSpill \B \) beyond its 
+starting place.
 
 \item[Attacking damage from outside] \label{i:def.traj.attack-from-outside}
-Suppose that the body of the current cell \( x \) is disjoint from damage, 
-and at least \( 0.5\B \) removed from damage on the left.
+For constant
+\begin{align}\label{eq:cns.dam-dist-2}
+   \cDamDist2 =3,
+ \end{align}
+suppose that the body of the current cell \( x \) is disjoint from damage, 
+and at least \( \cDamDist2 \B \) removed from damage on the left.
 Suppose further that the transition function directs the head towards the right.
-Then whenever the head comes left  of \( x \) again, the  
-damage will recede by a distance at least \( \B \) from the body of \( x \).
+Then whenever the head comes left  of \( x-\cDamDist2 \B \), the  
+damage will recede by a distance at least \( \B \) to the right from the body of \( x \).
 
 A similar property is required when ``left'' and ``right'' are interchanged.
 
-\item[Clearing damage from within] \label{i:def.traj.damage-within}
-Let \(  I  \) be a space interval of size \(  3\B  \).
-If the head spends a total time of at least \(  c_{1}\Tu  \) inside \(  I  \) (while possibly
-entering repeatedly), then \(  I  \) becomes damage-free.
+\item[Clearing damage] \label{i:def.traj.damage-within}
+For constant
+\begin{align}\label{eq:cns.dam-clear}
+        \cDamClearT =9,
+\quad   \cDamClearS =\cDamDist2 +1,
+ \end{align}1
+suppose that at the beginning of a noise-free time interval \( J \), 
+the head is in a certain interval \( I \) of size \( \B \).
+Then before the head spends a cumulative time 
+ \( \cDamClearT \Tu \)  in \( I \) during \( J \) (possibly while
+entering and exiting repeatedly), it will be found
+in a damage-free interval of size \( \cDamClearS \B  \).
 
 \end{flushdescription}
+
+The above definition can also clearly be localized to some space-time
+rectangle just as the definition of history was.
 \end{definition}
 
 
-Until this moment, we used the term ``simulation'' to denote
+\subsection{Simulation}
+
+Until this moment, we used the term ``simulation'' informally, to denote
 a correspondence between configurations of
 two machines which remains preserved during the computation.
+In the formal definition, this correspondence will essentially be a code
+\( \varphi=(\varphi_{*},\varphi^{*}) \).
+As a matter of fact, the \emph{decoding} part of the code is the more important.
+Indeed, we want to say that machine \( M_{1} \) simulates machine \( M_{2} \) via
+simulation \( \phi \) if whenever \( (\eta, \Noise) \) is a trajectory of \( M_{1} \) 
+then \( (\eta^{*},\Noise^{*} \) 
+defined by \( \eta^{*}(\cdot,t)=\phi^{*}(\eta(\cdot,t)) \) is a
+trajectory of \( M_{1} \), where \( \Noise^{*} \) is computed by an appropriate
 
+
+
+We will make, however, two refinements.
+First, it is not important to require this for arbitrary trajectories \( \eta \) of \( M_{1} \):
+it is sufficient to consider those \( \eta \) for which the initial configuration
+ \( \eta(\cdot,0) \) has been obtained by encoding, that is it has the form 
+\( \eta(\cdot,0)=\varphi_{*}(\xi) \).
+So the encoding function comes in, after all.
+
+But there is a more complex refinement.
+When a colony is in transition between encoding one simulated value to encoding another one,
+there may be times when the value represented by it before the transition
+is already not decodable from it, and the value after the transition is not yet decodable from it.
+For this reason, it is useful to define a notion of simulation decoding \( \Phi^{*} \)
+that is a mapping between \emph{histories}, not just configurations.
+We will not abuse this notion, but it will allow us a certain amount of looking back:
+the map \( \Phi^{*} \) can use the configuration at the beginning of the work period for decoding.
+
+We will also give another function to the mapping \( \Phi^{*} \).
+A history was defined above in Definition~\ref{def:history} 
+as a pair \( (\eta,\Noise) \),
+so \( \Phi^{*} \) also computes a new noise set:
+\( \Phi^{*}(\eta,\Noise)=(\eta^{*},\Noise^{*}) \).
+The meaning of this new noise set will be, just as in Definition~\ref{def:sparsity} of sparsity,
+that 
+\( \Noise^{*} \) will be obtained by deleting some small isolated parts of \( \Noise \) that the 
+error-correcting simulation can deal with.
 
 \begin{definition}[Simulation] \label{def:simulation-central}
 Let \( M_{1},M_{2} \) be two generalized Turing machines, and let
@@ -1415,16 +1486,15 @@ be a mapping from configurations of \( M_{2} \)
 to those of \( M_{1} \), such that it maps
 starting configurations into starting configurations.
 We will call such a map a \df{configuration encoding}.
-
 Let
 \begin{align*}
    \Phi^{*}:\Histories_{M_{1}} \to \Histories_{M_{2}}
 \end{align*}
 be a mapping.
-The pair \( (\phi_{*}, \Phi^{*})  \)
+The pair \( (\varphi_{*}, \Phi^{*})  \)
 is called a \df{simulation} (of \(  M_{2}  \) by \(  M_{1}  \)) if for every
 trajectory \(  (\eta, \Noise)  \) with initial
-configuration \(  \eta(0)=\phi_{*}(\xi)  \),
+configuration \(  \eta(\cdot,0)=\varphi_{*}(\xi)  \),
 the history \(  (\eta^{*},\Noise^{*})=\Phi^{*}(\eta,\Noise)  \) is
 a trajectory of machine \(  M_{2}  \).
 
@@ -1456,21 +1526,21 @@ and \( \emptyset \) if it is not.
 Block code \( (\psi_{*},\psi^{*}) \) gives rise to a 
 \df{code on configurations}, that is a pair of functions
     \begin{align*}
-        \phi_{*} :\Configs_{M_2} \to \Configs_{M_1},
+        \varphi_{*} :\Configs_{M_2} \to \Configs_{M_1},
         \quad
-        \phi^{*}:\Configs_{M_1} \to \Configs_{M_2}
+        \varphi^{*}:\Configs_{M_1} \to \Configs_{M_2}
     \end{align*}
     that encodes configurations of \( M_2 \) into configurations of \( M_{1} \).
 
 Let \( \xi \) be a configuration of \( M_2 \).
-We set \( \phi_*(\xi).\pos = \xi.\pos \), \(\phi_{*}.\state=  \) 
+We set \( \varphi_*(\xi).\pos = \xi.\pos \), \(\varphi_{*}.\state=  \) 
 the starting state of \( M_{1} \),
 \begin{align*}
- \phi_*(\xi).\tape[i\B_2, \dots, (i+1)\B_2 - \B_1] = \psi_*(\xi.\tape[i], s)
+ \varphi_*(\xi).\tape[i\B_2, \dots, (i+1)\B_2 - \B_1] = \psi_*(\xi.\tape[i], s)
  \end{align*}
 where \( s=\xi.\state \) if \( i = \xi.\pos \), and \( \emptyset \) otherwise, with
 a slight \emph{modification}: 
-\( \phi_*(\xi).\tape[i].\cDir \), is set to point towards the head \( \xi.\pos \).
+\( \varphi_*(\xi).\tape[i].\cDir \), is set to point towards the head \( \xi.\pos \).
 Decoding is the inverse of this process (need not succeed on all possible configurations
 of \( M_{1} \)).
  \end{definition}
@@ -1480,27 +1550,27 @@ of \( M_{1} \)).
 
  \begin{definition}[Code configuration]\label{def:code-config}
    A configuration \( \xi \) is called a \df{code configuration} if 
-it has the form \( \xi=\phi_{*}(\zeta) \).
+it has the form \( \xi=\varphi_{*}(\zeta) \).
  \end{definition}
 
 
 \begin{definition}[Hierarchical code]\label{def:hierarchical-code}
 For \( k\ge 1 \), let \( \Sigma_k \) be an alphabet, \( \Gamma_k \) be
 a set of states of a generalized Turing machine \( M_k \).
-Let \( Q_k>0 \) be an integer colony size, let \( \phi_k \)
+Let \( Q_k>0 \) be an integer colony size, let \( \varphi_k \)
 be a code on configurations defined by a block code
   \begin{align*}
        \psi_k: \Sigma_{k+1}\times(\Gamma_{k+1}\cup\{\emptyset\})
        \rightarrow \Sigma_k^{Q_k}
   \end{align*}
 as in Definition~\ref{def:configuration-code}.
-The sequence of triples \( (\Sigma_k,\Gamma_k,  \phi_k) \), (\( k\ge 1) \),  is
+The sequence of triples \( (\Sigma_k,\Gamma_k,  \varphi_k) \), (\( k\ge 1) \),  is
 called a \df{hierarchical code}.
 For the given hierarchical code, the configuration \( \xi^{1} \) of \( M_{1} \)
 is called a \df{hierarchical code configuration} if a sequence
 of configurations \( \xi^{2},\xi^{3},\dots \) of \( M_{2},M_{3},\dots \) exists with
 \begin{align*}
- \xi^{k}=\phi_{*k}(\xi^{k+1})
+ \xi^{k}=\varphi_{*k}(\xi^{k+1})
  \end{align*} 
 for all \( k \).
 (Of course, then whole sequence is determined by \( \xi^{1} \).)
@@ -1510,11 +1580,11 @@ Let us give a name to the object that we want to construct.
 
 \begin{definition}[A tower]\label{def:tower}
 Let \( M_1 \), \( M_2 \), \dots, be a sequence of generalized Turing machines,
-let \( \phi_{1} \), \( \phi_{2} \) , \(\dots \) be a hierarchical code for this sequence,
+let \( \varphi_{1} \), \( \varphi_{2} \) , \(\dots \) be a hierarchical code for this sequence,
 let \( \xi^{1} \) be a hierarchical code configuration for it, where \( \xi^{k} \) is an
 initial configuration of \( M_{k} \) for each \( k \).
 Let further be a sequence of mappings \( \Phi_{1} \), \( \Phi_{2} \), \( \dots \) be
-given such that for each \( k \), the pair \( (\phi_{k*},\Phi_{k}^{*}) \),
+given such that for each \( k \), the pair \( (\varphi_{k*},\Phi_{k}^{*}) \),
 is a simulation of \( M_{k+1} \) by \( M_{k} \).
 Such an object is called a \df{tower}.
 \end{definition}
@@ -1561,13 +1631,12 @@ The crudest outline of the main rule of machine \( M \) is given in
 Rule~\ref{alg:main1}, where the \( \Comp \) and \( \Transfer \) rules will be
 outlined below.
 
-\begin{algorule}[!ht] \caption{\textbf{Main rule}\label{alg:main1}}
+\begin{algorule}\caption{\textbf{Main rule}\label{alg:main1}}
+
   \If{the mode is normal}{
-    \lIf{\algNot \( \Coordinated \)}{\( \Alarm \)}\;
-    \lElseIf{\( 1 \le \Sweep < \TransferSw(1) \)}{ \( \Comp \)
-    }\;
-    \lElseIf{\( \TransferSw(1) \le \Sweep < \Last \)}{ \( \Transfer \) 
-    }\;
+    \lIf{\algNot \( \Coordinated \)}{\( \Alarm \)}
+    \lElseIf{\( 1 \le \Sweep < \TransferSw(1) \)}{ \( \Comp \) }
+    \lElseIf{\( \TransferSw(1) \le \Sweep < \Last \)}{ \( \Transfer \)}
    \lElseIf{\( \Last \le \Sweep  \)}{move the head to the new base.}
   }
 \end{algorule}
@@ -1665,15 +1734,15 @@ during the switchback.
 \begin{algorule}[!ht]\caption{\( \Zigzag(d) \)}\label{alg:Zigzag}
   \Comment{\( d\in\{-1,1\} \) is the direction of progress.}
   \If{\( \ZigDir=-1 \)}{
-    \lIf{\( \ZigDepth=\Z \)}{\( \ZigDir\gets 1 \)}\;
+    \lIf{\( \ZigDepth=\Z \)}{\( \ZigDir\gets 1 \)}
     \Else{
       \( \increment{\ZigDepth} \)\;
       \( \Move(-d) \) \cmt{Move only when not at the bottom.}
     }      
   }
   \ElseIf{\( \ZigDir=1 \)}{ 
-    \lIf{\( \ZigDepth=0 \)}{\( \ZigDir\gets -1 \)}\;
-    \lElse{\( \decrement{\ZigDepth} \)}\;
+    \lIf{\( \ZigDepth=0 \)}{\( \ZigDir\gets -1 \)}
+    \lElse{\( \decrement{\ZigDepth} \)}
     \( \Move(d) \) \cmt{Move once even at the top.}
   }
 \end{algorule}
@@ -2162,8 +2231,6 @@ are currently being manipulated.
 
 According to this definition, a stem cell is both left and right outer cell.
 
-% Basically, a configuration of level \( i \geq 1 \) is healthy if it encodes (using \( \phi_{*} \)
-% from Subsection~\ref{sec:coding}) \emph{any} configuration of the \( (i+1) \)-th level.
 Recall the definition of the \df{transfer sweep}
 \( \TransferSw(\delta) \) in Section~\ref{sec:TransferPhase}, if \( \delta \ne 0 \).
 (There is no transfer sweep if \( \delta = 0 \).)
@@ -2182,17 +2249,13 @@ for simplicity we omit the mention of the underlying interval.
 \begin{flushdescription}
 
      \item[Normality]
-           No cell in \( I \) is marked for healing healing or rebuilding.
-           That is, for every \( x \in I \), \( \cHeal.\Core = 0 \) and
-           \( \cArb.\Core = 0 \)
-          (see the definition of marking after~\eqref{eq:cHealCore}
-           and after~\eqref{eq:cArbCore}, respectively).
+           No cell in \( I \) is marked for healing healing or rebuilding:
+           that is, for every \( x \in I \), \( \cHeal.\Sweep = 0 \) and
+           \( \cRebd.\Sweep = 0 \)  (see the definition of marking after~\eqref{eq:Heal}).
 
 \item[Segments]
         The \df{base} is defined by counting back from \( \Addr \) such that, if the head
-        passes from a target cell to a member, 
-        % or from a bridge to a member 
-        we set \( \Addr \) to \( \cAddr \).
+        passes from a target cell to a member, we set \( \Addr \) to \( \cAddr \).
         The cell closer to the base where the \( \Addr \) is adjusted during
         this count-back is called the \df{address jump}.
 
@@ -2329,7 +2392,7 @@ In more detail:
 %             Whenever the head is inside a colony yard,
 %             the values of \( \cVisDrift \) extend the \( \cDrift \) values
 %             in the extended base colony if
-%             \( \Sweep\geq\TransferStart \).
+%             \( \Sweep\geq\TransferSw(1) \).
 
 %         \item
 %             Whenever the head is moving farther from
@@ -2461,7 +2524,7 @@ types, only one can be present: indeed, they all coincide with the location of t
 \end{proof}
 
 
- \begin{definition}\label{def:super-healthy}
+ \begin{definition}[Super healthy]\label{def:super-healthy}
 A configuration is  \df{super healthy} if in addition to the requirements of health, in each colony,
 whenever the head is not in the last sweep,
 the \( \Info \) and \( \State \) tracks contain valid codewords as
@@ -2821,7 +2884,7 @@ We add some more explanations after stating it.
 %      \( \cA=(\xi,\chi, \cI, \cS, \D) \)
 %      is \df{pre-annotated} on interval \( A \),
 %      if by just erasing the rebuild marks (\ie setting
-%      \( \cArb.\Core \) to \( 0 \), see~\eqref{eq:cArbCore}) on each cell of \( A \),
+%      \( \cRebd.\Core \) to \( 0 \), see~\eqref{eq:cRebdCore}) on each cell of \( A \),
 %      \( \cA \) satisfies
 %      all requirements of the Definition~\ref{def:annotated-config} on
 %      \( A \).
@@ -2857,8 +2920,8 @@ such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
     \begin{enumerate}[\upshape (a)]
      \item
         The states of nonempty cells of \( \xi \) can differ from the corresponding cells
-        of \( \zeta \) only in \( c_{\patch}\beta \) cells for a certain constant
-        \( c_{\patch} \)  to be specified below, and in the interval \( \D \).
+        of \( \zeta \) only in \( \cns{patch}\beta \) cells for a certain constant
+        \( \cns{patch} \)  to be specified below, and in the interval \( \D \).
 
      \item
         If \( \xi \) is damage-free then the 
@@ -3060,7 +3123,7 @@ a proof that the configuration \( \xi \) we started from is not admissible.
 %     \item
 %       \( \delta \) is the \( \cDrift \) value shared by all
 %       elements of the workspace inside \( \hat \R \)
-%       in case \( \sigma\ge\TransferStart \) or \( \sigma = 1 \).
+%       in case \( \sigma\ge\TransferSw(1) \) or \( \sigma = 1 \).
 %     \item
 %       \( \f = \front(\zeta) - a \) in case \( \hat\R \in \set{\R, \R_0^2, \R_2^0} \).
 %     \item \( \ga \) is a pair of two address values of some fixed
@@ -3126,7 +3189,7 @@ Whenever we say that a rule ``checks'' something,
 it is understood that if the check fails, \( \Alarm \) is called, restarting the 
 healing from scratch.
 This will be judged insufficient in some cases: for example if 
-the healing interval contains cells marked for rebuilding procedure,
+the healing interval contains cells marked for the rebuilding procedure (see later),
 or the patching algorithm given in Section~\ref{sec:patching} fails in a way
 indicating that the underlying configuration is not admissible.
 This indicates a ``bigger mess'', and is followed by a call to
@@ -3154,18 +3217,18 @@ According to the values of \( \Heal.\Sweep \), we distinguish \df{stages}.
 % at most one pair of non-adjacent cells remains in the healing interval,
 % hence, condition on the single cut of Patching Lemma~\ref{lem:patching}
 % is satisfied.
-In the planning stages, wherever the head steps, it walks over marked cells.
-In the committing stages it may set or remove marks.
+In the \df{planning} stages, wherever the head steps, it walks over marked cells.
+In the \df{committing} stages it may set or remove marks.
 
 Each committing stage is \( \beta \) steps long.
-Even if more could be accomplished at that stage, a new plannig stage
+Even if more could be accomplished at that stage, a new planning stage
 is called which decides again what to do.
 This limits the possible effect of any burst interrupting healing.
 On the other hand, we make 
 each planning stage is \( \beta \) \emph{sweeps} long.
 The cause is not evident here, since it seems  that a couple of sweeps should
 be sufficient to gather information.
-However, we want to make our healing procedure eventually to work even
+However, we want our healing procedure eventually to work even
 in the presence of \emph{damage in the islands}.
 And damage can in principle kick back the healing sweeps repeatedly, 
 while retreating only one cell at a time.
@@ -3184,13 +3247,23 @@ all the time: (some modification may be needed when an address is 0): \Pnote{!}
                         Check if \( \cHeal.\Sweep = \Heal.\Sweep -1 \).
               \end{bullets}
 
-  Healing starts by marking out the initial healing area \( \R \).
-  It marks every cell it passes, and alarms if any of the cells
-  along the way that it expects to be marked is not.
-  First, we mark \( \E \) cells on the right of \( z_{1} \), then further \( \E \) cells on the left.
-  Whenever the head steps on a stem cell or just creates a new cell, 
-  \( \cDrift \) is set to point to \( z_{1} \).
-  All this process is broken up into planning and commitment stages as outlined above.
+Healing starts by surveying an initial area of size \( 2\Z \), without marking it.
+Suppose that in this area, it finds at least one substantial homogenous segment
+(see Definition~\ref{def:Delta}) showing that the middle of the base colony
+is in direction \( \delta \), and finds no substantial homogenous segment
+pointing to a different direction.
+
+Next, the procedure marks out the initial healing area \( \R \).
+It marks every cell it passes, and alarms if any of the cells
+along the way that it expects to be marked is not.
+Let \( \delta'=\delta \) if \( \delta \) was determined above, and \( -1 \) otherwise.
+First, we mark \( \E \) cells in the direction \( \delta' \)
+from \( z_{1} \), then further \( \E \) cells on the other side.
+(This achieves that in case a new burst tries to drive away the head from 
+even a partially marked area, zigging will bring it back.)
+Whenever the head steps on a stem cell or just creates a new cell, 
+\( \cDrift \) is set to point to \( z_{1} \).
+All this process is broken up into planning and commitment stages as outlined above.
 
 Next, in each planning stage 
 the healing area is surveyed to gather information needed to carry out the
@@ -3276,1430 +3349,393 @@ This will most likely start another rebuilding, which now will operate without a
 Traces (say, marked cells) from the first, interrupted rebuilding might remain,
 the analysis will deal with this possibility.
 
-% By extending the healing interval, it createsa
-% a \df{rebuild cover}, and then it searches it
-% for a large interval with healthy structure
-% that we call  a ``tissue''.
-% A  colony
-% containing only outer cells, or a ``transferring arm'' (an interval
-% of cells whose $\cSweep$ is $\TransferSw(\cdot)$), are examples of
-% tissues.
-% To identify such intervals, we will first run $\Calc$ rule
-% over a $2\E\B$ interval contained in the rebuild cover.
-% The
-% correction data that it outputs (see Definition~\ref{def:correction-data}),
-% will then help us identify the boundaries of the candidate
-% ``tissue'', the position
-% of the front, and so on.
-
-% In an admissible configuration, non-adjacent cells that are not
-% in islands may exist
-% only outside of the colony, that is, they may exist only
-% in the bridges.
-% During this procedure, we may encounter them all over the
-% rebuild cover, and they will be eliminated
-% at the end.
-% For this reason, whenever we talk about
-% the length of a part of a rebuild cover, we will always
-% refer to the number of cells in it.
-
-% The procedure runs in many rounds: if a search for a tissue
-% failed, then the rebuild cover is expanded, and then we
-% repeat the same procedure again.
-% The rule has finite time frame to complete.
-% Say, if it spans a large enough area that was not healthy,
-% and a colony can fit in, it will create a new colony, and kill
-% everything else.
-% %Similarly, if the head finds itself inside a workspace and
-% %all changes needed to obtain a healthy configuration are admissible,
-% %then, it will locate the front, fill in the cells as the healing procedure would
-% %do, and leave the head at the front.
-
-%     The machine uses $\cArb.\Addr$, $\cArb.\Sweep$ and their
-%     corresponding fields of the state to guide the machine
-%     during this procedure.
-%        It also uses fields $\cArb.\Data$ and $\cArb.\Decision$ of the cell state,
-%     and fields $\Arb.\Data$ and $\Arb.\Decision$ of the state
-%     of generalized
-%     Turing machine $M$
-%     to store the data that it gathered about candidate tissues on the tape,
-%     and the decisions that are made about further actions.
-%     These fields make $\cArb.\Core$ and $\Arb.\Core$,
-%     respectively.
-
-
-
-% Similar to the healing procedure, the rebuild procedure has different
-% stages.
-% The initial stage is the \df{bootstrapping} stage, where the machine
-% checks if the healing interval carries $\failed$ marks everywhere except
-% possibly in the islands.
-% If this check does not pass, alarm is called at its center.
-% Otherwise, the healing interval is enlarged threefold, and
-% marked properly with the rebuild marks.
-
-% The second stage is the \df{assay} stage.
-% During this stage, two tasks are carried out one after another.
-% The first task is \df{data gathering}, in which,
-% it runs $\Calc$ rule over a $2\E\B$ interval (running it in two such
-% intervals suffice) in each side of the rebuild cover, and
-% stores the gathered data in $\cArb.\Data$ all over the
-% rebuild cover.
-% The second task is the \df{mediation}, during which the machine
-% analyzes the data, and comes to a decision for one of the following
-% actions:
-% \begin{enumerate}
-% \item to expand the rebuild cover on the left side
-%       for $e_L$ cells, and to the right for the
-%       $e_R$ cells, and repeat the assay stage on it,
-% \item to kill everything inside and create a new colony,
-% \item to renew a certain interval by filling it with adjacent
-% stem cells.
-% \end{enumerate}
-% For example, if the left part of the rebuild cover
-% contains an annotated configuration $\xi$
-% that consists of at least a base colony and $\xi.\Sweep = \TransferSw(1)$,
-% and on the right we have an annotated configuration
-% that contains the base colony and $\xi.\Sweep = \TransferSw(-1)$,
-% then, to resolve this ``conflict'' we kill both  of them and create
-% a new colony instead.
-
-% We store the decision in a $\cArb.\Decision$ track
-% of the rebuild track.
-% In order to make it robust against an eventual burst that
-% may occur during this procedure, the assay stage consists
-% of 3 repetitions of the above tasks, and storing the results
-% into an appropriate $\cHold$ track for each repetition.
-
-
-% Finally, the last stage of the rebuild procedure is the
-% \df{execution} stage in which, we first update
-% $\cArb.\Decision$ by computing the field majority of
-% $\cHold[1\dots 3].\Decision$ in each cell.
-% (Repeating this 2 times suffices.)
-% Then, we execute the decision that was taken.
-
-
-% \subsection{Damage and tissues}
-
-% Recall the definition of admissible configuration
-% given in Definition~\ref{def:admissible-config}, and
-% the notion of pre-annotated configuration given in
-% Definition~\ref{def:permissible}.
-% We said that a configuration
-%  is pre-annotated  on space interval $I$,
-%  if by just setting $\cArb.\Core \gets 0$ all over $I$, we obtain an
-%  annotated configuration.
-
-
-
-% We said that a cell of $M$ is damaged, if its state is $\Bad$.
-% When is a position of the simulated machine $M^*$ bad?
-% %How to define damage for $\eta^*$?
-% %
-% %Clearly, for some time $t$, intervals where $\eta(t)$
-% %is not admissible
-% %do consist a damage for $\eta^*$.
-% %However, this does not encapsulate everything.
-% %
-% %\begin{definition}[Rift]\label{def:rifts}
-% %  A \df{rift} is a
-% %  triple \begin{align*}(\xi_1, \xi_2, A),\end{align*}
-% %  where
-% %  $A$ is a space interval of size $\geq 2 Q\B$ with the property
-% %  that for two nonempty subintervals $A_1$ and $A_2$,
-% %  such that $A_1 \cap A_2 =\emptyset$ and
-% %  $A = A_1 \cup A_2$,
-% %  $\xi_1$ is admissible on $A_1$ but not on $A$, and
-% %  $\xi_2$ is admissible on $A_2$ but not on $A$.
-% %\end{definition}
-% %
-% %\TODO{Put a figure of a  rift here}
-
-
-% \begin{definition}[Damage scale-up]\label{def:damage-scaleup}
-% %   Let $(\Phi^*, \varphi_*, \I)$ be a simulation, and let
-% %   $(\eta, \Noise)$ be a trajectory of $M$.
-
-% %   A configuration is \df{pre-annotated} on an interval $A$
-% %   if an admissible one on $A$ can be obtained
-% %   from it by removal of the $\cArb$ marks.
-
-% %   Then, $$\Damage^{(k+1)} = \setOf{x}{\eta^k
-% %         \txt{ is not an admissible configuration of }
-% %           M_k \txt{ on } [x - Q\B_k, x + Q\B_k)}.$$
-
-% %Position $x$ of $M^*$ is \df{bad},
-% %if there is no admissible configuration
-% %of $M$ of size $\B^*$ containing it, or it belongs to a rift.
-
-% The set
-% \begin{align*}
-%     \Damage^*
-% \end{align*}
-% consists of all points $x$ %that belong to a rift or
-% that have the property that
-% there is no admissible configuration
-% of $M$ of size $\B^*$ containing it.%, or it belongs to a rift.
-
-% %   Then, a cell of $\Phi^*(\eta)$ is \df{bad}
-% %   if
-% %   it does not belong to
-% %   \begin{equation}\label{eq:damage-scaleup}
-% %   \begin{aligned}
-% %   \Damage^{*} = \{ (x,t) \; :& \; \eta^k(t)
-% %         \txt{ is not an admissible configuration of }
-% %           M \\
-% %           & \txt{ on } [x- Q \B, x + Q \B)\}% \\
-% %%            & \txt{ or } t\in \Noise \txt{ or } (x,t)\in\Damage^{(k)}\}.
-% %   \end{aligned}
-% %   \end{equation}
-% \end{definition}
-
-% In other words, $\Damage^*$ is obtained
-% from $\Damage$ by removing the $\Damage$ from it.
-
-% We have stated above that in this chapter, we
-% assume that all $\Damage$ is removed, hence we consider
-% only $\Damage^*$, that is, we are looking for
-% intervals with the ruined colony structure, which
-% will need to be \emph{rebuild}.
-
-% Next,  we give a formal definition
-% of intervals that have a ``good'' simulation structure
-% and may not be killed
-% by the rebuild rule.
-% Recall the notion %of history given in Definition~\ref{def:history},
-% of outer cells in Definition~\ref{def:outer-cells}.
-
-% \begin{definition}[Tissue]\label{def:tissue}
-%     Consider a configuration $\xi$ on a damage-free
-%     interval $I$.
-
-%   \begin{enumerate}
-
-%     \item Let $\xi(I)$ be pre-annotated configuration
-%     on $I$, where $|I|\geq Q\B$. %(1 + 2\cB)
-%     Suppose that
-%     $\xi.\Sweep = \TransferSw(1)$ (resp., $\xi.\Sweep = \TransferSw(-1)$)
-%     and $\xi.\Addr \geq (Q -\Z)\B$ (resp., $\xi.\Addr \leq \Z$).
-
-%     Then, $\xi(I)$ is
-%     \df{right transferring arm} (resp., \df{left transferring arm})
-%     if $I$ contains the base colony.
-
-%     %If $\xi$ is not pre-annotated on an extension
-% %    $I$ that contains
-% %    the base colony, the neighbor colony and the
-% %    gap or a bridge in between them, then $\xi(I)$ is \df{exposed}.
-
-% %    \item Consider the history $\eta$ on an space time rectangle
-% %    $A \times \tau$, $|A|\leq 6Q\B$ and $|\tau| \leq U$.
-% %
-% %    Consider interval $I\subset A$ of size $\leq (3Q-1+2\E)\B$ and
-% %    the pair $(\eta, t')$,
-% %    such that $\eta(t').\Addr \geq Q-1$ and
-% %    $\eta(t').\Sweep = \TransferSw$.
-% %
-% %    If for any $t\in \tau$, $0\leq t' - t \leq Q$,
-% %    such that $0\leq \eta(t).\Addr \leq Q -1$ and
-% %    $\eta(t).\Sweep = \TransferSw(1)$,
-% %    $\eta(t)$ is annotated on the base colony
-% %    contained in $I$, then
-% %    local configuration
-% %    $\eta(t')(I)$ is a \df{right transferring arm}.
-% %    If $\eta(t')$ is not annotated on $I$,
-% %    then the arm is \df{exposed}.
-% %
-% %    The \df{left transferring arm} is defined similarly.
-% %    %\item
-% %%        Consider
-% %%        configuration $\xi$,
-% %%        such that $\xi.\Addr \geq Q-1$ and
-% %%        $\xi.\Sweep \leq \TransferStart$.
-% %%        If $\xi$ is annotated
-% %%        on interval $I$ containing only one colony,
-% %%        then $(I, \xi)$ is a \df{small workspace}.
-
-%     \item
-%         Consider interval $I$ such that
-%         $(2Q -1)\B\leq |I| \leq (3Q-1)\B$.
-%         Configuration $\xi(I)$
-%         such that
-%         $\TransferSw(1)<\xi.\Sweep \leq \Last(1)$, and
-%         is pre-annotated on $I$ is a
-%         \df{full workspace}.
-
-%         If $I$ is an interval of size $Q\B$,
-%         then
-%         configuration $\xi(I)$
-%         such that
-%         $1 \leq \xi.\Sweep \leq \TransferSw(1)$, and
-%         is pre-annotated on $I$ is a
-%         \df{small workspace}.
-
-%     \item Let $I$ be an interval of size $Q\B$.
-%         Then,
-%         configuration $\xi(I)$ that is pre-annotated on $I$,
-%         where $I$ contains left (resp., right) outer
-%         cells,
-%         is a \df{left outer colony} (resp., \df{right outer colony}).
-
-%     \end{enumerate}
-
-%     $I$ is a \df{tissue} if it is of one of the types
-%     listed above.
-
-% \end{definition}
-
-
-% %\subsection{How cells are created}\label{sec:creation}
-% %
-% %When describing the program of $M$, we have seen
-% %that the head can extend over a vacant area during
-% %the transferring sweep.
-% %On the simulated level, this is a \df{birth} of an \df{extended}
-% %cell, \ie it is ``delivered'' by its neighboring cell, much
-% %similar to how cells replicate in nature.
-% %%Our rebuilding procedure will not do this: it will only
-% %%``renew'' the structure such that the simulation can
-% %%do it itself.
-% %
-% %What if a burst puts the head into an empty area, or ---as
-% %we will see here below--- we kill an interval of size $\geq 2Q\B$?
-% %For this, our rebuilding procedure will create an
-% %\df{emerging colony}, and then set the mode to normal.
-% %At this point, the simulation starts from this specific
-% %base colony, that will try to grow and connect to the other
-% %colonies.
-% %What do such colonies simulate?
-% %We answer to this question in the next definition.
-% %
-% %\begin{definition}[Emerging cells]\label{def:generic}
-% %  %  A stem cell whose $\Info = 1$, $\cState=1$, and
-% %%    $\cDrift = 1$ is a \df{right generic cell}.
-% %%
-% %%    A stem cell whose $\Info = 0$, $\cState=0$, and
-% %%    $\cDrift = -1$ is a \df{left generic cell}.
-% %
-% %
-% %    A codeword $1^Q$ %(resp., $0^Q$)
-% %    is called
-% %    the \df{emerging state}.% (resp., \df{left emerging state}).
-% %
-% %%    A colony $C$ of stem cells, whose $\Info$ %and $\State$
-% %%    track stores the right generic state all over, and whose
-% %%    $\cDrift = 1$
-% %%    is a \df{right generic colony}.
-% %%    A cell that is simulated by the colony $C$ is a \df{right generic cell},
-% %%    and its $\cDir$ is 1.
-% %%
-% %%    We define the notion of a \df{left generic colony}
-% %%    and of a \df{left generic cell}
-% %%    similarly.
-% %%
-% %%    A codeword $\dot{1}^Q$, where $\dot{1}$ is a distinguished
-% %%     state of $\Sigma$, is called
-% %%    the \df{emerging state}.
-% %
-% %
-% %    A colony $C_E$ of stem cells whose
-% %    $\Info$ %and
-% %    %$\State$
-% %    track stores the emerging state% (resp., right emerging state),
-% %    is an \df{emerging colony}, and
-% %    it simulates an \df{emerging cell}: % whose $\cDir$ is $-1$ (resp., $1$).
-% %    whenever the head steps on such cell, alarm is called.
-% %    Further, a colony whose $\State$ track stores the emerging
-% %    state simulates calling of alarm.
-% %
-% %\end{definition}
-
-
-%  %We assume that our program calls alarm
-%  %whenever the head is over an emerging cell.
-
-
-
-
-% \subsection{The rebuild procedure}\label{sec:healing}
-
-
-%     Here are the details of the rebuild procedure.
-%     %Similarly to the healing procedure,
-% %    it has several stages, and makes
-% %    use of several rules.
-% %
-% %    The procedure runs in many rounds, and on each round it expands
-% %    its range at most threefold of the previous range.
-% %    It makes use of the
-% %    rule $\Calc $ from the Patching lemma~\ref{lem:patching},
-% %    that will run in small intervals of size $2\E\B$.
-% %    Then,  using the correction data that it outputs, it will
-% %    determine the boundaries of the candidate tissue, the front, identify
-% %    if these are present on the tape, and so on.
-% %    Based on the data gathered,
-% %    it makes a decision on further actions.
-% %    The further actions may be: to kill a part or all
-% %    of the interval that is spanned, %to build a bridge between
-% %    %two colonies,
-% %    to build an emerging colony, to do admissible repairs
-% %    and switch to  normal, or
-% %    to go to the ``next round''.
-% %    In the latter case, a new round
-% %    of the procedure starts: the interval grows (at most
-% %    threefold), and
-% %    we repeat the same.
-
-%     To maintain consistency and detect eventual
-%     problems early, we use zigging in the same
-%     way as we did in the normal mode.
-%     In case that any of the consistency checks
-%     that we will spell out below fails,
-%     alarm is called.
-
-
-
-%     The blueprint of the rebuild rule is given in Rule~\ref{alg:rebuild}.
-
-
-% \begin{algorule}[h!] \caption{{\bf Rebuild rule}\label{alg:rebuild}}
-%   \If{$\Mode=\Rebuilding$}{
-%    \lIf{$\Arb.\Sweep = 1$}{$\Bootstrap$\;}
-
-%         $\Assay$\;
-%         $\Exec$\;
-%   }
-% \end{algorule}
-
-% The details of each of the rules used in the rebuild
-% procedure are as follows.
-% %Recall that we assumed that no bursts occur
-% %and that no $\Damage$ exists in a large enough interval.
-
-
-% \begin{flushdescription}
-% \item [Rule $\GiveUp$]
-%  This rule is called by the healing procedure when it fails.
-%  Similar to the goal of alarm, its goal is to initialize
-%  the rebuilding procedure.
-
-% \begin{algorule}[h!] \caption{{\bf Rule $\GiveUp$}\label{alg:giveup}}
-%     $\Arb.\Addr \gets 0$\;
-%     $\Arb.\Sweep \gets 1$\;
-%     Initialize the auxiliary fields to their initial values\;
-%     $\Mode \gets \Rebuilding$\;
-% \end{algorule}
-
-
-
-% \item [Proper bootstrapping]
-% %\Inote{I'm still thinking if the repair of the
-% %rebuild's structure is worth it.
-% %At this moment you can just ignore that part, but remember
-% %that the rebuild procedure will always check if it
-% %was initialized properly by the healing procedure}
-
-%     In this stage, the machine checks two things: (1)
-%     that the healing that called $\GiveUp$ has indeed
-%     failed, and hence, has properly marked the healing
-%     interval with failing marks; and
-%     (2) provided that the previous condition is satisfied,
-%     it checks if the healing interval contains
-%     cells with marks and the structure of a rebuild procedure
-%     that
-%     may have been interrupted for any of the possible reasons.
-%     In the latter case, under certain conditions,
-%     it will restore the structure of the previous
-%     rebuild procedure and the machine will continue
-%     it seamlessly.\footnote{We point out herewith that the second
-%     task is not required and may add some extra complication
-%     while spelling out the rule.
-%     However, we will see later that besides some performance
-%     benefits, it will facilitate somewhat simpler proofs.}
-%     This is done by the rule $\RebRestore$ whose details are
-%     given in Subsection~\ref{subsec:RebRestore}.
-
-%     The rebuild procedure starts at the cell $x_0$ which
-%     is the center of a healing interval over which
-%     the healing procedure has failed.
-%     Therefore, all the cells
-%     of this interval must
-%     be marked properly with marks denoting a failing
-%     healing, that is,
-%     all but at most $3\beta$ cells must have $\cHeal.\Core = \failed$.
-%     If this is not the case, $\Alarm$ is called at $x_0$.
-
-%     Initially, $\Arb.\Sweep =1$ and $\Arb.\Addr = 0$.
-
-%     The $\Arb.\Addr$ values are set based on the values of
-%     $\Heal.\Addr$ left by the healing procedure.
-%     If we determine that the rebuilding is not initialized
-%     properly, then we call alarm at $x_0$.
-
-%     During this stage, we only rely on the $\Heal$ structure:
-%     we do not update $\cArb.\Addr$ and $\cArb.\Sweep$ fields
-%     yet.
-
-%     The bootstrapping stage has two possible outcomes:
-%     \begin{bullets}
-%       \item continue with the rebuild procedure that was running before; or
-%       \item move on with the rebuild procedure, by calling the rule $\InitCover$,
-%       that starts widening the initial healing interval.
-%     \end{bullets}
-
-
-% \item [Initial cover formation: rule $\InitCover$]
-%     Similar to the healing procedure, the rebuild procedure
-%     opens an interval that we call  the \df{rebuilding cover}.
-%     The rebuild cover starts by expanding the healing interval.
-
-%      At each step we write $\Arb.\Addr$ and $\Arb.\Sweep$
-%      on their corresponding fields on the tape.
-%      This rule uses zigging with the maximum depth
-%      $\Z$.
-
-%      During this phase, we do look for the following
-%      consistency in the structure of rebuild.
-%      \begin{quote}
-%          %\item
-%              While the head is enlarging the rebuilding cover,
-%              we do not check if $\cArb.\Addr$ and $\cArb.\Sweep$
-%              match their counterparts on the head.
-%              In all other times, we do.
-% %         \item The current cell should not be an emerging one.
-%      \end{quote}
-
-%      If any violation of consistency conditions occurs
-%      then $\Alarm$ is called there.
-
-%      The initial opening of the rebuilding cover is done as follows.
-%      Suppose that we are at a position $x_0$.
-%      The head moves left for $3\E$ cells.
-%      At each step,
-%      it writes $\cArb.\Sweep$ and $\cArb.\Addr$ on
-%      the tape.
-%      We set $\cArb.\Core\gets 0$.
-%      %As the positions  outside of $[x_0-\E\B, x_0 + \E\B)$
-%      %may be vacant,
-%      %While moving over $x_0 - [3\E\B, \E\B)$ for the first time
-%      %we use the $\Purge$ rule.
-% %
-%      While sweeping over $x_0 - [\E\B, 0)$, we expect to
-%      see appropriate $\cHeal.\Addr$ and $\cHeal.\Core$ values.
-
-%      Then, the head returns, updates $\Arb.\Sweep$ and does the same
-%      on the other direction.
-%      When passing over the cells between the left end and
-%      $x_0$, it expects to see corresponding $\cArb.\Addr$
-%      and $\cArb.\Sweep$
-%      on each cell.
-
-% \item [Structural check] Once the rebuild cover is opened,
-%      until the end of the procedure, we will
-%      check if
-%      every cell we pass has corresponding
-%      $\cArb.\Sweep$ and $\cArb.\Addr$, and that no
-%      cell is emerging one.
-
-% \item [Assay stage] During this stage,
-%     we will gather data from the rebuilding cover,
-%     and then come to some
-%     decisions, which will be stored on the tape using
-%     a simple repetition code all over the rebuild cover.
-%     The structure of this rule is given in Rule~\ref{alg:Assay}.
-
-
-% \begin{algorule}[h!] \caption{{\bf Assay rule}\label{alg:Assay}}
-%   \For{$j=1, \dots, 3$}{
-%         $\Gather$\;
-%         $\Mediate$\;
-%         Store the decisions in $\cHold[j].\Decision$\;
-%   }
-% \end{algorule}
-
-
-
-%     %Then, we will repeat this again, and check if the decisions match those
-% %    of the first repetition.
-% %    If not, we call $\Alarm$.
-% %    Only after this is completed, we will execute the decisions in
-% %    the execution stage.
-%     The details are as follows.
-
-% \begin{flushdescription}
-% \item [Data gathering]
-
-%         Let $$l, r$$
-%         denote $\cArb.\Addr$ of the left and
-%         the right endpoint of the rebuild cover, respectively.
-
-%         Starting from $x_0$, move right
-%         and while over $x_0 + 2/3 r - \E\B$ %+ [-\E\B, \E\B)$
-%         run $\Purge(1,2\E)$.
-%         Starting from  the next left sweep, in the next
-%         $\SCalc$ sweeps,
-%         run $\Calc$ over
-%         $x_0 +2/3 r + [-\E\B, \E\B)$,
-%         where $\SCalc$ is a number of sweeps over
-%         the interval
-%         needed by the $\Calc$ rule to complete, and is
-%         defined in~\eqref{eq:scalc}.
-%         %, and
-% %        $\Purge(-1, 2\E)$ starting from
-% %        $x_0 - 2/3r + \E\B$.
-% %        On the next right sweep, run $\Calc$ over
-
-%         If it fails, do the same on an interval
-%         that starts from a position $x_0 + 8/9r$.
-%         If this one fails as well, then we fail in obtaining
-%         any data on this side of the rebuild cover.
-
-%         Then, we repeat the same on the left side.
-
-
-% %        If the rule fails, then continue with the other $2\E$ cells,
-% %        until the end of the interval.
-% %        Then, we repeat the same on the other side.
-
-%         Recall from Definition~\ref{def:correction-data}
-%         that the output of $\Calc$ is
-%         aggregated in a tuple $\Delta$.
-
-%         If $\Calc$ failed on side $j$, ($j\in\set{\pm 1}$),
-%         then we set $\Delta_j$
-%         to $\failed$.
-%         The values of $\Delta_j$ are stored %on the tape in a specific
-%         %track and
-%         in a specific auxiliary field of the state.
-% %
-% %        Zigging makes sure that this information is spread consistently all
-% %        over the rebuilding cover.
-
-%         Using the correction data from $\Calc$,
-%         in the next four sweeps, we can
-%         determine if a colony has more than 3 islands or
-%         more than one pair of non-adjacent cells.
-%         We do this using the rule $\SLine$ given in
-%         Subsection~\ref{subsec:sline}.
-
-
-%          If we determine that more than 1 cuts or more
-%          than 3 islands exist
-%          inside a colony, that is, we determine
-%          that the admissibility is breached,
-%          then that part is considered as \emph{rifted},
-%          %that is, %it belongs to $\Damage^*$,
-%          and it will be killed.
-%          Since our simulation defines
-%          only four kinds of intervals, namely
-%          base colony, bridge, neighbor colony, and
-%          outer colony,
-%          and since only a constant number of them can
-%          fit inside a rebuild cover,
-%          we can easily map them inside $[l,r]$ and
-%          record if they are rifted or not, and so on.
-
-%          During the rebuilding process, we may need to ``mediate''
-%          between two tissues.
-%          Say, we can have two workspaces one next to the other.
-%          Due to the geometry of the tape we can distinguish these
-%          entities as the left and the right side.
-
-%          Besides $\Delta_j$, the data that we keep %both in the tape and the head
-%          for each side are:
-%          \begin{enumerate}
-
-%            \item $\type\in \set{\Outer, \SmallWs, \FullWs, \TrArm}$ to
-%                  denote if the region  belongs to an outer colony,
-%                  small workspace,  full workspace, or a
-%                  transferring arm;
-%            %\item $\delta$ carrying the drift of the candidate tissue;
-% %           \item $\sigma$ carrying the majority of sweep fields
-% %                          of the candidate tissue;
-%            %\item the position $f^d$, $d\in \set{\pm 1}$ of the front  given
-% %                 by its $\cArb.\Addr$;
-%            \item $\Status \in \set{\OK, \Damaged, \NeedMoreToDecide}$ that
-%                 denotes if the region is a tissue, is rifted, %or an arm, if it is damaged,
-%                 or if it needs to perform computations on a larger
-%                 rebuilding cover in order to decide;
-
-%            \item boundaries $e_1$ and $e_2$ (relative to $\Arb.\Addr$) in
-%            a corresponding healthy configuration (for example, if
-%            from $\Delta_j$ we determine that the tissue
-%            is a right outer colony and is on the right side, $e_1$
-%            is the corresponding $\Arb.\Addr$
-%            of the cell whose $\cAddr$ is $0$, and $e_2$
-%            is the corresponding $\Arb.\Addr$ of the cell
-%            whose $\cAddr$ is $Q-1$.
-
-% %                 If the status is $\NeedMoreToDecide$, then
-% %                 after the cover gets enlarged ,
-% %                 we do not run $\Calc$ again, but just verify
-% %                 if the region is a tissue.
-%            \end{enumerate}
-
-
-%  \item [Mediation]
-
-%  Based on the gathered data,
-%  the machine makes certain decisions on what to do
-%  with the cells in the rebuild cover.
-
-%  It stores the results in a
-%  $\cHold[j].\Decision$
-%  at each cell of the rebuild cover.
-
-
-%  A \df{decision} is a non-empty sequence of strings
-%  representing the following
-%  operations.
-%  \begin{enumerate}
-%    \item $\CreateCol(a, b, c)$
-%          where $a$ denotes
-%          the position of the base of
-%          the new colony, and $b$ and $c$ are the
-%          boundaries
-%          of the interval containing it.
-
-%          All the positions are given
-%          relative to $\Arb.\Addr$.
-
-%    \item $\Renew(a,b,c)$,  where $a$ and $b$
-%         determine the interval
-%         whose cells will be killed and replaced
-%         with stem cells
-%         adjacent to  $c$.
-
-
-%   \item $\Fillin$ is the operation of performing admissible
-%          changes in an interval.
-
-%   \item $\CleanUp$, denotes the operation of the mark removal
-%         from the cells under the rebuilding cover.
-
-%    \item $\MoveOn$, denotes that we need to enlarge the interval
-%    and go to the next round.
-
-% \end{enumerate}
-
-% %    This rule also makes sure that
-% %    once the rebuilding finishes, $2\E\B_i$ cells next to
-% %    the workspace of the resulting admissible configuration
-% %    are damage-free.
-
-
-%    The ways how these decisions are made, are specified later
-%    in Subsection~\ref{sec:mediation}.
-% \end{flushdescription}
-
-% \item[Execution stage]
-%   During the execution stage,
-%   we first update $\cArb.\Decision$ to the
-%   majority of $\cHold[1, \dots, 3].\Decision$ in
-%   each cell of the rebuild cover, and
-%   we repeat this three times.
-
-
-%   The decisions are executed in
-%   the given order.
-%   Say, if $\Arb.\Decision = [\Renew(a,b,c), \CleanUp]$,
-%   first we execute $\Renew$ and then the $\CleanUp$.
-%   Needless to say, a decision that is not $\CreateCol$
-%   always ends with either
-%   $\CleanUp$ or $\MoveOn$.
-%   The way how the decisions are made guarantee that
-%   the procedure does not run forever.
-
-%   Here are the details how each of them is executed.
-%  \begin{enumerate}
-
-%    \item With the execution of $\CreateCol(a, b, d)$%,b,-1)$
-%    we will
-%    create a new colony whose base is $a$, that
-%    belongs to wider interval $[b,d]$.
-%    Parameters $a, b, d$ are $\Arb.\Addr$.
-
-
-%     \begin{itemize}
-
-%         \item
-%            Initially, we set $\Addr \gets 0$.
-
-%         \item
-%              If $\G=\true$, \ie the current cell
-%              is not adjacent,
-%              then, kill it and return to the previous cell, and
-%              there switch the direction.
-
-%              If there is no cell at the current position (since we just
-%              killed it), then
-%              create an adjacent one with $\cKind \gets \Stem$.
-
-%              If there is a cell at the current position,
-%              then set $\cKind \gets \Stem$.
-
-%             \begin{enumerate}
-
-%             \item Suppose that the head is to the left of $a$.
-
-%                 We set $\cInfo$, $\cState$, and $\cDrift$ to 1.
-%                 Whenever we move to the right from a cell,
-%                 we remove all the rebuild marks from it.
-
-
-%             \item Suppose that the head is in $[a, a + Q\B]$.
-%              We %set  $\Info \gets \dot{1}$,
-%              %$\cState \gets 0$,
-%              %and
-%              write appropriate values in $\cSweep$ and $\cAddr$ fields.
-%              Then update $\Addr$ and $\cArb$ fields
-%              and move right to the next cell.
-
-%              \item Suppose that we are to the right of
-%              $a+Q\B$.
-%              Write $\cDrift \gets -1$,  %, and set
-% %             $\cInfo$ and $\cState$ to 0.
-%              and appropriate $\cArb$ marks.
-%            \end{enumerate}
-
-% %         \item Once the colony is created, fill in $[b,a)$
-% %         with stem cells whose drift is 1, $\cInfo =1$, and $\cState=1$;
-% %         and fill
-% %        $[a+Q\B, c)$ with stem cells whose drift is  -1,
-% %        $\cInfo =0$, and $\cState=0$.
-
-%         \item Suppose that we have reached $d$.
-%         Then, we turn to the left, and we remove the marks
-%         as we move towards the base of the emerging colony.
-%         Once we are there, we set
-%         \begin{align*}
-%            &\Mode \gets \Normal, \\
-%            &\Sweep \gets 1, \txt{ and} \\
-%            &\Addr \gets 0.
-%         \end{align*}
-
-
-
-%         \item During zigging, besides the consistency
-%               of the rebuilding structure and matching
-%               of $\Arb.\Decision$ and $\cArb.\Decision$ when
-%               in a marked area,
-%               we verify if $\Addr$ and $\cAddr$ match
-%               whenever the head is over the emerging colony,
-%               if all the cells in $[b,d]$ are adjacent to their
-%               neighbors,
-%               and if each cell of it is stem with
-%               appropriate $\cDrift$ values. %, $\cInfo$,
-% %              and $\cState$.
-
-
-%         \end{itemize}
-
-
-
-
-
-
-%    \item Suppose that $a<b<d$ (resp., $d<a<b$).
-%          To perform $\Renew(a,b,d)$,
-%          we start from $d$.
-
-
-%          %We first call $\Sanitize(a - Q\B, \blank)$.
-% %         Then, we proceed as follows.
-
-%     \begin{enumerate}
-
-%     \item \label{i:renew:move}
-%           Let $h$ denote the position of the
-%          head.
-%          If $h>a$ (resp., $h<b$),
-%          move one step to the left (resp., right).
-
-%     \item If the cell is not adjacent to the previous cell,
-%          then kill it, return to the previous cell and
-%          create a new cell with $\cKind = \Stem$, write
-%          $\cArb$ fields appropriately, set $\cDrift$ to point
-%          to $d$.
-
-%          If the cell is adjacent, then make the cell
-%          be $\Stem$, set $\cDrift$ to point to $d$.
-% %         set $\cInfo$ and $\cState$ to $0$ (resp., 1)
-% %         if $\cDrift = -1$ (resp., $\cDrift = 1$),
-% %         and move.
-
-%    % \item If $b-a\geq Q\B$, then
-% %         Set $\cInfo$ to $1$. %(resp., 1).
-% %         if $\cDrift = -1$ (resp., $\cDrift = 1$),
-%  %        and step further away from $d$.
-
-%     \item Go to the step~\eqref{i:renew:move}.
-%     \end{enumerate}
-
-
-%          During zigging, besides correct values in
-%          $\cArb$ and $\Arb$,
-%          we check for adjacency of the cells
-%          between $a$ and $b$
-%          and that each of them has $\cKind = \Stem$.
-%          All stem cells must have $\cDrift$ that point
-%          towards $d$. %, and
-% %         $\cInfo$ are $1$. %(resp., 1).
-
-
-%     \item During the execution of $\Fillin$,
-%           the head sweeps from the left to the right, and fills
-%           the correction data in $\cCore$ by first setting the values in
-%           the $\cHold[j]$, for $j=1, \dots, 3$, and
-%           then in the following three sweeps,
-%           it updates the values by computing the field
-%           majority of values stored in $\cHold$ fields of
-%           each cell.
-
-%    \item  The execution of $\CleanUp(f,s,a,k, d)$, where
-%            $f$ is the position where the head will be left,
-%            and $(s,a,k, d)$ are the values
-%            to be stored in $\Sweep$, $\Addr$, $\Kind$, and $\Drift$ fields
-%            of the head before the mode is switched to normal,
-%            is done as follows.
-
-%          Suppose that the $\dir(s) = 1$ (resp., $\dir(s) = -1$).
-%          We start from the left (resp., right)  end of the interval,
-%          return to the front %and if the decision contained
-% %         $\Fillin$, set $\cCore$
-%          and
-%          remove the marks (including the healing marks) up to there.
-%          Then, move to the other end, and from there, while moving
-%          in the direction that is the opposite of $\dir(s)$, do the same.
-%          Once we are at the front,
-%          set
-%          \begin{align*}
-%            (\Sweep, \Addr, \Kind) \gets (s, a, k),\\
-%            \Mode \gets \Normal.
-%          \end{align*}
-
-
-%    \item $\MoveOn$ will expand the rebuilding cover as follows.
-
-
-%     \begin{enumerate}
-%     \item
-%         Suppose that on one of the sides,  we have a tissue whose status is
-%         $\NeedMoreToDecide$.
-%         Then,
-%         we will expand in that direction for a needed amount of
-%         cells until the determined boundary is reached.
-
-%         Similarly for the other direction.
-
-%    \item Otherwise,
-%        the new boundaries are set as follows:
-%        \begin{align*}
-%                 l \gets & l - |l-r| \\
-%                 r \gets & r + |l-r|,
-%        \end{align*}
-%       where $l$ and $r$ are $\Arb.\Addr$ values of the
-%       left and right boundary of the rebuild cover, respectively.
-
-
-%     \end{enumerate}
-
-%     The expansion starts from the center, and then it moves to
-%     the right first, and then to the left.
-%     If the head steps on vacant position, then
-%     a cell is created adjacent to the previous.
-%     While expanding, at each cell, we spread $\cArb.\Data$ and
-%     $\cArb.\Decision$, together with $\cArb.\Sweep$ and $\cArb.\Addr$.
-%     Then, we repeat the same on the other direction.
-
-%     Then, we continue from
-%     the structure check stage.
-
-%  \end{enumerate}
-
-% \end{flushdescription}
-
-
-
-% \subsection{Mediation}\label{sec:mediation}
-
-%         We say that
-%         an interval $A$ intersects the interval $B$
-%         \df{significantly}, if the size of the intersection is
-%          $>\Z\B$.
-%         From now on throughout this section,
-%         whenever we say intersect, we mean that the
-%         intersection is significant unless otherwise specified.
-
-%         %A \df{right tissue} is either a left transferring arm
-% %        or a right outer colony.
-% %        Similarly, a \df{left tissue} is either a right transferring arm
-% %        or a left outer colony.
-% %
-% %        Workspaces can be left and right tissues simultaneously.
-% %
-% %
-
-
-
-%  \begin{enumerate}
-
-
-%  \item (Two full workspaces)
-%         Suppose that the rebuilding cover intersects two workspaces,
-%         %or a workspace and a transferring arm to it,
-%         at the time when the size of the cover is at most $2Q\B$.
-
-%         Expand the cover until
-%         until both tissues are fully within the rebuild cover.
-
-%         We kill both tissues.
-
-%         Then, we create a colony that is centered
-%         at the center of the area that is killed.
-
-%   \item (Two transferring arms)% pointing to each other]
-%         Suppose that the rebuilding cover intersects
-%         a transferring arm on the left and a transferring
-%         arm on the right, when
-%         the size of the cover is at most $2Q\B$.
-
-%         We enlarge the cover until the base colonies
-%         of both arms are fully contained in the cover, then we
-%         kill them together with the space in between.
-
-%         Then, if this area is $\geq 3Q\B$, we create
-%         a colony that is at least $1.5Q\B$ apart from
-%         the right endpoint of the cover.
-
-%         Otherwise, the new colony is centered at the center of
-%         the rebuild cover.
-
-% \item (A transferring arm and a workspace )
-%         Suppose that the rebuilding cover intersects
-%         a workspace in one side and a transferring arm on the other,
-%         when the size of the cover is at most $2Q\B$.
-
-%         We enlarge the cover until the workspace is
-%         included completely and until the base colony
-%         of the arm is included completely, and
-%         kill them both.
-
-%         Then, we create a new colony whose body is
-%         $1.5Q\B$ apart from the right end of the cover.
-
-
-
-
-%     \item (Inside a workspace)
-%         Suppose that the size of the cover is $\leq 2\PenetrationLen\B$.
-
-%         If we determine that the rebuild cover is inside a workspace,
-%         then spread the cover until  the whole workspace
-%         is contained fully in the cover.
-%         Then, fill in the islands, remove the marks,  and leave the head
-%         at the position of the front.
-
-%     \item \label{i:mediation:transfer-attack}
-%     (Transferring-arm attacking) %or a small workspace]
-%        % Suppose that the size of the cover is $\leq 2\PenetrationLen\B$.
-
-%         Suppose that
-%         on the left (resp., right) side of the cover
-%          we have
-%         a right (resp., left) transferring arm such
-%         that $\cKind$ of the front is
-%         $\Neighbor$
-%         and its
-%         address ranges in $[0, Q - \Z)\cup [Q,2Q-1-\Z)$
-%         (resp., $(\Z, Q-1] \cup (-Q+\Z,-1]$).
-%         or $\Bridge$ and its address
-%         ranges in $[Q, 2Q - 2)$
-%         (resp., $(-Q, -1]$).
-
-%         Suppose further that on the right (resp., left) side of the
-%         rebuild cover there is no
-%         workspace or transferring arm of any direction.
-% %        (resp., right-transferring) arm.
-
-%         Then we expand the cover until %the right (resp., the left)
-% %        endpoint of the base colony of the transferring arm
-% %        is at least $\PenetrationLen\B$
-%         the entire arm is
-%         inside the rebuild cover, and on the right (resp., left)
-%         side we expand until the cover either
-%         includes  a right-outer (resp., left-outer)
-%         colony that is $<Q\B$ apart from the base colony
-%         of the transferring arm,
-%         or it covers an interval $c + [0,(Q + \PenetrationLen)B)$
-%         (resp., $c  -((Q + \PenetrationLen)B, 0)$), where
-%         $c$ is the rightmost (resp., leftmost) cell of the base
-%         colony contained in the transferring arm.
-
-%         Then we renew the interval to the right (resp., left)
-%         of the base colony that does not belong to an eventual
-%         right-outer colony (resp., left-outer colony)
-%          on the right part (resp., left part) of the cover.
-%         We leave the head at the rightmost (resp., leftmost)
-%         cell of the base colony.
-
-
-
-%      \item
-%         \label{i:mediation:transfer-completion}
-%         (Rifted region between the base and the neighbor colony)
-
-%         Suppose that the size of the cover is $\geq 3Q\B$.
-
-%         Suppose that on the left (resp., right) side of the cover
-%          we have
-%         a right-transferring arm (resp., left-transferring arm),
-%         such that $\cKind$ of the front is $\Bridge$
-%         and its addresses range in $[Q,2Q-1-\Z)$ (resp., $(-Q+\Z,-1]$).
-% %        \Inote{This is a kind of a transferring arm that does not
-% %        have where to complete. So we ``cut it'', empty the region,
-% %        and let the simulation build a new colony}
-
-
-%         Suppose further that on the right (resp., left) side of the
-%         rebuild cover there is no
-%         workspace or transferring arm of any direction.
-%         %(resp., right-transferring) arm.
-
-%         We renew the interval to the right (resp., left) of the front
-%         that does not belong to an eventual right-outer colony on the right
-%         half
-%         (resp., left-outer colony on the left half).
-% %        and fill it will stem cells whose drift points
-%         The head is left to the front.%---where the head is left after the cleanup.
-
-
-% \item\label{i:mediation:transfer-slow-clearing}
-% (Slow clearing)
-%         Suppose that the size  of the cover is $\leq 1.5Q\B$.%4\PenetrationLen\B$.
-
-%         If we determine that the rebuild cover intersects a workspace (possibly
-%         small) on the left (resp., right) side,
-%         but its front is not inside the cover,
-%         then we move on: we set the rebuilding data appropriately, and
-%         in particular $\Status \gets \NeedMoreToDecide$, and let
-%         the rebuild cover grow.
-
-%         Suppose that the entire workspace and the front are
-%         inside the rebuild cover and
-%         at least $Q\B/2$ of it does not intersect
-%         the workspace.
-%         Suppose further that if the workspace is small, then the rebuild
-%         cover contains the range of the transferring sweep.
-%         If we determine that the right (resp., the left) side
-%         of the cover does not intersect a workspace
-%         or a transferring arm (of any direction),
-%         but eventually covers a right-outer colony (resp., left-outer colony) ,
-%         then we decide to renew the interval under the rebuild cover
-%         that does not belong to the two tissues,
-% %        by creating stem cells whose $\cDrift$ points to the
-% %        workspace, with
-%         and write
-%         appropriate values of
-%         $\cVisSw$, $\cVisAddr$, and $\cVisDrift$ in the renewed interval.
-
-%         Then, we commit the changes,
-%         remove the marks, place the head
-%         at the front, and switch the mode to normal.
-
-
-
-% \item (Failure)
-%         Suppose that  none of the previous applies.
-
-%         If the radius of the cover is at least $3Q \B$,
-%         and no tissue is found,
-%         then create a colony such that it is
-%         $1.5Q\B$ from the right end.%,  surrounded
-% %        by stem cells pointing to the base colony.
-
-%         Otherwise, if the status of a tissue is $\NeedMoreToDecide$,
-%         then we will expand the cover in that side until we
-%         include the tissue completely.
-%         Similarly for the other side.
-
-%         Otherwise, %if the radius is less than $(Q + 8\E)\B$
-% %        and not tiss
-%         we move on and
-%         the rebuilding cover will get tripled.
-
-%  \end{enumerate}
-
-
-% \subsection{Rule $\SLine$}\label{subsec:sline}
-
-% The $\SLine$ rule is similar to the $\Purge$ rule.
-% Its role is to identify if the number of islands and cuts
-% within a colony whose boundaries are given with
-% two $\Arb.\Addr$ values, exceed the limits determined by
-% the definition of a pre-annotated configuration.
-% Its output can be either $\failed$ or the positions of
-% at most 3 islands, and the $\Arb.\Addr$ of an eventual
-% cut.
-
-
-%             \begin{enumerate}[(1)]
-
-%                 \item
-%                 Let $\kK$ be a counter of cells that are killed,
-%                 $\lK$ be the number of
-%                 $\beta$ long batches where at most $\beta$ cells were
-%                    killed one after another (\ie the number of islands),
-%                    and
-%                 $\lCuts$ the number of cuts.
-
-%                 The maximal values of these counters are
-%                 $3$, $3\beta$, and $2$ respectively.
-%                 They are incremented only if their values
-%                 are less than their maximal.
-
-
-%                 These counters are initialized by the rule that calls
-%                 $\SLine$.
-
-%                 \item Move in direction
-%                      $d \in \set{\pm 1}$.
-
-%                 \item If the head is on a vacant position,
-%                    create a stem cell, set its $\cDrift$ to $-d$,
-%                    store the $\Arb.\Addr$ and $\Arb.\Sweep$ into their
-%                    corresponding fields on this cell, set the $\cArb.\Data$ and
-%                    $\cArb.\Decision$ fields appropriately,
-%                    and move further.
-
-%                 \item
-%                    If a non-adjacent cell or an address
-%                    jump is found at $o_1$, we record that
-%                    and move further.
-
-%                    If no other non-adjacent cell or address jump
-%                    is found within the next $3\beta$
-%                    steps,
-%                    then
-%                    increment $\lCuts$ if it is $\leq 1$.
-
-%                    If another non-adjacent cell or address jump $o_2$
-%                    is found within $3\beta$
-%                    steps, then
-%                    return to $o_1$, and then moving in direction
-%                    $d$ again, kill at most $\beta$ cells between $o_1$ and 						
-%                    $o_2$,
-%                    increment $\lK$ and $\kK$, and then return to $o_1$.
-%                    Then, move on in direction $d$ again.
-
-%                 \end{enumerate}
-
-
-
-
-
-% \subsection{Analysis of the rebuild procedure}
-
-% It is easy to see that the number of steps needed for this
-% rule to complete is
-% \begin{align}\label{eq:K_H}
-%    \K_H  = O(Q).
-% \end{align}
-
-% It follows from the design of the procedure that
-% $\max|\Arb.\Addr| <4Q$.
-% To store $\Arb.\Addr$, $\Arb.\Data$, and $\Arb.\Decision$,
-% we need at $O(\log Q)$ bits of the state.
-% Similarly for their counterparts of the state of cells.
-
-
-% Later, we will make use of the following constant
-% \begin{align}\label{eq:RebSweeps}
-%   \Sreb = \max{\Arb.\Sweep}.
-% \end{align}
-
-
-% %\subsection{Reactive property of programs}
-% %
-% %During the rebuild procedure,
-% %we create an emerging current colony whenever
-% %a large area of cells is killed.
-% %Then, the simulation starts from $\Sweep = 1$.
-% %Further, in case that the neighbor colony is damaged,
-% %but the base colony is not,
-% %during the transition sweep, we may kill the damaged area in the
-% %place of the neighbor cell and eventual bridge, and
-% %fill it with emerging cells.
-% %Then, the simulation continues by transferring the state
-% %from the base colony into this new colony that
-% %has the emerging state encoded in the $\Info$ track.
-% %
-% %On the simulated machine $M^*$, this means that whenever
-% %a new cell is created in the place of damage,
-% %the new cell will have $\dot{1}$ state.
-% %
-% %This distinguished tape symbol is special for that
-% %when the head steps on it,
-% %alarm will be called, regardless of the previous state.
-% %
-% %
-% %\begin{definition}[Reactive property of the program]\label{def:reactive}
-% %    A program has a \df{reactive property} if
-% %    the following two conditions hold.
-% %    \begin{itemize}
-% %      \item Whenever a cell is created in a place that
-% %            was previously occupied
-% %            by $\Bad$ cells, that cell carries
-% %            $\dot{1}$ symbol.
-% %      \item Whenever the head steps on a cell carrying
-% %      $\dot{1}$ symbol, alarm is called.
-% %    \end{itemize}
-% %\end{definition}
-% %
-% %By its design, our program has this property.
-
-
-
-% \subsection{Rule $\RebRestore$}\label{subsec:RebRestore}
-
-% During the bootstrapping stage of the rebuild procedure,
-% we have announced the rule $\RebRestore$ that,
-% under certain conditions,
-% restores the state of the rebuild procedure.
-% We have indicated above, and restate it herewith also
-% that this rule is optional, and its only benefit is
-% that later,  certain proofs become slightly easier.
-% The reader may choose to skip this part
-% during the first reading and return back to
-% it when necessary.
-
-
-% In order to spell out the conditions under which we can
-% restore the state of the rebuild procedure, we need to
-% define what constitutes a ``good'' rebuild structure,
-% similarly to what we have done with the simulation and
-% the healthy configuration.
-
-%  \begin{definition}
-%     A configuration $\xi$ on interval $I$ of size $\geq 0.6\E\B$
-%     is \df{good} if $\xi.\Mode = \Rebuilding$, and the following
-%     conditions hold.
-
-%         \begin{enumerate}
-%           \item $\cArb.\Addr$ grow continuously throughout $I$.
-
-%           \item Values of $\cArb.\Sweep$ on $I$ partition it into
-%           at most two partitions, such that cells
-%           in one partition that are not stem
-%           have $\cArb.\Sweep = a$, and cells of the other one have
-%           $\cArb.\Sweep = b$, such that $|b-a|=1$.
-
-%           The cell with the largest $\cArb.\Sweep$ in direction $\dir(\Sweep)$
-%           is the \df{pivot} of $\xi$.
-
-%           \item All cells that are not stem of each partition have equal
-%            values of $\cArb.\Data$ (resp., $\cArb.\Decision$).
-
-%           \item  If $\Arb.\Sweep = 21$ and
-%           $\Arb.\Addr\in \set{0, \dots, \E}$, then
-%           $\cArb.\Sweep$, $\cArb.\Addr$,  $\cArb.\Data$,
-%           and $\cArb.\Decision$ is $\empty$.
-
-%           If $\Arb.\Sweep = 22$ and
-%           $\Arb.\Addr\in \set{-\E, \dots, -1}$, then
-%           $\cArb.\Sweep$, $\cArb.\Addr$,  $\cArb.\Data$,
-%           and $\cArb.\Decision$ is $\empty$.
-
-%           \item Interval $I$ contains no emerging cells.
-%    \end{enumerate}
-% \end{definition}
-
-% Now we can define what does it mean for a configuration
-% to be \df{restorable}.
-
-% \begin{definition}\label{def:restorable}
-%     A pair $(\xi, \xi', \cI)$,
-%     where $\xi'$ is a good configuration,
-%     and $\cI$ is a set of islands
-%     is \df{restorable} if
-%     the following holds.
-
-% \begin{itemize}
-%     \item $\xi$ contains at most 3 islands on $I$.
-%     \item $\cHeal.\Core$ must be set to
-%     $\failed$ everywhere except possibly in
-%     an interval of $\beta\B$.
-%     \item $\xi'$ can be obtained from $\xi$ by
-%        changing $\cArb.\Addr$, $\cArb.\Sweep$, and $\cArb.\Core$
-%        in at most $\Z$ cells of $I$, and changing
-%        the values of
-%        $\Arb.\Sweep$, $\Arb.\Addr$, and $\Arb.\Core$ fields
-%        of the state.
-% \end{itemize}
-% \end{definition}
-
-
-
-% Now, let us define the rule $\RebRestore$.
-
-%     \begin{enumerate}
-%         \item
-%             For $j=1, \dots, 3$, compute the majority of
-%             $\cArb.\Addr$, $\cArb.\Sweep$,
-%             $\cArb.\Data$, and $\cArb.\Decision$.
-
-%             If the configuration is restorable,
-%             we define the \df{correction data}
-%             $\Delta_H$ consisting
-%             of the position of the pivot,
-%             values of $\cArb.\Addr$, values of $\cArb.\Sweep$
-%             for both partitions (if applicable),
-%             values of $\Arb.\Addr$, $\Arb.\Sweep$
-%             values of $\cArb.\Data$ and $\cArb.\Decision$
-%             tracks for
-%             both partitions.
-
-%             If the configuration is not restorable,
-%             then we set $\Delta_H \gets \emptyset$.
-
-%             For $j=1, \dots 3$,
-%             based on $\Delta_H$, set appropriate values
-%                  on $\cHold[j]$ track on each cell of
-%                  the interval.
-
-%              For $j=1, \dots, 2$, update $\cArb.\Addr$, $\cArb.\Sweep$,
-%              $\cArb.\Data$, and $\cArb.\Decision$ fields
-%              at each cell
-%              by computing
-%              the field majority of  their values stored in $\cHold[1 \dots 3]$.
-
-%         \item
-%             Now we proceed as follows.
-%             \begin{bullets}
-
-%                 \item If the values of $\Delta_H$ are not defined,
-%                 then we go to the center $x_0$, and continue.
-%                 In other words, this is a rebuilding procedure
-%                 that is starting from ``scratch''.
-
-%                 \item Otherwise, if the pivot is not in
-%                       the underlying healing interval,
-%                       we put the head at the end of the
-%                       interval in its direction,
-%                       and call alarm there, after we have
-%                       removed
-%                       all $\cHeal$ marks from the interval.
-
-%                 \item Otherwise, if the pivot is in the healing interval,
-%                    once the healing marks outside of the cover are removed,
-%                   we put the head at the location of the pivot
-%                   and update $\Arb$ fields
-%                   of the state.
-
-%              \end{bullets}
-%     \end{enumerate}
 
+
+
+\section{Resisting Isolated Bursts of Faults}
+\label{sec:1-level-noise}
+
+In order to show what can be achieved by the recovery procedure,
+we extend the notions of annotation and admissibility to histories.
+
+
+
+\subsection{Annotated history}
+
+Recall the definition of history and trajectory in Definitions~\ref{def:history} 
+and~\ref{def:traj}.
+
+Just as the notions of annotation and health for configurations were local to a certain
+interval, the definition of annotation, and so on, for histories 
+will be local for a certain space-time rectangle.
+But just as there, we will not keep mentioning this all over the definition.
+
+Recall the definition of (possibly centrally consistent)
+annotated configuration on an interval \( A \) given
+in Definition~\ref{def:annotated-config}.
+In such a configuration, a cell is free when it does not
+belong to an island or to the distress area.
+We also said that the head is free if the distress area is empty.
+
+\begin{definition}[Annotated history]\label{def:annotated-hist}
+% Let \( \tau = [t, t+k) \), for \( t, k\in\bbZ_{\geq 0} \), \( k>0 \),
+% and let \( A \) be a space interval.
+
+    An \df{annotated history} of
+     \begin{align*}
+        M=(\Gamma,\Sigma,\delta,q_{\start},F,B,\Tu{}),
+     \end{align*}
+    is a sequence of annotated configurations over a certain time interval,
+    if its sequence of underlying configurations is a 
+    (localized) trajectory satisfying some additional requirements given below.
+
+    % Let
+    % \begin{align}\label{eq:cB}
+    %   \cB  %= \frac{6\E}{Q}
+    % \end{align}
+    % denote a constant value that we will
+    % define later that we call the \df{damage attraction range}.
+
+    We require that over the whole time interval, the head stays by at least a
+    distance \( 3\B \) inside from the ends of the space interval considered.
+
+    If the head is in a free cell, in normal mode, then
+    the time (and the configuration) will be called
+    \df{distress-free}.
+    If the annotated configuration at a certain time
+    is centrally consistent, then we call
+    that time \df{centrally consistent}.
+    A time that is not distress-free and was preceded by
+    a distress-free time
+    will be called a \df{distress event}.
+
+    Consider a time interval \( \lint{t_1}{t_1+u} \) starting
+    with a distress event and ending with the head
+    becoming free again.
+    It is called a \df{relief event} of \df{duration} \( u \)
+    if the only possible islands that remains from the distress area
+    are due to some burst
+    that occurred at a time intersecting \( \lint{t_1}{t_1 + u} \).
+    Moreover, if such islands
+    exist, then the sweep direction from before the
+    distress event is preserved, except when the island is
+    outside the extended base colony---then it will be reversed.
+
+    The \df{extent} of a relief event is the maximum size
+    interval covering the distress area during the distress.
+
+    % Recall the definition of the parameter
+    % \( K_\R \) in~\eqref{eq:K_R}.
+    The additional requirements for annotated history are:
+
+    \begin{enumerate}[(a)]
+
+        \item \label{i:annotated-hist.progress}
+            Islands (whose size do not exceed \( \beta\B \))
+            are only created
+            by bursts.
+            The distress area starts out as an island.
+
+       % \item \label{i:annotated-hist.damage-progress}
+       %      Islands  have
+       %      a \df{progress indicator} that is increased
+       %      each time the head steps in it and dwells in it,
+       %      until it becomes damage-free.
+       %      In the latter event, we say that the indicator is
+       %      \df{expired}.
+
+       %      Islands of size \( \leq \beta \),
+       %      may increase in one side
+       %      for at most \( \loc\B \) in one side only.
+
+
+        \item\label{i:annotated-hist.distress}
+            Each distress event is followed by a relief event within at most \( O(\beta^{2}) \) %?
+            steps of duration, and extent \( <4\E\B \).
+
+        \item\label{i:annotated-hist.stain}
+            If a distress-free configuration has
+            \( \Sweep \ge \TransferSw(1) \),
+            then the base colony contains no stains
+            from earlier work periods.
+        \end{enumerate}
+\end{definition}
+
+
+%In this section, we will only consider how machine \( M_1 \)
+%copes with \( (\beta, V) \)-bursts.
+%Once we establish that the simulated history is
+%a trajectory, then we will consider the case
+%on how \( M_i \) recovers from \( (\beta_i, V_i) \)-bursts.
+
+
+%\begin{definition}[The range of a sweep]\label{def:sweep-range}
+%  Consider an annotated history \( \eta \) on some space-time rectangle
+%  \( A \time \tau \).
+%  A \df{range of a sweep} \( s \) in \( \eta \) on \( A\times \tau \)
+%  is the interval
+%  \( [a,b]\subseteq A \) that contains the position of the head
+%  of satisfying healthy  configurations of \( \eta(t) \), (\( t>0 \))
+%  whose \( \Sweep = s \)%,
+%  %the distress area is empty,
+%  and \( t \notin \Noise \).
+%\end{definition}
+%
+%\begin{remark}[On the range of a sweep]
+%   With some abuse of the previous definition, we will
+%   usually use only the term ``a range of a sweep \( s \)''
+%   instead of a ``range of a sweep \( s \) in \( \eta \) on a space-time
+%   rectangle''.
+%
+%   However, there will always be
+%   an underlying history that we are considering, and we
+%   assume that we are referring to that one.
+%   Otherwise, we will specify the underlying annotated
+%   history  explicitly.
+%\end{remark}
+
+
+
+
+
+\subsection{The outline of the chapter}
+
+ In this chapter, we will show how any trajectory \( (\eta, \Noise) \) 
+ of a generalized Turing machine \( M \) 
+ that is annotated on a large interval \( I \), remains annotated
+ as long as no larger bursts than \( \beta\B \) occur and the
+ head does not leave \( I \).
+
+ The main part of the proof is about obtaining a relief
+ after a distress event.
+ Unlike in~\cite{burstyTuring12Conf}, in this work, islands 
+ may have their cell structure damaged.
+ Hence, when the head is in an island for a certain
+ time, we cannot talk immediately about the cells in it
+ and their structure.
+ However, since \( \eta \) is a trajectory,
+ many passes over an island and a certain amount of time
+ that the head spends in it, will guarantee that
+ soon, we will be able to talk in terms of cells of \( M \).
+ This means that the relief consists of two stages: (1)
+ damage-removal, and (2) correcting their structure.
+Note that this division is only possible for an observer.
+There is no ``damage-detector'' in the machine:
+we just rely on the properties of a 
+trajectory introduced in Definition~\ref{def:traj}.
+
+
+\subsection{Escape}
+
+In the elimination of damage, we will rely on the following property of our transition rule.
+
+\begin{lemma}[Damage-free escape]\label{lem:dam-free-esc}
+ There is a constant
+\begin{align}\label{eq:cns.dam-free-esc}
+  \cDamFreeEsc \ge\cDamClearT 
+ \end{align}
+with the following property.
+Suppose that \( I \) is any interval of size \( \le n\B \) for an integer \( n \),
+that contains no damage.
+Then the head spends at most \( \cDamFreeEsc  n^{2} \) noise-free steps inside without leaving it.
+\end{lemma}
+
+We will prove this lemma later, since it relies on a detailed analysis of healing 
+and rebuilding.
+But at least, that analysis does not have to count with damage.
+The upper bound \( O(n^{2}) \) is pessimistic, we may later improve it.
+
+We will apply Lemma~\ref{lem:dam-free-esc} together with
+the basic trajectory properties to prove a lemma that can be used to
+track the elimination of damage.
+First we need some definitions.
+Recall the trajectory properties in Definition~\ref{def:traj}, and the 
+definition of the constants \( \cDamClearS  \) and \( \cDamDist2  \)
+there.
+
+\begin{definition}[Right-live]\label{def:right-live}
+Consider a damage-free interval of size \( \lint{a}{b} \) of size
+\( \ge \cDamClearS \B \).
+Assume that an attacking event of the Attacking property takes place at point \( x\le b-\B \)
+at the beginning time \( t \) of a noise-free time interval.
+So the body of cell \( x \) is contained in \(\lint{a}{b} \)
+where  \( a \) is at a distance \( \ge\cDamDist2  \) from the left edge of
+the body cell \( x \), and \( b \) is to the right of the right edge \( y \) of \( x \).
+From this time \( t \) on, we will call the interval \( \lint{a}{y} \) a
+\df{right-live} interval until the first time when the head returns
+to the left of \( x-\cDamDist2 \B \).
+
+Left-live intervals are defined analogously.
+\end{definition}
+
+While the interval \( \lint{a}{y} \) is right-live, 
+damage may spill over on the left of \( y \) as far as \( \cSpill \B \), 
+but this is temporary: after the return, according to the Spill and Attack
+properties, damage is cleared from the whole interval \( \lint{a}{y+\B} \).
+
+\begin{definition}[Cheese]\label{def:cheese}
+In a configuration, consider an interval \( I \) at a distance
+at least \( (\cDamDist2 +\cSpill )\B \)
+from damage, and such that damage inside \( I \) is also removed by at 
+last \( \cSpill \B \) from the edges.
+Let us further have a sequence of subintervals \( J_{1},\dots,J_{k} \) of \( I \),
+where \( |J_{i}|\ge (\cDamDist2 +1)\B \) and
+\( |J_{i}\cap J_{i+1}|\le\cSpill \B \).
+For each \( J_{i} \) we require that if it is to the left of the head it is 
+right-live, if it is to the right then it is left-live,
+and if it contains the head then it is damage-free.
+Such a structure \( C=(I,J_{1},\dots,J_{k}) \) 
+is called a \df{cheese of the configuration} with \( I \) called its \df{bulk} and
+the intervals \( J_{i} \)  called its \df{holes}.
+
+In a trajectory, over a certain time interval \( K \),
+suppose that there is a cheese \( C(t) \) at each time \( t \).
+The whole sequence is called a \df{cheese of the trajectory}
+if from  one switching time to the next only one of
+the following changes can occur, within distance \( \cDamClearS \B \)
+of the head: 
+\begin{itemize}
+\item One of the holes gets enlarged.
+\item A new hole is created.
+\item The spill at a live end of a hole changes within its allowed limits.
+\end{itemize}
+In each case, if the union of two holes becomes a single hole then we replace them
+with the new one.
+
+We say that the head \df{escapes} the cheese if it is found % make it more  precise
+in a damage-free interval of size \( \cDamClearS \B  \) not contained in \( I \).
+\end{definition}
+
+Due to \( \cDamClearS \ge 2\cSpill \),
+the total volume of hole sizes in a cheese is at most twice the size of its bulk.
+
+\begin{lemma}[Escape]\label{lem:escape}
+Suppose that at some noise-free time 
+\( t_{0} \), the head is in the bulk of a cheese \( C(t_{0}) \) 
+of the configuration at time \( t_{0} \), where the size of this bulk is 
+\( \le n\B \).
+Then the cheese can be extended to a cheese of the trajectory.
+If the head does not escape before some time
+\( t\ge t_{0}+ 2i\cdot\cDamFreeEsc n^{2}\Tu \) such that \( \lint{t_{0}}{t} \) is
+noise-free 
+then by that time, the sum of the sizes of holes increases by at least
+\( i\B \).
+In particular, taking into account the remark after Definition~\ref{def:cheese},
+the head escapes before time \( t \) if 
+this increase becomes greater than \( 2|C(t_{0})| \).
+  \end{lemma}
+
+  \begin{proof}
+Since the damage inside the chees begins at least \( \cSpill \B \) removed from the edges 
+of the bulk,
+the Spill property of a trajectory in Definition~\ref{def:traj} implies
+that during the time interval considered, damage never spills beyond the bulk.
+
+We will define a sequence of time intervals \( t_{0}<t_{1}<t_{2}\dotsm<t \),
+where between \( t_{i} \) and \( t_{i+1} \) always some progress will be made.
+
+Suppose that at time \( t_{i} \) the head is in a damage-free part of a hole.
+By Lemma~\ref{lem:dam-free-esc}, the head does not stay longer than
+\begin{align*}
+\cDamFreeEsc n^{2}\Tu
+ \end{align*}
+in the damage-free part of the hole.
+At some time \( t_{i+1} \) it either escapes, or steps onto damage. 
+In the latter case the hole does not decrease, though it becomes right-live, 
+possibly with some new spilled-over damage.
+
+Suppose that at time \( t_{i} \) the head is over damage.
+Then it is either between (the damage-free parts of)
+two holes, say \( J_{p} \) and \( J_{p+1} \), 
+or between a hole and the outside of the bulk.
+Assume that the head does not escape before an additional time
+\begin{align*}
+ t'=t_{i}+\cDamClearT n\Tu.
+ \end{align*}
+Suppose at some time \( t_{i+1} \le t' \) 
+it steps into a hole, for example into \( J_{p+1} \) (possibly by merging to it
+another hole from the left).
+Since \( J_{p+1} \) was left-live, the Attack property in 
+Definition~\ref{def:traj} implies that the possible spilled-over damage 
+on the left of \( J_{p+1} \) disappears---moreover \( J_{p+1} \)
+gets enlarged by at least the amount \( \B \).
+
+Suppose that this does not happen.
+Let us partition the bulk into \( n \) subintervals of size \( \B \).
+Until time \( t' \) the head spends on average at least
+\( \cDamClearT \Tu \) over these subintervals,  so 
+there will be some subinterval over which it spent 
+at least this much time.
+By the trajectory property about clearing damage, 
+at some time \( t_{i+1} \) the head will be found in some damage-free
+interval \( J \) of size \( \cDamClearS \B \).
+If we had \( J\not\subseteq I \) then the head would have escaped, 
+contrary to the assumption; so we have \( J\subseteq I \).
+Also, \( J \) is not merged with another hole, since this
+possibility already was excluded above.
+Therefore \( J \) is a new hole.
+
+\begin{sloppypar}
+The definition in Lemma~\ref{lem:dam-free-esc} implies
+\( \cDamFreeEsc n^{2} \ge \cDamClearT n \).
+Then \( t_{i+1}\le t_{i}+\cDamFreeEsc n^{2}\Tu \) 
+for each \( i \), and the sum of sizes of all the holes
+increases by at least \( \B \) from step \( i \) to step \( i+2 \).
+  \end{sloppypar}
+ \end{proof}
+
+ 
+
+\section{The simulation codes}
+
+Let us now define formally the codes \( \varphi_{*k},\Phi_{k}^{*} \) that are needed
+for the simulation of history \( (\eta^{k+1},\Noise^{(k+1)}) \) by history \( (\eta^{k},\Noise^{(k)}) \).
+Omitting the index \( k \) we will write \( \varphi_{*},\Phi^{*} \).
+To compute the configuration encoding \( \varphi_{*} \) we proceed first as
+done in Section~\ref{sec:hier-codes}, using the code \( \psi_{*} \) there,
+and then add some initializations:
+In cells of the base colony and its left neighbor  colony,
+the \( \cSweep \) and \( \cDrift \) fields are set 
+to \( \Last(+1)-1 \),  \( 1 \), and \( \Last(+1) \),  \( 1 \) respectively.
+In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
+In all other cells, these values are empty.
+The \( \cAddr \) fields of each colony are filled properly:
+the \( \cAddr \) of the \( j \)th cell of a colony
+is \( j \bmod \B^* \).
+
+The value \( \Noise^{(k+1)} \) is obtained by a residue operation
+just as in Definition~\ref{def:sparsity} of sparsity.
+It remains to define \( \eta^{*}=\eta^{(k+1)} \) when \( \eta=\eta^{k} \).
+Over a history that has been super admissible locally for a while,
+if no colony starts at \( x \) at time \( t \), set \( \eta^{*}(x,t)=\Vacant \).
+Otherwise \( \eta^{*}(x,t) \) will be decoded from
+the \( \cInfo \) track of this colony, at the beginning of the its work period 
+containing time \( t \).
+In the non-super admissible case, \( \eta^{*}(x,t)=\Bad^{*} \), contributing to
+the set \( \Damage^{*} \).
+More precisely:
+
+\begin{definition}[Damage scale-up]\label{def:damage-scaleup}
+Let \( (\eta,\Noise) \) be a history of \( M \), where \( \Noise=\Noise^{(k)} \)
+as in Definition~\ref{def:sparsity}.
+We define \( (\eta^{*},\Noise^{*})=\Phi^{*}(\eta,\Noise) \) as follows.
+Let \( \Noise^{*}=\Noise^{{(k+1)}} \).
+Consider position \( x \), and let \( I=\lint{x-2QB}{x+3QB} \),
+\( J=\rint{t-\Tus}{t} \).
+If the history \( (\eta,\Noise) \) has not been super admissible on \( I\times J \)
+then \( \eta^{*}(x,t)=\Bad^{*} \); assume now that it is, and let
+\( \chi(\cdot,u) \) be some healthy configuration satisfying \( \eta \) over 
+\( I \) at time \( u \).
+If \( x \) is not a start of a colony \( C=\lint{x}{x+Q\B} \) in \( \chi(\cdot,t) \)
+then let \( \eta^{*}(x,t)=\Vacant \); assume now that it is.
+Then let \( t'\in J \) be the starting time in \( \chi \) of the work period of \( C \)
+containing \( t \),
+and let \( \eta^{*}(x,t) \) be the value decoded from \( \eta(C,t') \).
+In more detail, as said at the end of Section~\ref{sec:coding}, 
+we remove \( \PadLen \) symbols from both ends of 
+the track \( \eta(C,t').\cInfo \), and apply 
+the decoding \( \psi^{*} \) to it to obtain \( \eta(x,t) \).
+\end{definition}
 
 
 \bibliographystyle{plain}

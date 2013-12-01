@@ -93,9 +93,8 @@ Rule}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
 \newcommand{\algLet}{\mykeyword{let}}
 
 \newskip\captionskip
-\captionskip=-2ex
-
-% Redefined just to add the captionskip between caption and body.
+\captionskip=0.5ex
+% % Redefined makethealgo to add the captionskip between caption and body.
 \renewcommand{\algocf@makethealgo}{%
   \vtop{%
     % place caption above if needed  bye the style
@@ -107,8 +106,8 @@ Rule}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
     % place caption at top if needed  bye the style
      \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{top}}%
      {\csname algocf@caption@\algocf@style\endcsname}{}%
-    % Gacs: The next line, decreases the space below the caption.
-     \vspace{\captionskip}
+    %
+     \vspace{\captionskip} %Gacs
     \box\algocf@algobox% the algo
     % place caption at bottom if needed  bye the style
      \ifthenelse{\equal{\csname @algocf@capt@\algocf@style\endcsname}{bottom}}%
@@ -120,6 +119,6 @@ Rule}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
      {\csname algocf@caption@\algocf@style\endcsname}{}%
   }%
 }%
-
+%
 
 \endinput %?
