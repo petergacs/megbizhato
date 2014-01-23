@@ -4,46 +4,44 @@ The top-level auxiliary file: longTuring.aux
 The style file: plain.bst
 Database file #1: reli.bib
 Database file #2: publ.bib
-Warning--I didn't find a database entry for "Bursts"
 You've used 5 entries,
             2118 wiz_defined-function locations,
-            544 strings with 5072 characters,
-and the built_in function-call counts, 1808 in all, are:
-= -- 178
-> -- 69
-< -- 2
-+ -- 28
-- -- 21
-* -- 140
-:= -- 301
-add.period$ -- 19
+            538 strings with 4908 characters,
+and the built_in function-call counts, 1493 in all, are:
+= -- 150
+> -- 52
+< -- 0
++ -- 23
+- -- 16
+* -- 109
+:= -- 262
+add.period$ -- 18
 call.type$ -- 5
 change.case$ -- 23
 chr.to.int$ -- 0
 cite$ -- 5
-duplicate$ -- 69
-empty$ -- 149
-format.name$ -- 21
-if$ -- 384
+duplicate$ -- 54
+empty$ -- 123
+format.name$ -- 16
+if$ -- 305
 int.to.chr$ -- 0
 int.to.str$ -- 5
 missing$ -- 5
 newline$ -- 31
-num.names$ -- 12
-pop$ -- 14
+num.names$ -- 10
+pop$ -- 12
 preamble$ -- 1
 purify$ -- 18
 quote$ -- 0
-skip$ -- 47
+skip$ -- 36
 stack$ -- 0
-substring$ -- 134
-swap$ -- 16
-text.length$ -- 2
+substring$ -- 106
+swap$ -- 5
+text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 20
 warning$ -- 0
-while$ -- 18
+while$ -- 15
 width$ -- 6
-write$ -- 65
-(There was 1 warning)
+write$ -- 62

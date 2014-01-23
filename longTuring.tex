@@ -51,13 +51,14 @@
 \newcommand{\shownotes}{1}
 \ifnum\shownotes=1
 \newcommand{\authnote}[3]
-{{ \textcolor{#3}{\( \langle\hspace{-0.2em}\langle \)\textsf{\footnotesize #1: #2}\( \rangle\hspace{-0.2em}\rangle \)}}}
-%{ {\( \langle\hspace{-0.2em}\langle \) \textsf{\footnotesize #1:}\par{#2}\( \rangle\hspace{-0.2em}\rangle \)}}
+{\text{{ \textcolor{#3}{\( \langle\hspace{-0.2em}\langle \)\textsf{\footnotesize #1: #2}\( \rangle\hspace{-0.2em}\rangle \)}}}}
 \else
 \newcommand{\authnote}[2]{}
 \fi
 \newcommand{\Pnote}[1]{{\authnote{Peter}{#1}{cyan}}}
 \newcommand{\Inote}[1]{{\authnote{Ilir}{#1}{blue}}}
+
+\renewcommand{\le}{\leq}
 
 \newcommand{\fld}[1]{\ensuremath{\textit{#1}}}
 \newcommand{\rul}[1]{\ensuremath{\texttt{\slshape #1\/}}}
@@ -72,9 +73,10 @@
 \newcommand{\blank}{\text{\textvisiblespace}}
 \newcommand{\Configs}{\mathrm{Configs}}
 \newcommand{\D}{D}
-\newcommand{\Damage}{Damage}
+\newcommand{\Damage}{\mathit{Damage}}
 \newcommand{\E}{E}
 \newcommand{\h}{h}
+\renewcommand{\H}{H}
 \newcommand{\hc}{\tilde h}
 \newcommand{\Noise}{\mathit{Noise}}
 \newcommand{\Output}{\mathit{output}}
@@ -86,6 +88,7 @@
 \newcommand{\Tu}{T}
 \newcommand{\Tus}{T^{*}}
 \newcommand{\Z}{Z}
+\newcommand{\z}{z}
 
 
 \newcommand{\Addr}{\fld{Addr}}
@@ -179,7 +182,7 @@
 \newcommand{\cDamFreeEsc}{\cns{dam-free-esc}}
 \newcommand{\cDamClearS}{\cns{dam-clear-s}}
 \newcommand{\cDamClearT}{\cns{dam-clear-t}}
-\newcommand{\cDamDist}[1]{\cns{dam-dist-\if#111\else\if#122\fi\fi}}
+\newcommand{\cDamDist}[1]{\cns{dam-dist-#1}}
 \newcommand{\cSpill}{\cns{spill}}
 
 \begin{document}
@@ -291,7 +294,7 @@ there are \( 0\le\varepsilon <1 \) and \( \alpha_{1},\alpha_{2}>0 \)
 with the following property.
 
 For each input length \( n=|x| \) a block code
-\( (\varphi_*, \varphi^*) \) of blocksize \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
+\( (\varphi_*, \varphi^*) \) of block size \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
 such that the following holds.
 
 Let \( M_1 \) start its work from its initial state,
@@ -321,7 +324,7 @@ code with itself, \( O(\log\log n) \) times.
 
 A Turing machine that simulates ``reliably'' any other
 Turing machine even when it is subjected to isolated bursts of faults of constant size,
-is given in~\cite{burstyTuring12Conf}.
+is given in~\cite{burstyTuring13}.
 By \df{reliably} we mean that the 
 simulated computation can be decoded from the history
 of the simulating machine despite occasional damages.
@@ -396,7 +399,7 @@ itself can be interrupted (or started) by a burst.
 \subsection{Hierarchical construction}
 
 In order to build a machine that can resist faults 
-occuring independently of each other with some small probability,
+occurring independently of each other with some small probability,
 we take the approach suggested in~\cite{Kurd78},
 and implemented in~\cite{Gacs1dim86} and~\cite{GacsSorg01}
 for the case of one-dimensional cellular automata, with some ideas
@@ -405,7 +408,7 @@ We will build a \df{hierarchy of simulations}:
 machine \( M_1 \) simulates machine \( M_2 \) which 
 simulates machine \( M_3 \), and so on.
 For simplicity we assume all these machines have the same program,
-and all simulations have the same blocksize.
+and all simulations have the same block size.
 
 One cell of machine \( M_3 \) is simulated by one colony of machine \( M_2 \).
 Correspondingly, one cell of \( M_2 \) is simulated by
@@ -885,6 +888,7 @@ it takes values in \( \lint{-Q}{2Q} \), since the addresses in a bridge (see lat
 will be continuations of those in the colony (which run from \( 0 \) to \( Q-1 \)).
 The colony along with the adjacent cells that continue its addresses will be called
 an \df{extended colony}.
+A colony can only be extended in the direction of the drift of its cells.
 There is a corresponding \( \Addr \) field of the state.
 The
  \begin{align*}
@@ -917,11 +921,9 @@ Normally, cells will have the kind \( \Member \).
 During the simulation, however, the elements of the colony that is to become
 the next base colony, will be made to have the kind \( \Target \).
 If the neighbor colony 
-is not adjacent, then the cells in the structure during simulation
-that connects the base colony to it will get addresses extending the those of the base
-colony,  to become a \df{bridge}, and such a bridge creates from the colony a
-so-called extended colony.
-Thus, bridge cells are member cells with addresses outside \( \lint{0}{Q} \).
+is not adjacent, then the base colony will be extended to it by 
+a \df{bridge}.
+Bridge cells are member cells with addresses outside \( \lint{0}{Q} \).
 Though they have the kind \( \Member \), they will frequently be treated
 differently from the other member cells.
 
@@ -1217,7 +1219,7 @@ on the tape} is the same.
              \delta: \Sigma\times \Gamma
              \to \Sigma\times \Gamma\times\{-1,0,1\},
         \end{align*}
-    is the \df{transition function}
+    is the \df{transition function}.
 The function (``field'') \( \NonAdj\colon\Gamma\to\{\true,\false\} \) of the 
 state will show whether the last move was from a non-adjacent cell.
 The function (``field'') \( \cDir\colon\Sigma\to\{-1,0,1\} \) of the cell content
@@ -1398,11 +1400,11 @@ For constant
 \begin{align}\label{eq:cns.spill}
    \cSpill =4,
  \end{align}
-during any noise-free time interval, 
+during any noise-free time interval \( J \), 
 the damage may spill to at most a total distance of \( \cSpill \B \) beyond its 
-starting place.
+place at the beginning of \( J \).
 
-\item[Attacking damage from outside] \label{i:def.traj.attack-from-outside}
+\item[Attacking Damage] \label{i:def.traj.attack-from-outside}
 For constant
 \begin{align}\label{eq:cns.dam-dist-2}
    \cDamDist2 =3,
@@ -1415,12 +1417,12 @@ damage will recede by a distance at least \( \B \) to the right from the body of
 
 A similar property is required when ``left'' and ``right'' are interchanged.
 
-\item[Clearing damage] \label{i:def.traj.damage-within}
+\item[Clearing Damage] \label{i:def.traj.damage-within}
 For constant
 \begin{align}\label{eq:cns.dam-clear}
         \cDamClearT =9,
 \quad   \cDamClearS =\cDamDist2 +1,
- \end{align}1
+ \end{align}
 suppose that at the beginning of a noise-free time interval \( J \), 
 the head is in a certain interval \( I \) of size \( \B \).
 Then before the head spends a cumulative time 
@@ -1507,7 +1509,7 @@ We say that \( M_{1} \) \df{simulates} \( M_{2} \) if there is a simulation
 Recall the notion of a code in Definition~\ref{def:codes}.
 
 \begin{definition}[Code on configurations]\label{def:configuration-code}
-Consider two generalized Turing macines \( M_{1},M_{2} \) with the corresponding
+Consider two generalized Turing machines \( M_{1},M_{2} \) with the corresponding
 state spaces, alphabets and transition functions, and an integer \( Q\ge 1 \).
 We require
 \begin{align}\label{eq:B_2-B_1-Q}
@@ -1623,9 +1625,13 @@ Ordinary simulation proceeds in the normal mode.
 The structure will be arranged in such a way that when the basic structure
 supporting this process is broken somewhere, then this will be recognizable
 by a one-step checking of a simple relation: whether the present state is \df{coordinated}
-with the currently observed cell symbol.
+with the currently observed cell symbol (see Definition~\ref{def:coordinated}).
 This condition is then checked in every step, and if it is found violated then
-the \( \Alarm \) rule takes the state into the recovering mode.
+the rule 
+\begin{align*}
+ \Alarm 
+ \end{align*}
+takes the state into the recovering mode.
 (The machine enters into the rebuilding mode if healing fails.)
 The crudest outline of the main rule of machine \( M \) is given in
 Rule~\ref{alg:main1}, where the \( \Comp \) and \( \Transfer \) rules will be
@@ -1749,7 +1755,7 @@ during the switchback.
 
 \subsection{Computation phase}\label{sec:computation-phase}
 
-As shown in Rule~\ref{alg:main1} descibing a top-down view of the simulation,
+As shown in Rule~\ref{alg:main1} describing a top-down view of the simulation,
 the first phase of the simulation computes new values for state of the 
 simulated machine \( M^{*} \)
 represented on track \( \cState \), the direction of the move of the head of  \( M^{*} \)
@@ -1978,7 +1984,7 @@ Let us call the direction of the transfer the \df{drift}.
 
 During this phase, the range of the head
 includes the base colony and the neighbor colony
-determined by the drift, including a possible ``bridge'' between them.
+determined by the drift, including a possible bridge between them.
 
 The sweep in which we start transferring in direction \( \delta \) is called
 \( \TransferSw(\delta) \), the \df{transfer sweep}.
@@ -2011,7 +2017,7 @@ see Section~\ref{sec:adjacency}.
 in all cells of the neighbor colony.    
   \end{quote}
   
-\item If \( \Drift = 1 \), then move right to the left endcell of the neighbor colony
+\item If \( \Drift = 1 \), then move right to the left end cell of the neighbor colony
 (else you are already there).
 
         \begin{sloppypar}
@@ -2034,8 +2040,7 @@ Let us address the situation when the neighbor colony is not adjacent.
   \( a \) and \( b \) are two \df{non-adjacent neighbor cells}.
 For the sake of the present discussion, a \df{colony} is a sequence of \( Q \) adjacent
 cells whose \( \cAddr \) value runs from \( 0 \) to \( Q-1 \).
-It may be extended by a bridge of length up to \( Q-1 \) on left or right,
-whose addresses continue those of the colony.
+It may be extended by a bridge of length up to \( Q-1 \), in the direction of the drift.
 
 If the bodies of two cells are not adjacent, but are at a distance \( <\B \) then the space
 between them is called a \df{small gap}.
@@ -2049,15 +2054,16 @@ the \( \cKind \) field of the cells visited will be set as follows.
 The base colony has cells of kind \( \Member \) to begin with.
 The kind of the cells of the neighbor colony, the target of the transfer, will be set
 as \( \Target \) for the duration of the transfer.
-However, in the first transfer sweep, the cells adjacent to the base colony form a
-bridge, continuing the colony's addresses.
+However, in the first transfer sweep, if there was a gap between the base and
+the target, then cells between them will be created or adapted to form
+a bridge, that extends the base colony, also extending its addresses.
 A bridge can override an opposite old bridge (``old'' meaning 
-that its \( \Sweep \) is maximal) or 
-into an empty area, killing opposite bridge cells or stem cells in the process.
+that its \( \Sweep \) is maximal) or move 
+into an empty area, or kill opposite bridge cells or stem cells while it extends.
 If while forming a bridge, another colony is encountered before
 the bridge grows to length \( Q\B \)), then this new colony's cells will get the 
 kind \( \Target \), and add it all to the workspace.
-There can be a gap of size \( <\B \) between the bridge and the neighbor colony.
+(There can be a gap of size \( <\B \) between the bridge and the neighbor colony.)
 Otherwise the bridge itself becomes this neighbor colony, and its cell kinds are
 turned to \( \Target \) on the way back.
 
@@ -2075,7 +2081,7 @@ turned to \( \Target \) on the way back.
 %        Here is how a bridge is extended from the base colony, in 
 % transfer direction \( \delta \).
 % Recall that the field \( \Kind \) of the state shows the kind of the cell visited
-% before the current one, whild \( \cKind \) is the kind of the cell being visited right now.
+% before the current one, while \( \cKind \) is the kind of the cell being visited right now.
 
 % \begin{enumerate}[1.]
 
@@ -2161,6 +2167,8 @@ When the head steps outside of the workspace and
 does not find a cell, then it creates a stem cell whose
 \( \cDrift \) is set to \( -\Dir \), where \( \Dir \) is the field
 of the state storing the direction of the last step (see~\ref{sec:language}).
+Also its address \( \cAddr \) continues the adresses of the workspace, 
+modulo \( Q \).
 While zigging outside the workspace in normal mode,
 we allow one small gap, next to the workspace (other situations cause alarm).
 
@@ -2189,20 +2197,39 @@ these we will ``legalize'', since they might encode
 some conceivable configuration of the machine we simulate.
 Cells of a healthy configuration are grouped into gapless colonies, and 
 a few transitional segments described below.
+The big picture is this:
+\begin{bullets}
+\item There is a base colony, possibly extended by a bridge in the direction of
+  the drift.
+Possibly, in the direction of the drift, the neighbor colony of the base is a 
+\df{target}, meaning that its cells are marked as such.
+\item Non-base colonies are called \df{outer colonies}.
+If an outer colony 
+is not adjacent to its neighbor colony closer to the base,
+then it is extended by a bridge that covers this gap.
+
+A partial exception is the colony \( C \) closest to the base colony in the direction of the
+drift.
+If there is a gap between it and the base colony then initially it is covered by 
+a bridge extending \( C \), but in the first transfer sweep this bridge will be
+overridden by the bridge extending the base colony.
+\end{bullets}
+\Pnote{Pictures!}
 
 \begin{definition}[Segments]\label{def:segments}
-    A \df{(homogenous) segment} is a sequence of adjacent neighbor cells of the same kind,
-with addresses growing to the right, with the same value of \( \Sweep \)
-and \( \cDrift \),
-or a sequence of neighboring (not necessarily adjacent) 
+    An \df{(homogenous) segment} is a sequence of adjacent neighbor 
+cells, with addresses growing to the right, with the same value of \( \Sweep \)
+and \( \cDrift \), or a sequence of neighboring (not necessarily adjacent) 
 stem cells (this will be called a \df{desert}).
+We require such a segment to consist of cells of the same kind or only of 
+colony cells and bridge cells.
 Its \df{left end} is the left edge of its first cell, and its \df{right end} is 
 the right edge of its last cell.
 
 It is a \df{colony} if the addresses grow from \( 0 \) to \( Q-1 \), possibly continued
 by a bridge on one side.
-It is a % \df{bridge} if it consists of bridge cells, a 
-\df{target} if it consists of target cells.
+It is a \df{target} if it consists of target cells.
+A target is never extended by a bridge.
 
 A boundary is called \df{rigid} if its address is the end 
 address of a colony in the same direction.
@@ -2221,12 +2248,10 @@ are currently being manipulated.
     Recall the definition of the sweep value
     \(  \Last(\delta)  \) from~\eqref{eq:Last}.
     For \( \delta \in \{ -1,1 \} \), if a cell is stem or
-    has \( 0 \le \cAddr < Q \),
-    \( \cDrift = \delta \),
-    \( \cSweep = \Last(\delta) \)
+\( \cDrift = \delta \),  \( \cSweep = \Last(\delta) \)
     then it will be called a \df{right outer cell} if
-    \( \delta = -1 \).
-    It is a \df{left outer cell} if \( \delta = 1 \).
+    \( \delta = -1 \), \( -Q< \cAddr < Q \),  and a \df{left outer cell} 
+    if \( \delta = 1 \), \( 0\le\cAddr<2Q-1 \).
 \end{definition}
 
 According to this definition, a stem cell is both left and right outer cell.
@@ -2236,99 +2261,92 @@ Recall the definition of the \df{transfer sweep}
 (There is no transfer sweep if \( \delta = 0 \).)
 
 \begin{definition}[Healthy configuration]\label{def:healthy}
-Health of a configuration should strictly speaking be defined only 
-locally, saying when a configuration \( \xi \)
-is healthy over a certain interval \( A \).
-But since it will be obvious how to localize the properties in question,
-for simplicity we omit the mention of the underlying interval.
+The \df{health} of a configuration \( \xi \) of a generalized Turing machine 
+\( M \) will be defined over a certain interval \( A \).
+So it depends only on \( \xi_{\tape}(A) \) further on whether \( \xi_{\pos} \) is in \( A \) and
+if it is, where.
+But we will mention the interval \( A \) explicitly only where it is necessary.
+In particular, some of the structures described below may fall partly or fully
+outside \( A \).
 
-    A configuration \( \xi \) of a generalized Turing machine \( M \),
-    is \df{healthy}, if the mode is normal, and the following conditions hold.
-    Let \( \delta = \Drift \).
+We require the mode is normal, and that the following conditions hold.
+Let \( \delta = \Drift \).
 
 \begin{flushdescription}
 
-     \item[Normality]
-           No cell in \( I \) is marked for healing healing or rebuilding:
-           that is, for every \( x \in I \), \( \cHeal.\Sweep = 0 \) and
-           \( \cRebd.\Sweep = 0 \)  (see the definition of marking after~\eqref{eq:Heal}).
+\item[Normality]
+  No cell in \( I \) is marked for healing or rebuilding:
+  that is, for every \( x \in I \), \( \cHeal.\Sweep = 0 \) and
+  \( \cRebd.\Sweep = 0 \)  (see the definition of marking after~\eqref{eq:Heal}).
 
 \item[Segments]
-        The \df{base} is defined by counting back from \( \Addr \) such that, if the head
-        passes from a target cell to a member, we set \( \Addr \) to \( \cAddr \).
-        The cell closer to the base where the \( \Addr \) is adjusted during
-        this count-back is called the \df{address jump}.
+  The \df{base} is defined by counting back from \( \Addr \) such that
+  passing from a target cell to a member, we set \( \Addr \) to \( \cAddr \).
+  The cell closer to the base where the \( \Addr \) is adjusted during
+  this count-back is called the \df{address jump}.
 
-    All cells can be grouped into full extended colonies,
-with possibly some stem cells between these.
-In more detail:
+  All cells can be grouped into full extended colonies,
+  with possibly some stem cells between these.
+  In more detail:
   \begin{bullets}
   \item A segment of the \df{extended base colony} consisting of member cells.
-  \item \df{Outer colonies}, consisting of outer member cells.
-   \item A segment of a possible target, defined by the value of \( \cSweep \) in its cells.
-    \item Desert filling out the gaps between these other parts.
+  \item \df{Extended outer colonies}, consisting of outer member cells.
+  \item A segment of a possible target, defined by the value of \( \cSweep \) in its cells.
+  \item Desert filling out the gaps between these other parts.
   \end{bullets}
 
-        The colony starting at the base is the base colony, and it consists of member cells.
-        To describe the other segments, we consider several cases.
-        \begin{bullets}
-        \item 
-        If \( \delta=0 \) or \( \Sweep < \TransferSw(\delta) \), 
-        then there are no bridge or target cells.
+  The colony starting at the base is the base colony, and it consists of member cells.
+  To describe the other segments, we consider several cases.
+  \begin{bullets}
+  \item 
+    If \( \delta=0 \) or \( \Sweep < \TransferSw(\delta) \), 
+    then there are no bridge or target cells.
 
-        \item If \( \TransferSw(\delta) +1 < \Sweep <  \) (the last two sweeps for \( \delta \)),
-          then there is a target colony in the direction \( \delta \).
-          If its distance from the base colony is \( \ge\B \) then there is a 
-          bridge adjacent to the base colony filling the gap between the 
-          base colony and the target colony.
-          % We define the \df{extended base colony} by extending the base colony
-          % by the target colony, with the possible bridge in between.
-
-        \item If \( \Sweep = \TransferSw(\delta) \) then the above 
-          described situation is in the making, as
-          a bridge segment is being built up in direction \( \delta \), or after that,
-          a target segment is being built in direction \( \delta \), converting member cells into target cells.
+  \item If \( \TransferSw(\delta) +1 < \Sweep <  \) (the last two sweeps for \( \delta \)),
+    then there is a target colony in the direction \( \delta \).
+    If its distance from the base colony is \( \ge\B \) then the bas
+    colony is extended by a bridge filling the gap.
+    
+  \item If \( \Sweep = \TransferSw(\delta) \) then the above 
+    described situation is in the making, as
+    a bridge segment is being built up in direction \( \delta \), or after that,
+    a target segment is being built in direction \( \delta \), converting member cells into target cells.
           
-        \item If \( \Sweep = \TransferSw(\delta) +1 \) and there is still not a complete target colony,
-          then this can only happen if the whole bridge is being converted into a target, 
-          as the head travels in direction \( -\delta \).
-
-         \item In the last sweep, the target cells are being converted into member cells.
-        \end{bullets}
-        These are the only possible segments to be seen in a healthy area.
+  \item If \( \Sweep = \TransferSw(\delta) +1 \) and there is still not a complete target colony,
+    then the whole bridge is being converted into a target, 
+    as the head is traveling in direction \( -\delta \).
+    
+  \item In the last sweep, the target cells are being converted into member cells.
+  \end{bullets}
+  These are the only possible segments to be seen in a healthy area.
         
     \item [The front] 
-    The farthest position \( \front(\xi) \) to which the head has 
-    advanced before starting a new backwards zig is called the \df{front}:
-    it can be computed from \( \xi.\pos \) and \( \ZigDepth \), but can also be reconstructed from
-    the \( \cSweep \) track.
+      The farthest position \( \front(\xi) \) to which the head has 
+      advanced before starting a new backwards zig is called the \df{front}:
+      it can be computed from \( \xi.\pos \) and \( \ZigDepth \), but can also be reconstructed from
+      the \( \cSweep \) track.
 
      \item[Workspace]
 
        \begin{sloppypar}
           Suppose that \( \front(\xi) \) is inside the extended base colony or the target.
           The \df{workspace} is an interval of non-outer cells, such that:         
-       \end{sloppypar}
-
+        \end{sloppypar}
+        
         \begin{bullets}
-            \item For \( \Sweep < \TransferSw(1) \),
-                  it is equal to the base colony.
-            \item In case of \( \Sweep = \TransferSw(1) \),
-                  it is the smallest interval including
-                  the base colony and the cell neighboring to
-                  \( \front(\xi) \) on the side of the base colony.
+        \item For \( \Sweep < \TransferSw(1) \), it is equal to the base colony.
+        \item In case of \( \Sweep = \TransferSw(1) \), it is the smallest interval including
+          the base colony and the cell neighboring to
+          \( \front(\xi) \) on the side of the base colony.
 
-            \item In case of \( \Sweep = \TransferSw(-1) \),
-                  it is the smallest interval including
-                  the base colony, the right neighbor colony,
-                  and the cell neighboring to
-                  \( \front(\xi) \) on the side of the base colony.
+            \item In case of \( \Sweep = \TransferSw(-1) \), it is the smallest interval including
+              the base colony, the right neighbor colony,
+              and the cell neighboring to \( \front(\xi) \) on the side of the base colony.
 
             \item If \( \TransferSw(-1) < \Sweep < \Last(\delta) \),
-                  then it is equal to the union of the extended base colony and the target.
-            \item When \( \Sweep = \Last(\delta) \), it is
-                  the smallest interval including the future
-                  base colony and \( \front(\xi) \).
+              then it is equal to the union of the extended base colony and the target.
+            \item When \( \Sweep = \Last(\delta) \), it is the smallest interval including the future
+              base colony and \( \front(\xi) \).
         \end{bullets}
 
 %     %\item [Non-live cells]
@@ -2455,22 +2473,66 @@ In more detail:
          If \( \Sweep \ge \TransferSw(\delta) \) or \( \Sweep=1 \) then \( \cDrift \)
          is constant on the workspace.
 
-\item[Coordination]
- In a healthy configuration, each \( \Core =(\Addr, \Sweep, \Drift, \Kind) \) 
- value along with \( \Z \) determines uniquely the 
-\( \cCore \) value of the cell it is coordinated with, with the following exceptions.
-\begin{bullets}
-\item During the first transferring sweep, while
+   \end{flushdescription}
+
+A tape configuration is called \df{healthy} on an interval \( A \)
+when there is a head position (possibly outside \( A \) ) and a 
+state that turns it into a healthy configuration.
+ \end{definition}
+
+Note that health only depends on the fields in \( \Core \) and
+the zigging field \( \Z \) in the state, further the  \( \cCore \) field
+and the lack of marks in the cell content.
+
+A violation of the health requirements can sometimes be noted immediately:
+
+\begin{definition}[Coordination] \label{def:coordinated}
+   The state of the machine is \df{coordinated} with the current cell
+   if it possible for them to be together in a healthy configuration.
+\end{definition}
+
+Recall that in Rule~\ref{alg:main1} it is required in normal mode,
+if lack of coordination is discovered then alarm is called.
+The  following lemmas show the power of coordination:
+how local consistency checking will help achieve longer-range consistency.
+
+\begin{lemma}\label{lem:coordination1}
+  In a healthy configuration, each \( \Core =(\Addr, \Sweep, \Drift, \Kind) \) 
+  value along with \( \Z \) determines uniquely the 
+  \( \cCore \) value of the cell it is coordinated with, with the following exceptions.
+  \begin{bullets}
+  \item During the first transferring sweep, while
     creating a bridge between the base colony and the target colony, 
     the front can be a stem cell or the first cell of an outer colony.
- \item Every jump backward from the target colony can end up on the last cell of a 
-   bridge (whose address is not recorded in the state) or the last cell of the base colony.
-\end{bullets}
- To compute the values in question, calculate \( \Z \) steps backwards from the front,
-referring to the properties listed above.
+  \item Every jump backward from the target colony can end up on the last cell of a 
+    bridge (whose address is not recorded in the state) or the last cell of the base colony.
+  \end{bullets}
+  \end{lemma}
+  \begin{proof}
+  To compute the values in question, calculate \( \Z \) steps backwards from the front,
+  referring to the properties listed above.
+\Pnote{Elaborate!}    
+  \end{proof}
 
-   \end{flushdescription}
- \end{definition}
+  \begin{lemma}\label{lem:coordination2}
+    Suppose that during a noise-free time interval \( J \), the head passes at least once over the two
+endcells of a damage-free space interval \( I \) (possibly passing over some 
+parts of \( I \) several times).
+Then at the end of time interval \( J \), the configuration over \( I \) is healthy.
+  \end{lemma}
+  \begin{proof}
+    This follows from the above lemma, after examining some simple possibilities.
+\Pnote{Elaborate!}
+  \end{proof}
+
+\begin{lemma}[Health extension]\label{lem:health-extension}
+  Let \( \xi \) be a \emph{tape} configuration that is healthy on intervals \( A_{1}, A_{2} \) 
+where \( A_{1}\cap A_{2} \), contains a whole cell body of \( \xi \).
+Then \( \xi \) is also healthy on \( A_{1}\cup A_{2} \).
+\end{lemma}
+\begin{proof}
+  The statement follows easily from the definitions.
+\end{proof}
 
 In a healthy configuration, the possibility of finding non-adjacent neighbor
 cells is limited.
@@ -2482,20 +2544,22 @@ contains at most two maximal sequences of adjacent non-stem neighbor cells.
 \begin{proof}
 Indeed, by definition a healthy configuration consists of full extended colonies, with 
 possibly stem cells between them.
-An interval of size \( <Q \) contains the segments from at most two full extended colonies.
+An interval of size \( <Q \) contains sequences of adjacent cells 
+from at most two such extended colonies.
 \end{proof}
 
 Let us classify the boundary pairs possible in a healthy configuration.
 Rigid pairs:
 
 \begin{enumerate}[(r1)]
-\item\label{i:rigid.base-bridge} Between a base colony and its extension bridge.
 \item\label{i:rigid.outer-workspace}
-Between an outer extended colony or a desert, and the workspace: base colony or target.
-\item\label{i:rigid.bridge-target} Between a bridge and the target or an outer colony.
+  Between an outer extended colony or a desert, and a colony closer to the base.
+\item\label{i:rigid.bridge-target} Between the extended base colony 
+and the target or an outer colony.
 \end{enumerate}
 
-Non-rigid pairs:
+Non-rigid pairs are the place of the front, but it is 
+worth distinguishing some kinds:
 
 \begin{enumerate}[(nr1)]
   \item\label{i:nonrigid.sweep} Between sweep values differing by 1,
@@ -2523,7 +2587,6 @@ Of the boundary pairs containing the other
 types, only one can be present: indeed, they all coincide with the location of the front.
 \end{proof}
 
-
  \begin{definition}[Super healthy]\label{def:super-healthy}
 A configuration is  \df{super healthy} if in addition to the requirements of health, in each colony,
 whenever the head is not in the last sweep,
@@ -2533,16 +2596,6 @@ defined in Section~\ref{sec:coding}.
 A configuration \( \xi \) defined on an interval \( I \) is \df{(super) healthy} on \( I \) if 
 it can be extended to a (super) healthy configuration.
  \end{definition}
-
-Note that health only depends on the fields in \( \Core \) and
-the zigging field \( \Z \) in the state, further the  \( \cCore \) field
-and the lack of marks in the cell content.
-A violation of the health requirements can sometimes be noted immediately:
-
-\begin{definition}[Coordination] \label{def:coordinated}
-   The state of the machine is \df{coordinated} with the current cell
-   if it possible for them to be together in a healthy configuration.
-\end{definition}
 
 % %\Inote{I needed this \Pnote{marks in a healthy configuration?}
 %%  because I'm using the \( \Calc \) algorithm
@@ -2676,100 +2729,101 @@ A violation of the health requirements can sometimes be noted immediately:
 Configurations that have been affected by noise in a limited way only, can be ``annotated'',
 adding some information showing some of the affected parts. 
 
-
 We will make use of a new parameter \( \E \) which approximately measures the work 
 area needed for eliminating the damage caused by a couple of bursts.
 Let:
 \begin{align}\label{eq:Expansion}
-   \E  &= 30(\Z-1), %?
+   \E  &= 30\Z, %?
 \\   \PenetrationLen &= \E+\Z.
  \end{align}
 
+The definition below makes use of the constant
+\begin{align*}
+   \cns{island}=3. \Pnote{?}
+ \end{align*}
 
 \begin{definition}[Annotated configuration]\label{def:annotated-config}
-    An \df{annotated configuration} of machine \( M \) whose cell body size is \( \B \),
-    % on interval \( A \), of length at least \( 2\E\B \) that contains the head,
-    is a tuple
-         \begin{align*}
-             \cA=(\xi,\chi, \cI, \D),
-%             \cA=(\xi,\chi, \cI,\cS, \D),
-         \end{align*}
-    with the following meaning.
+  An \df{annotated configuration} of machine \( M \) whose cell body size is \( \B \),
+  is a tuple
+  \begin{align*}
+    \cA=(\xi,\chi, \cI, \D),
+  \end{align*}
+  with the following meaning.
 
-    \( \xi \) is a configuration.
+  \( \xi \) is a configuration.
 
-    \( \chi \) is a healthy configuration, % locally healthy configuration on \( A \).
+  \( \chi \) is a healthy configuration,
 
-    \( \cI \) is a set of intervals called \df{islands}, each of size \( \le\beta\B \).  %?
-    They may contain damage.
+  \( \cI \) is a set of intervals called \df{islands}, each of size \( \le \cns{island}\beta\B \).  %?
+  They may contain an interval of damage, of size \( \le\beta\B \).
 
-    \( \D \) is an interval containing the head called the \df{distress area}.
-    This is where the structure is currently being restored.
-    It contains any island containing the head.
-    It has size \( <5\E\B \). %?
+  \( \H \) is an interval containing the head called the \df{healing area}\footnote{The corresponding 
+set in~\cite{burstyTuring13} called the ``distress area''.}.
+  This is where the structure is currently being restored.
+  It contains any island containing the head.
+  It has size \( <5\E\B \). %?
 
-    We can obtain \( \chi \) from \( \xi \) by removing damage from the islands,
-    filling them with cells, and then by
-    \begin{bullets}
-         \item changing the state,
-         \item changing the \( \cKind \), \( \cCore \)  and \( \cHeal.\Core \) tracks
-               in the islands and possibly
-               additional \( \le \Z \) cells within \( \D \), where
-               \( \cHeal.\Core \) is a set of fields used in the healing
-               procedure;
-         \item changing the \( \cHeal.\Core \) track,  \( \cKind \),
-           and the head position inside \( \D \).
-    \end{bullets}
-%    or by
-%    erasing at most \( \E \) cells from \( \D \).
+  We can obtain \( \chi \) from \( \xi \) by removing damage from the islands,
+  filling them with cells, and then by
+  \begin{bullets}
+  \item changing the state,
+  \item changing the \( \cKind \), \( \cCore \)  and \( \cHeal.\Core \) tracks
+    in the islands and possibly
+    additional \( \le \Z \) cells within \( \D \), where
+    \( \cHeal.\Core \) is a set of fields used in the healing  procedure;
+  \item changing the \( \cHeal.\Core \) track,  \( \cKind \),
+    and the head position inside \( \D \).
+  \end{bullets}
+  The \df{current colony} of \( \cA \) is the base colony of \( \chi \).
 
+  We say that an interval \( W \) is the \df{workspace} of the annotated
+  configuration \( \cA \) if it is the workspace of \( \chi \).
 
-    % Suppose that
-    %  \( |A|\geq Q\B \) and that \( \xi.\pos \in A \).
-    The \df{current colony} of \( \cA \) is the base colony of \( \chi \).
+  The following additional properties are required:
+  \begin{enumerate}[(a)]
+  \item \label{i:annotated-config.islands}
+    At most 1 island intersects the workspace.
 
-    We say that an interval \( W \) is the % ? (extended) 
-    \df{workspace} of the annotated
-    configuration \( \cA \) if it is the %? (extended) 
-    workspace of \( \chi \).
+    There are at most 2 islands in each extended colony
+    that do not intersect the workspace.
+    If there is more than one, then one of them is within
+    a distance \( \PenetrationLen\cdot\B \) from the boundary of the neighbor colony
+    towards the base colony.
 
-    The following additional properties are required:
-    \begin{enumerate}[(a)]
-        \item \label{i:annotated-config.islands}
-          At most 2 islands intersect the workspace.
-
-          There are at most 2 islands in each colony or bridge
-            that do not intersect the workspace.
-            % and the extended workspace.
-            If there is more than one, then one of them is within
-            a distance \( \PenetrationLen\cdot\B \) from the boundary of the neighbor colony
-            towards the base colony.
-
-        \item
-            If \( \D \) is empty then the mode is normal.
+        \item  If \( \D \) is empty then the mode is normal.
 %
 %        \item \label{i:annotated-config.ptr}
-%            The \( \cDir \) field of each cell
-%              of \( A \) that is not damaged, points towards the head.
+%          The \( \cDir \) field of each cell
+%          of \( A \) that is not damaged, points towards the head.
 
-        %\item
-%              What I meant is that if the head is in the
-%              annotated configuration then the annotated configuration must
-%              contain the current colony
-%              (base colony is OK, just make sure it is clear that it
-%              corresponds to the current cell of M^*).
-
-
-    \end{enumerate}
-
-
+%        \item
+%          What I meant is that if the head is in the
+%          annotated configuration then the annotated configuration must
+%          contain the current colony
+%          (base colony is OK, just make sure it is clear that it
+%          corresponds to the current cell of M^*).
+ \end{enumerate}
 
     We say that a cell is \df{free} in an annotated configuration
     when it is not in any island or \( \D \).
     The head is \df{free} when \( \D \) is empty.
-
-    An  annotated configuration is \df{centrally consistent} if the workspace is free.
+    % An  annotated configuration is \df{centrally consistent} if the workspace is free.
 \end{definition}
+
+Here are some notes on the requirements above.
+First, on the requirements concerning islands.
+Normally, if an island is created by a burst, it will be eliminated in the next sweep at the latest,
+before other islands could be created.
+If an island is created in the last sweep before leaving a colony,
+then it may be revisited only much later; but then it will be eliminated in the first
+transfer sweep, before the workspace extends over it.
+This accounts for one island per extended colony outside the workspace.
+But during the normal operation of the workspace, while the head is at the edge
+or slightly outside due to zigging or healing, a burst can create another island.
+The careful construction of the healing process (making the boundary address
+of the healing interval \( \lint{a}{b} \) a multiple of \( \E \)) will 
+guarantee that only one such additional
+island can remain in extended colonies outside the workspace.
 
 \begin{definition}\label{def:super-annotated}
 A tuple \( (\xi,\chi,\cI,\D,\cS), \)
@@ -2780,7 +2834,7 @@ In the base colony, either all stains but one are
 within a distance \( \E+\beta\B \) to the left colony boundary,
 or all but one are within a distance \( \E+\beta\B \)
 to the right colony boundary.
-This one is called the \df{internal stain}.
+The one exception is called the \df{internal stain}.
 In all other colonies, all stains but one are
 within distance \( \E + \beta\B \) of the boundary towards the
 base colony.
@@ -2807,8 +2861,101 @@ Intuitively, the definition says that a configuration is
 admissible on an interval, if there are not ``too many'' islands
 in that interval, and that by local changes, we can obtain
 a corresponding healthy configuration on the same interval.
-In Section~\ref{sec:patching}, we will see in more detail how
-such a configuration can be obtained.
+The healing procedure will maintain this property under conditions of sparse
+bursts.
+
+In Lemma~\ref{lem:health-extension} (Health extension) we have seen
+that a tape configuration that is healthy on overlapping intervals is healthy
+on the union.
+We would like to establish something similar for admissibility.
+Recall Definition~\ref{def:segments} of segments.
+
+\begin{definition}[Substantial segments]\label{def:substantial}
+Let \( \xi(A) \) be a tape configuration admissible over an interval \( A \).
+We will call a homogenous segment of \( \xi(A) \) \df{substantial} if it has size 
+at least \( 4\cns{island}\beta\B \).
+The area between two neighboring maximal
+substantial segments or between an end of \( A \) and the closest substantial segment
+will be called \df{ambiguous}.
+It is \df{terminal} if it contains an end of \( A \).
+  Let
+ \begin{align*}
+ \Delta=22\cns{island}\beta,\quad \Delta'=\Delta+3\cns{island}\beta. %?
+ \end{align*}
+\end{definition}
+
+The choice \( 3\beta\B \) above is made to make it larger than the total length of the
+2 possible islands that can interrupt any homogenous segment of the healthy
+configuration.
+
+\begin{lemma}\label{lem:ambiguous}
+  In an admissible tape 
+configuration \( \xi \), the size of each ambiguous area is at most \( \Delta\B \).
+\end{lemma}
+\begin{proof}
+Let \( \chi \) be any healthy configuration satisfying \( \xi \) in an appropriate annotation.
+There are at most 3 boundary pairs in \( \chi \) at a total size of \( 3\B \), 
+further 3 islands in the annotation, of size \( \le\cns{island}\beta\B \), with 4 
+non-substantial segments of sizes \( < 4\cns{island}\beta\B \)
+between them: this adds up to
+\begin{align*}
+ < (3+3\cns{island}\beta+ 4\cdot 4\cns{island}\beta)\B<22\cns{island}\beta\B=\Delta\B.
+ \end{align*}
+\end{proof}
+
+% \begin{lemma}[Uniqueness]\label{lem:uniqueness}
+% Let \( \xi(A) \) be an admissible tape configuration over some interval \( A \).
+% Let \( \chi_{1}(A) \) and \( \chi_{2}(A) \) be two healthy configurations both of which
+% satisfy \( \xi(A) \).
+% Then these can differ only in ambiguous intervals.
+% Moreover, they can differ in at most one non-terminal
+% ambiguous interval, in which case the
+% interval contains the front of \( \chi_{1} \) and \( \chi_{2} \).
+% If in addition they differ in a terminal ambiguous interval,
+% then this interval contains a boundary of type~(r\ref{i:rigid.bridge-target}) for
+% \( \chi_{1} \) and \( \chi_{2} \). 
+% \end{lemma}
+% \begin{proof}
+%   By their definition, inside substantial segments there is no possibility of ambiguity.
+% If an ambiguous segment \( I \) is substantial and does not contain the front 
+% of, say, \( \chi_{1} \), 
+% then the values of \( \chi_{1},\chi_{2} \) over the substantial segments outside \( I \) can
+% be uniquely extended inside \( I \).  \Pnote{Elaborate!}
+
+% If the ambiguous segment is terminal while the front is inside a non-terminal 
+% ambiguous interval, then the non-uniqueness is due to a rigid boundary.
+% It can only be of type~(r\ref{i:rigid.bridge-target}), since we assumed the front 
+% to be elsewhere.
+% \end{proof}
+
+% Here is a consequence of Lemma~\ref{lem:health-extension} for annotated configurations:
+
+% \begin{lemma}[Annotation extension]
+% Let \( I_{1},I_{2} \) be two space intervals with intersection \( \ge\Delta\B \),
+% and \( \xi(I_{1}\cup I_{2}) \) a tape configuration that is admissible separately
+% on both \( I_{1} \) and \( I_{2} \).
+% Then there is a healthy configuration \( \chi(I_{1}\cup I_{2}) \) satisfying
+% \( \xi \) over \( I_{1} \) as well as over \( I_{2} \).
+% \end{lemma}
+% \begin{proof}
+% Without loss of generality assume that \( I_{1} \) begins before \( I_{2} \) begins, and ends before
+% \( I_{2} \) ends.
+% Assume that tape configurations \( \chi_{1} \) and \( \chi_{2} \) satisfy \( \xi \) on \( I_{1} \) and
+% \( I_{2} \) respectively.
+
+% It can be seen \Pnote{Elaborate!}
+% that the only parts where \( \chi_{1} \) and \( \chi_{2} \) may not fit together are the ones
+% that depend on the position of the front.
+% But due to the size of intersection, there will be a front position allowed by both
+% \( \xi(I_{1}) \) and \( \xi(I_{2}) \).
+% \end{proof}
+
+Just as we distinguished super healthy configurations, we will also distinguish super 
+annotated ones.
+\emph{Stains} will account for islands that have been healed, but whose information
+is lost for the purposes of simulation.
+
+
 
 \begin{definition}[Local configuration, replacement]
 \label{def:local-config}
@@ -2838,7 +2985,7 @@ such a configuration can be obtained.
 \end{definition}
 
 
-\section{Patching}\label{sec:patching}
+\section{Stitching}\label{sec:stitching}
 
 In this section we show that an admissible configuration of machine \( M \)
 can be locally corrected.
@@ -2846,156 +2993,46 @@ Moreover, in case the configuration is damage-free then this correction
 can be carried out by the machine \( M \) itself.
 We will deal with the elimination of damage later.
 
-The lemma below shows that local correction can be carried out.
-We add some more explanations after stating it.
+Recall the notion of substantial and ambiguous segments in
+Definition~\ref{def:substantial}.
+We introduce an operation called \df{stitching} below that handles
+ambiguous areas between substantial segments.
+First we handle the simplest case, when the two segments should be
+merged into one.
 
-% Before  spelling out the main lemma of this section,
-% we need to introduce some notation, that will be used throughout this work.
-% Since cells between any two positions \( a \) and \( b \) can be nonadjacent,
-% the notation \( b-a \) or \( a + 3\beta\B \) is not adequate anymore.
-% Recall the definition of outer cells in
-% Definition~\ref{def:outer-cells},
-% and the notion of the address jump in Definition~\ref{def:healthy}.
-
-% \begin{Notation}\label{not:oplus-rho-ominus}
-
-% Let \( a\in\bbZ \) denote a cell position, and let
-% \( b \) be a positive multiple of \( \B \).
-% \begin{align}
-%   a \Plus b := c, \txt{ such that }  a\leq c \txt{ and }
-%   b \leq |c-a| < b + \B,
-% \end{align}
-% and
-% \begin{align}
-%   a \Minus b :=c, \txt{ such that } c \leq a \txt{ and } b \leq |c - a| < b + \B.
-% \end{align}
-% We will use this notation only when between
-% \( a \) and \( c \) at most one small gap exists.
-% \end{Notation}
-
-% Since we want to use the patching procedure in various settings,
-% we do not want to restrict it to admissible configurations
-% only.
-
-% Hence, we introduce the following.
-
-% \begin{definition}[Pre-annotated configuration]\label{def:permissible}
-%      A quintuple
-%      \( \cA=(\xi,\chi, \cI, \cS, \D) \)
-%      is \df{pre-annotated} on interval \( A \),
-%      if by just erasing the rebuild marks (\ie setting
-%      \( \cRebd.\Core \) to \( 0 \), see~\eqref{eq:cRebdCore}) on each cell of \( A \),
-%      \( \cA \) satisfies
-%      all requirements of the Definition~\ref{def:annotated-config} on
-%      \( A \).
-% \end{definition}
-
-% Is this the correct definition of \( \Delta \)?
-
-\begin{definition}\label{def:Delta}
-We will call a homogenous segment of \( \xi \) \df{substantial} if it has size 
-at least \( 5\beta\B \).
-  Let
- \begin{align*}
- \Delta=35\beta,\quad \Delta'=\Delta+5\beta.
- \end{align*}
+\begin{definition}[Mergeable segments]
+Two substantial  segments \( \lint{a_{1}}{b_{1}} \) and \( \lint{a_{2}}{b_{2}} \) will be
+called \df{mergeable} if they are connected to each other with at most
+\( \Delta\beta \) other neighbor cells, and if \( 0<\cAddr'(a_{2})-\cAddr'(b_{1}-1)\le \Delta\beta \).  
 \end{definition}
-
-
-\begin{lemma}[Patching]\label{lem:patching}
-    Let  \( \R=\lint{a}{b} \) be an interval of length at least \( \E\B \).
-    Consider an
-annotated configuration \(  (\xi, \chi, \cI, \D) \)  with the property that in the left half 
-or the right half of \( \R \), there are at least \( \E/2-4\beta \) non-stem cells.
-
-   Then it is possible to compute from \( \xi.\cCore(\R) \) and the additional information telling
-which neighbor cells are adjacent,  an interval
-\begin{align*}
-   \hat \R =\lint{\hat a}{\hat b}
- \end{align*}
-with \( a-\E\B\le\hat a \), \( \hat b \le b+\E\B \),
-and a local configuration \( \zeta = \zeta(\hat \R) \)
-such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
-
-    \begin{enumerate}[\upshape (a)]
-     \item
-        The states of nonempty cells of \( \xi \) can differ from the corresponding cells
-        of \( \zeta \) only in \( \cns{patch}\beta \) cells for a certain constant
-        \( \cns{patch} \)  to be specified below, and in the interval \( \D \).
-
-     \item
-        If \( \xi \) is damage-free then the 
-        computation of \( \zeta \) can be carried out by the machine \( M \)
-        (relying only on \( \xi \) and \( \R \)), using a
-        constant number (independent of \( \beta \), \( Q \))
-        of passes over \( \R \), and a constant number
-        of fields containing values of size \( \le Q \).
-
-   \item\label{i:patching.inside}
-       If \( \chi.\pos < \hat a +\Delta'\B \) then it is \( \le \hat a - \Delta'\B \).
-       Similarly with \( \hat b \).
-
-       \item\label{i:patching.align}
-         Assume that \( \R \) contains at least \( E/2-4\beta \) workspace cells of \( \xi \).
-       Assume \( \Drift(\xi)=1 \).
-       Then we will have \( \hat a-a\ge\E\B/2 \); moreover, extending the addresses of the 
-       rightmost homogenous segment of \( \xi(\hat\R) \) to \( \hat b \) 
-       (in case it did not reach), will give
- \begin{align*}
-   |\cAddr(\hat b) \amod \E|\le \Delta'\B.
- \end{align*}
- The analogous statement holds interchanging left and right if \( \Drift(\xi)=-1 \).
-      \end{enumerate}
-The computation can be carried out by the machine \( M \) using only the configuration
-\( \xi\lint{\hat a-\Delta\B}{\hat b+\Delta\B} \).
-\end{lemma}
-
-The feature~\eqref{i:patching.align} is added for two reasons, both of which 
-will only become important in a healing procedure possibly interrupted by
-a burst.
-The alignment property of the front end of \( \hat R \) will prevent 
-a creeping deposit of more and more islands just beyond the front end.
-The property \( \hat b-b\ge \E\B/2 \) helps make sure that no marked cells are left
-behind when an interrupting new burst triggers new healing.
-
-\begin{Proof}
-\begin{step+}{step:patching.substantial}
-Let us consolidate segments.
-\end{step+}
-\begin{prooofi}
-(There are at most 4 islands in the area to be considered, so this is a segment 
-larger than all of them combined.)
-The area between two neighboring substantial segments will be called \df{ambiguous}.
-
-How large can be the ambiguous areas?
-There are at most 3 boundary pairs at a total size of \( 3\B \), 
-further 4 islands of size \( \le\beta\B \), with non-substantial segments of sizes \( < 5\beta\B \)
-between them: this adds up to \( \le (34\beta+3)\B<35\beta\B=\Delta\B \) 
-by Definition~\ref{def:Delta}.
-
-Let us call two substantial  segments \( \lint{a_{1}}{b_{1}} \) and \( \lint{a_{2}}{b_{2}} \)
-\df{mergeable} if they are connected to each other with at most
-\( 35\beta \) other neighbor cells, and if \( 0<\cAddr'(a_{2})-\cAddr'(b_{1}-1)\le 35\beta \).
 
 It is easy to see that in an admissible configuration, two mergeable substantial segments can indeed
 be merged: one can erase the cells in the ambiguous area
 that cannot be added adjacently to the other ones, and replace them all with adjacent cells,
 having addresses growing from \( \cAddr(b_{1}) \) to \( \cAddr(a_{2})-1 \).
 While doing this, \emph{no cells outside the islands need be changed}.
-Machine \( M \) can recognize mergeable substantial segments and can merge them, going from left to 
-right, one-by-one.
-We will call this operation, and others to come later, \df{stitching}.
 
-Let us stitch also two substantial segments if they are adjacent and form a boundary of type
-(r\ref{i:rigid.outer-workspace}), (r\ref{i:rigid.bridge-target}) (this would be rare),
-(nr\ref{i:nonrigid.sweep}).
-\end{prooofi} % step:substantial
+Machine \( M \) can recognize a pair of mergeable substantial segments.
+If the configuration was admissible it can also merge them: if the merging
+fails then it can be concluded that the configuration is not admissible.
 
-\begin{step+}{step:patching.boundaries1}
-The following stitching operation restores some boundaries between substantial segments,
-that fall into ambiguous areas.
-\end{step+}
-\begin{prooofi}
+
+\begin{definition}[Stitching]\label{def:stitching}
+In an admissible configuration \( \xi \) with a satisfying healthy configuration \( \chi \),
+consider two substantial segments \( I_{1},I_{2} \) with an ambiguous area \( J \) 
+between them: so \( I_{1}\cup J\cup I_{2} \) is an interval.
+We define an operation called \df{stitching}
+on \( \xi(J) \), performable by machine \( M \), that turns the
+\( \xi \) over  \( I_{1}\cup J\cup I_{2} \) into a healthy configuration.
+
+If \( I_{1} \) and \( I_{2} \) are mergeable then we perform the above described merging operation.
+
+If they are not mergeable then \( \chi(J) \) contains one of the possible boundaries
+listed after Lemma~\ref{lem:two-domains}.
+We will recreate such a boundary with the help of \( \xi(I_{1}) \) and \( \xi(I_{2}) \).
+In case that the boundary is rigid, its position will be what it was in \( \chi \),
+otherwise this is not necessary.
+
 Consider a boundary of type~(r\ref{i:rigid.outer-workspace}): for example
 a left extended outer colony, followed by the workspace on the right: base colony or target.
 Then extend the base colony into the ambiguous area
@@ -3010,9 +3047,8 @@ In case of a boundary of type~(r\ref{i:rigid.bridge-target}),
 again we extend the target or colony side first towards the separation,
 and then the bridge toward the new colony end.
 
-Consider a boundary of type~(nr\ref{i:nonrigid.sweep}) covered by an ambiguous area:
-these must be two substantial segments that would be mergeable by the criterion 
-of part~\ref{step:patching.substantial} above, except that they
+Consider a boundary of type~(nr\ref{i:nonrigid.sweep}) covered by an ambiguous
+area: it must be between substantial segments that would be mergeable, except that they
 differ in their sweep values by 1 (and also possibly in the kind of cells,
 as colony or bridge cells are converted into target cells, or a target cells into member cells
 in the sweep of question).
@@ -3028,111 +3064,195 @@ other bridge or a colony.
 If it is meeting an old colony or a target then first extend the colony to its maximum,
 then extend the new bridge to meet it.
 If there is an old bridge to meet it, then extend the old bridge as much as possible.
-If it is meeting a desert then extend replace the desert with adjacent 
+If it is meeting a desert then replace the desert with adjacent 
 stem cells that extend the bridge.
-\end{prooofi} % step:boundaries1
-
-\begin{step+}{step:patching.extend}
-  Let us extend the ends of \( \R \) to satisfy the requirement~\eqref{i:patching.align}.
-\end{step+}
-\begin{prooofi}
-In case that we started from an admissible configuration, the above operations
-created a sequence of substantial segments adjacent to each other, satisfying the 
-requirements of a healthy configuration.
-After they were merged, then according to Lemma~\ref{lem:two-domains},
-they must form at most two \df{domains} consisting of adjacent cells, that extend
-to within \( \Delta\B \) of the boundaries \( a,b \).
-We can also determine a value \( \delta \).
-If there is any substantial segment belonging to the workspace
- then it is be the majority value of its \( \cDrift \), otherwise it is 
-the majority value of \( \cDrift \) over all non-stem segments (these are not outer cells).
-
-Assume \( \delta=1 \).
-Let \( b' \) be the right end of the rightmost one of these domains,
-and let \( \alpha=\cAddr(b') \).
-Consider the following operation:
- \begin{itemize}
-\item[(*)] 
-Set \(  b'\gets b+\Delta'\B \), perform the needed stitching operations on the 
-new interval \( \lint{a}{b'} \), and 
-compute a new value of \( b' \) as the right end of the rightmost domain.
- \end{itemize}
-Perform the operation (*) until the condition below holds:
- \begin{align}\label{eq:patching.terminate}
-   b'\ge b+\E/2 \text{ and }    |\cAddr(b') \amod \E| \le \Delta'.
- \end{align}
-\end{prooofi} % step:patching.finish
-
-\begin{step+}{step:patching.cutoff}
-Finally, we satisfy the requirement~\eqref{i:patching.inside}.
-\end{step+}
-\begin{prooofi}
-There may still be ambiguous areas left on the ends.
-If there is such an area for example on the left side then we cut off \( \Delta'\B \) 
-from the left end.
-The operations we performed shifted the front of the healthy configuration by at most
-\( \Delta'\B \).
-If by this or by the above cutting off the end, the head got closer than \( \Delta'\B \) to the
-end then we cut off another \( \Delta'\B \) length from that end.
-\end{prooofi} % step:patching.cutoff
-
-It should be clear that all these operations can be accomplished by a constant number of
-passes on machine \( M \).
-\end{Proof}
-
-\begin{definition}\label{def:patching-failure}
-If any of the stitching operations described in the above proof
-does not lead to the required result then we
-declare that the patching \df{failed}, since this is 
-a proof that the configuration \( \xi \) we started from is not admissible.
 \end{definition}
 
-% Later we will see that the procedures that use
-% the algorithm from Patching Lemma~\ref{lem:patching}
-% will have their own structures in terms of
-% certain designated fields of the state.
-% Similarly to \( \Addr \) and \( \cAddr \) fields of the state
-% and tape, respectively,
-% healing procedure and the rebuild procedure that
-% we will introduce later will have their own
-% addressing.
-% Hence, we can always express a position of a cell
-% of interest relative to these addresses.
+% The lemma below shows that local correction can be carried out.
+% We add some more explanations after stating it.
+
+% % Before  spelling out the main lemma of this section,
+% % we need to introduce some notation, that will be used throughout this work.
+% % Since cells between any two positions \( a \) and \( b \) can be nonadjacent,
+% % the notation \( b-a \) or \( a + 3\beta\B \) is not adequate anymore.
+% % Recall the definition of outer cells in
+% % Definition~\ref{def:outer-cells},
+% % and the notion of the address jump in Definition~\ref{def:healthy}.
+
+% % \begin{Notation}\label{not:oplus-rho-ominus}
+
+% % Let \( a\in\bbZ \) denote a cell position, and let
+% % \( b \) be a positive multiple of \( \B \).
+% % \begin{align}
+% %   a \Plus b := c, \txt{ such that }  a\leq c \txt{ and }
+% %   b \leq |c-a| < b + \B,
+% % \end{align}
+% % and
+% % \begin{align}
+% %   a \Minus b :=c, \txt{ such that } c \leq a \txt{ and } b \leq |c - a| < b + \B.
+% % \end{align}
+% % We will use this notation only when between
+% % \( a \) and \( c \) at most one small gap exists.
+% % \end{Notation}
+
+% % Since we want to use the patching procedure in various settings,
+% % we do not want to restrict it to admissible configurations
+% % only.
+
+% % Hence, we introduce the following.
+
+% % \begin{definition}[Pre-annotated configuration]\label{def:permissible}
+% %      A quintuple
+% %      \( \cA=(\xi,\chi, \cI, \cS, \D) \)
+% %      is \df{pre-annotated} on interval \( A \),
+% %      if by just erasing the rebuild marks (\ie setting
+% %      \( \cRebd.\Core \) to \( 0 \), see~\eqref{eq:cRebdCore}) on each cell of \( A \),
+% %      \( \cA \) satisfies
+% %      all requirements of the Definition~\ref{def:annotated-config} on
+% %      \( A \).
+% % \end{definition}
 
 
-% We can aggregate all information
-% that define \( \zeta \) in the following
-% tuple.
+% \begin{lemma}[Patching]\label{lem:patching}
+%     Let  \( \R=\lint{a}{b} \) be an interval of length at least \( 2\E\B \).
+%     Consider an
+% annotated configuration \(  (\xi, \chi, \cI, \D) \)  with the property that in the left half 
+% or the right half of \( \R \), there are at least \( \E-3\beta \) non-stem cells.
 
-% \begin{definition}[Correction data]\label{def:correction-data}
-%   The following information
-%     \begin{align*}\Delta = (s,\alpha,\alpha',\sigma,\sigma',
-%       \delta,\f, \ga)\end{align*}
-%   incorporates all the data defining the corrected healthy
-%   local configuration \( \zeta(\hat \R) \), provided that
-%   \( \R \) and an addressing on it is given:
-%   \begin{bullets}
-%     \item
-%       \( s\in\{-4, -2, -1,0,1, 2, 4\} \) says which of the seven
-%       alternative values of \( \R_0^4 \),\( \R_2^4 \), \( \R_2^0 \), \( \R \), \( \R_0^2 \), ,
-%        \( \R_4^0 \), \( \R_4^2 \) does \( \hat \R \) have.
-%     \item
-%       \( \alpha,\alpha',\sigma,\sigma' \) help computing
-%       the address and sweep values as seen in the proof
-%       of the Patching Lemma~\ref{lem:patching}.
-%     \item
-%       \( \delta \) is the \( \cDrift \) value shared by all
-%       elements of the workspace inside \( \hat \R \)
-%       in case \( \sigma\ge\TransferSw(1) \) or \( \sigma = 1 \).
-%     \item
-%       \( \f = \front(\zeta) - a \) in case \( \hat\R \in \set{\R, \R_0^2, \R_2^0} \).
-%     \item \( \ga \) is a pair of two address values of some fixed
-%     addressing established in \( \R \), that
-%     correspond to
-%        the pair of cells that are non-adjacent or
-%         have an address jump.
-%   \end{bullets}
+%    Then it is possible to compute from \( \xi.\cCore(\R) \) and the additional information telling
+% which neighbor cells are adjacent,  an interval
+% \begin{align*}
+%    \hat \R =\lint{\hat a}{\hat b}
+%  \end{align*}
+% with \( a-\E\B\le\hat a \le a + 2\Delta'\B \), \( b-2\Delta'\B\le\hat b \le b+\E\B \),
+% and a local configuration \( \zeta = \zeta(\hat \R) \)
+% such that \( \xi |\zeta(\hat \R) \) is healthy, and the following holds.
+
+%     \begin{enumerate}[\upshape (a)]
+%      \item
+%         The states of nonempty cells of \( \xi \) can differ from the corresponding cells
+%         of \( \zeta \) only in \( \cns{patch}\beta \) cells for a certain constant
+%         \( \cns{patch} \)  to be specified below, and in the interval \( \D \).
+
+%      \item
+%         If \( \xi \) is damage-free then the 
+%         computation of \( \zeta \) can be carried out by the machine \( M \)
+%         (relying only on \( \xi \) and \( \R \)), using a
+%         constant number (independent of \( \beta \), \( Q \))
+%         of passes over \( \R \), and a constant number
+%         of fields containing values of size \( \le Q \).
+
+%    \item\label{i:patching.inside}
+%        If \( \chi.\pos < \hat a +\Delta'\B \) then it is \( \le \hat a - \Delta'\B \).
+%        Similarly with \( \hat b \).
+
+%        \item\label{i:patching.align}
+%          Assume that \( \R \) contains at least \( \E-3\beta \) workspace cells of \( \xi \),
+%  and the majority sweep among these is 1.
+%        Then we will have \( \hat a-  a\ge\E\B/2 \); moreover, extending the addresses of the 
+%        leftmost homogenous segment of \( \xi(\hat\R) \) to \( \hat a \) 
+%        (in case it did not reach), will give
+%  \begin{align}\label{eq:alignment}
+%    |\cAddr(\hat a) \amod \E|\le \Delta'\B.
+%  \end{align}
+%  The analogous statement holds interchanging left and right if \( \Drift(\xi)=-1 \).
+%       \end{enumerate}
+% The computation can be carried out by the machine \( M \) using only the configuration
+% \( \xi\lint{\hat a-\Delta\B}{\hat b+\Delta\B} \).
+% \end{lemma}
+
+% Property~\eqref{i:patching.inside} says that if the front is near the
+% interval \( \hat\R \) then it is well inside it: this makes sure that 
+% the new placement of the front is based on sufficient information.
+
+% The feature~\eqref{i:patching.align} is added for two reasons, both of which 
+% will only become important in a healing procedure possibly interrupted by
+% a burst.
+% The alignment property~\eqref{eq:alignment} of the rear end of \( \hat R \) will prevent 
+% a creeping deposit of more and more islands just beyond the front end.
+% The property \( \hat a-a\ge \E\B/2 \) helps make sure that no cells marked for
+% healing are left behind when an interrupting new burst triggers new healing.
+% The idea is that 
+
+% \begin{Proof}
+% \begin{step+}{step:stitch}
+% Let perform all the stitching operations between substantial segments.
+% \end{step+}
+
+% \begin{step+}{step:patching.extend}
+%   Let us extend the ends of \( \R \) to satisfy the requirement~\eqref{i:patching.align}.
+% \end{step+}
+% \begin{prooofi}
+% \begin{step+}{step:patching.cutoff}
+% Finally, we satisfy the requirement~\eqref{i:patching.inside}.
+% \end{step+}
+% \begin{prooofi}
+% There may still be ambiguous areas left on the ends.
+% If there is such an area for example on the left side then we cut off \( \Delta'\B \) 
+% from the left end.
+% The operations we performed shifted the front of the healthy configuration by at most
+% \( \Delta'\B \).
+% If by this or by the above cutting off the end, the head got closer than \( \Delta'\B \) to the
+% end then we cut off another \( \Delta'\B \) length from that end.
+% \end{prooofi} % step:patching.cutoff
+
+% It should be clear that all these operations can be accomplished by a constant number of
+% passes on machine \( M \).
+% \end{Proof}
+
+% \begin{definition}\label{def:patching-failure}
+% If any of the stitching operations described in the above proof
+% does not lead to the required result then we
+% declare that the patching \df{failed}, and this can be taken as 
+% a proof that the configuration \( \xi \) we started from is not admissible.
 % \end{definition}
+
+% % Later we will see that the procedures that use
+% % the algorithm from Patching Lemma~\ref{lem:patching}
+% % will have their own structures in terms of
+% % certain designated fields of the state.
+% % Similarly to \( \Addr \) and \( \cAddr \) fields of the state
+% % and tape, respectively,
+% % healing procedure and the rebuild procedure that
+% % we will introduce later will have their own
+% % addressing.
+% % Hence, we can always express a position of a cell
+% % of interest relative to these addresses.
+
+
+% % We can aggregate all information
+% % that define \( \zeta \) in the following
+% % tuple.
+
+% % \begin{definition}[Correction data]\label{def:correction-data}
+% %   The following information
+% %     \begin{align*}\Delta = (s,\alpha,\alpha',\sigma,\sigma',
+% %       \delta,\f, \ga)\end{align*}
+% %   incorporates all the data defining the corrected healthy
+% %   local configuration \( \zeta(\hat \R) \), provided that
+% %   \( \R \) and an addressing on it is given:
+% %   \begin{bullets}
+% %     \item
+% %       \( s\in\{-4, -2, -1,0,1, 2, 4\} \) says which of the seven
+% %       alternative values of \( \R_0^4 \),\( \R_2^4 \), \( \R_2^0 \), \( \R \), \( \R_0^2 \), ,
+% %        \( \R_4^0 \), \( \R_4^2 \) does \( \hat \R \) have.
+% %     \item
+% %       \( \alpha,\alpha',\sigma,\sigma' \) help computing
+% %       the address and sweep values as seen in the proof
+% %       of the Patching Lemma~\ref{lem:patching}.
+% %     \item
+% %       \( \delta \) is the \( \cDrift \) value shared by all
+% %       elements of the workspace inside \( \hat \R \)
+% %       in case \( \sigma\ge\TransferSw(1) \) or \( \sigma = 1 \).
+% %     \item
+% %       \( \f = \front(\zeta) - a \) in case \( \hat\R \in \set{\R, \R_0^2, \R_2^0} \).
+% %     \item \( \ga \) is a pair of two address values of some fixed
+% %     addressing established in \( \R \), that
+% %     correspond to
+% %        the pair of cells that are non-adjacent or
+% %         have an address jump.
+% %   \end{bullets}
+% % \end{definition}
 
 
 
@@ -3148,15 +3268,18 @@ to repair a larger interval.
 On a higher level of simulation, 
 this corresponds to the implementation of the trajectory properties
 in which damage ``magically'' disappears.
-The healing procedure runs in \( O(\beta^{2}) \) \Pnote{was \( \beta \)}
-steps, whereas rebuilding needs \( O(Q) \) steps.
+The healing procedure runs in \( O(\beta^{2}) \) 
+steps, whereas rebuilding needs \( O(Q^{2}) \) steps. \Pnote{maybe even \( Q^{3} \)?}
 
-Throughout this section, it will look as if we assumed that the there is no noise or damage.
-The rules described here remove the damage under the 
-appropriate conditions, and will also work under the appropriate noise conditions.
+The details of the section look as if we assumed that there is no noise or damage.
+The rules described here, however, will remove the damage under the 
+appropriate conditions, and will also work under appropriately moderate noise.
 
-The healing procedure opens an interval \( \R = \lint{a}{b} \) to which it applies the
-patching algorithm of the proof of the Patching Lemma~\ref{lem:patching}.
+The healing procedure designates an interval \( \lint{a}{b} \)
+to which it applies the
+stitching operations defined above in Definition~\ref{def:stitching}.
+This healing interval may be extended somewhat during the procedure.
+
 
 \subsection{Healing addresses}\label{sec:rec-addr}
 
@@ -3167,33 +3290,38 @@ we will use the address field
  \end{align*}
 in a more complicated way than the main simulation.
 It will count the number of cells 
-from the left end of the healing interval to the current cells if it is positive,
+from the left end of the healing interval to the current cell if it is positive,
 and from the right end if it is negative.
 Starting from the head, \( \cHeal.\Addr \) decreases to 0 towards the left, 
 and increases to 0 towards the right (its value under the head belongs to
 the left or the right segment depending on the direction of movement).
 Using two counts instead of one helps keeping track of the position of important points,
-even though at the head occasionally a new cell will be inserted.
+even though occasionally a new cell will be inserted at the head.
 
 The updating will also use the fields
 \( \Heal.\Addr_{-1} \) and \( \Heal.\Addr_{1} \) of the state.
 When moving in direction \( j \), field \( \Heal.\Addr_{-j} \) remembers the last
-value of \( \cHeal.\Addr \) set, and field \( \Heal.\Addr_{j} \) the last one seen 
-before setting.
+value of \( \cHeal.\Addr \) written, and field \( \Heal.\Addr_{j} \) the last one seen 
+before writing.
 We also set \( \cHeal.\Addr\gets\Heal.\Addr_{-j}+j \).
 (Some modification will be needed for the case when one of the fields is 0.) \Pnote{!}
 
 \subsection{Healing stages}\label{sec:rec-stages}
 
 Whenever we say that a rule ``checks'' something,
-it is understood that if the check fails, \( \Alarm \) is called, restarting the 
+it is understood that if the check fails, the rule \( \Alarm \) is called, restarting the 
 healing from scratch.
 This will be judged insufficient in some cases: for example if 
 the healing interval contains cells marked for the rebuilding procedure (see later),
-or the patching algorithm given in Section~\ref{sec:patching} fails in a way
+or the healing procedure fails in a way
 indicating that the underlying configuration is not admissible.
-This indicates a ``bigger mess'', and is followed by a call to
-the rule \( \GiveUp \) that we will specify later.
+This indicates a ``bigger mess'', and is followed by a call to the rule
+\begin{align*}
+ \GiveUp 
+ \end{align*}
+that we will specify later.
+We will sometimes just say: then the machine \df{gives up}, meaning that the
+\( \GiveUp \) rule is called.
 
 There is a field \( \cHeal.\Dir \) used only to record the direction
 of movement in the special case when the head steps onto a vacant or stem cell.
@@ -3203,7 +3331,7 @@ measures the progress, just as \( \Sweep \) in the main program.
 There is a corresponding \( \cHeal.\Sweep \) field in the cells.
 According to the values of \( \Heal.\Sweep \), we distinguish \df{stages}.
 % It is convenient to 
-% introduce a \df{pseudofield} \( \Stage \) (just a function of
+% introduce a \df{pseudo-field} \( \Stage \) (just a function of
 % \( \Heal.\Sweep \)), with the following possible values:
 %  \begin{align*}
 %    \Stage\in\{\Planning,\Committing\}.
@@ -3224,8 +3352,7 @@ Each committing stage is \( \beta \) steps long.
 Even if more could be accomplished at that stage, a new planning stage
 is called which decides again what to do.
 This limits the possible effect of any burst interrupting healing.
-On the other hand, we make 
-each planning stage is \( \beta \) \emph{sweeps} long.
+On the other hand, each planning stage is \( \beta \) \emph{sweeps} long.
 The cause is not evident here, since it seems  that a couple of sweeps should
 be sufficient to gather information.
 However, we want our healing procedure eventually to work even
@@ -3234,7 +3361,7 @@ And damage can in principle kick back the healing sweeps repeatedly,
 while retreating only one cell at a time.
 So it may take \( \beta \) sweeps to pass through an island.
 
-Suppose that \( \Alarm \) is called at some position \( z_{1} \).
+Suppose that \( \Alarm \) is called at some position \( \z \).
 Then it sets  \( \Mode\gets\Healing \),  \( \Stage\gets\Marking \),
 \( \Heal.\Sweep \gets 1 \), and \( \Heal.\Addr = 0 \).
 
@@ -3246,47 +3373,99 @@ all the time: (some modification may be needed when an address is 0): \Pnote{!}
                   \item 
                         Check if \( \cHeal.\Sweep = \Heal.\Sweep -1 \).
               \end{bullets}
+\begin{flushdescription}
 
-Healing starts by surveying an initial area of size \( 2\Z \), without marking it.
-Suppose that in this area, it finds at least one substantial homogenous segment
-(see Definition~\ref{def:Delta}) showing that the middle of the base colony
-is in direction \( \delta \), and finds no substantial homogenous segment
-pointing to a different direction.
+\item[Locating]
+Healing starts by marking and surveying an initial interval of \( \Delta' \) cells
+to the left and \( \Delta' \) cells to the right of \( \z \), in order
+to determine the direction \( \delta \) in which a larger-scale marking should start.
+If no substantial (see Definition~\ref{def:substantial}) 
+homogenous segment is found then we give up;
+suppose that such a segment is found.
 
-Next, the procedure marks out the initial healing area \( \R \).
+Suppose that at least one such substantial homogenous segment belongs to the workspace.
+If all such segments show the same sweep value \( \sigma \)
+then let \( \delta=-\sigma \).
+If these segments show two sweep values ponting towards each other, then
+let \( \delta \) be the direction of the older one.
+
+Suppose that there is no workspace segment, but each substantial segment
+shows the same \( \Drift \) value: then we call this value \( \delta \).
+
+In all other cases we give up.
+
+\item[Marking]
+Next, the procedure marks out the initial healing area \( \lint{a}{b} \).
 It marks every cell it passes, and alarms if any of the cells
 along the way that it expects to be marked is not.
-Let \( \delta'=\delta \) if \( \delta \) was determined above, and \( -1 \) otherwise.
-First, we mark \( \E \) cells in the direction \( \delta' \)
-from \( z_{1} \), then further \( \E \) cells on the other side.
-(This achieves that in case a new burst tries to drive away the head from 
-even a partially marked area, zigging will bring it back.)
-Whenever the head steps on a stem cell or just creates a new cell, 
-\( \cDrift \) is set to point to \( z_{1} \).
-All this process is broken up into planning and commitment stages as outlined above.
+First, we mark \( \E/2 \) cells in the direction \( \delta \)
+from \( \z \), further \( \E \) cells on the other side.
+(This way if a new burst drives the head away from 
+an---even partially---marked area, it will be noticed that the
+front is left behind, allowing no orphaned marks to be left behind.)
 
-Next, in each planning stage 
+Whenever the head steps on a stem cell or creates a new cell, 
+\( \cDrift \) is set to point to \( \z \) (tomake sure that the head does not get
+lost in the desert).
+All this process is broken up into planning and commitment stages as outlined
+above.
+
+\item[Stitching] Next, in each planning stage 
 the healing area is surveyed to gather information needed to carry out the
-operations outlined in the proof of the Patching Lemma~\ref{lem:patching}.
-A bounded number of substantial segments are found, (using some working track and working
-field which we do not give a name to), and it is determined what needs to be done
+stitching operations.
+A bounded number of substantial segments are found, (using some working tracks and working
+fields which we do not name), and it is determined what needs to be done
 to each of the boundaries between them.
 The first up to \( \beta \) steps of such a stitching operation are carried out in the
 next commitment stage, and then the process will be repeated.
-If at any point, it is determined that the configuration in question is not admissible
+If it is concluded at any point that the configuration in question is not admissible
 then the \( \GiveUp \) rule is called.
 
-The planning-commitment stages are iterated enough times (just a large absolute constant)
-to make sure that the goals of the Patching Lemma have been
-achieved.
-Then the marks are removed (again alternating planning and committing stages)
+The planning and commitment stages are iterated enough times (just a large absolute constant)
+to make sure that everything inside \( R \) has been stitched.
+
+In case that we started from an admissible configuration, the above operations
+created a sequence of substantial segments adjacent to each other, satisfying the 
+requirements of a healthy configuration.
+After they were merged, then according to Lemma~\ref{lem:two-domains},
+they must form at most two \df{domains} consisting of adjacent cells, that extend
+to within \( \Delta\B \) of the boundaries \( a,b \).
+
+\item[Extending]
+Let \( a'\ge a \) be the left end of the leftmost one of the domains,
+and let \( \alpha=\cAddr(a') \).
+If \( a' \) is not the end of a bridge with \( \cDrift=-1 \), then
+keep extending this domain to the left (adding an adjacent cell
+to the repair area and changing \( a' \) accordingly to \( a'-\B \)),
+until \( \cAddr(a')\eqv 0\pmod{\E} \).
+Any adjacent cell must be rewritten, any non-adjacent cell in the way must be killed.
+(This operation must also happen in planning and committing stages as described above.)
+Perform the corresponding operation also on the right end.
+Let \( \lint{a}{b} \) denote the final domain \( \lint{a'}{b'} \).
+
+\item[Trimming]
+Compute the position \( p \) of the front of the new configuration (or find out whether
+is outside \( \lint{a}{b} \)).
+Now we change the interval
+\( \lint{a}{b} \) to achieve the property that if the front \( p \) is inside it then it is not near
+the boundary:
+
+If \( p - a < \Delta'\B \) then increase \( a \) by \( \Delta'\B \).
+If \( p - b \le \Delta'\B \) then decrease \( b \) by \( \Delta'\B \).
+While doing this, \emph{the marks will not be erased}.
+(This is designed to cause a new alarm after the healing finishes,
+on the end where the trimming occurred.)
+
+\item[Mopping]
+Finally the marks are removed (again alternating planning and committing stages)
 in the following manner.
-If the front of the new configuration is to the left of \( \hat R \), then the marks 
-are removed starting from the right.
-If it is on the right, then they are removed starting from the left.
-If it is inside then first remove the marks starting from the left end, up to the front, 
-then from the right end, up to the front.
-This way, the head healing area shrinks to the front.
+If it the front is on the right of \( \lint{a}{b} \), then they are removed starting from the left;
+if it is on the left then they are removed from the right.
+If it is inside then they are removed first from the end in direction \( \delta \) to the front,
+(that is starting from behind the front), then from the other end to the front.
+This way, the healing area shrinks to the front while always containing the head.
+\end{flushdescription}
+
 
 
 \section{Rebuilding}\label{sec:rebuilding}
@@ -3302,7 +3481,7 @@ it is important not only that it is invoked when it is needed, but that it is no
 invoked otherwise!
 It will be invoked at the end of a failed healing, and it will be designed
 to fail immediately (to result in an alarm) 
-if launched in any of its stages from just a burst.
+if launched under normal conditions into any of its stages from just a burst.
 What assures this is that a rebuild starts from a marked area of a failed
 healing.
 The failure is determined
@@ -3311,40 +3490,48 @@ Then a final sweep, checking that the two tracks identically show failure, turns
 the heal marks into rebuild marks, and thus the healing region into the germ of a
 rebuilding region.
 Rebuilding starts by extending the germ to the right.
-It will use use zigging, expecting marked cells on its backward zig.
+It will use zigging, expecting marked cells on its backward zig.
 It can find these in the first time only in the germ, so if rebuilding 
-started from just a burst then alarm will follow immediately.
+started from just a burst then alarm follows immediately.
 
 The crude outline is this:
-\begin{bullets}
- \item Mark a rebuilding area consisting of \( 4Q \) cells \Pnote{?}
+\begin{flushdescription}
+ \item[Marking] Mark a rebuilding area consisting of \( 4Q \) cells \Pnote{?}
    extending in both directions from the germ, similarly to marking a healing area.
 
- \item Survey the rebuilding area, keeping track of addresses just as in the healing procedure,
-  looking for candidate whole colonies (with a few possible islands in them).
+ \item[Survey] Survey the rebuilding area, 
+   keeping track of addresses just as in the healing procedure,
+   looking for candidate whole colonies (a few substantial segments with disjoint 
+   addresses fitting into a colony, with the allowed number of possible islands 
+   between them).
 
- \item For each candidate colony, attempt a stitching operation over each island.
+ \item[Stitching] For each candidate colony, attempt a stitching operation over each island.
  If one of the stitches in a candidate colony does not succeed,
  the candidate does not become a colony.
- Mark this result on a track (distinguishing accepted colony cells from the rest).
- Then repeat the whole operation and accept the end result only if the two tracks agree
- (otherwise call alarm).
+ Mark this result on a track, distinguishing accepted colony cells from the
+ rest, which will be marked as \df{stragglers}.
+ Then repeat the whole operation and accept the end result only if the two tracks agree.
+ Otherwise call alarm (which in due course may restart a rebuilding).
+
+\item[Creation] If there is no colony at all, create one, overriding any stragglers.
  
-\item If there is no colony at all, create one.
+\item[Initialize] 
   Declare one of the colonies the base colony, in starting sweep.
   If there is only the base colony, grow other colonies from it in both directions.
   Put all other colonies into end sweep with drift towards the base colony, and
   grow bridges from them in the gaps between them towards the base colony.
   If any bridge gets \( Q \) cells, turn it into yet another colony.
+  Throughout this, override any stragglers.
 
-\end{bullets}
+\item[Mopping] Remove the rebuild marks similarly to the healing procedure.
+\end{flushdescription}
 
 How to defend against the effects of a burst during the rebuild procedure?
 Just as with healing, there is only limited defense.
 The major decision on which cells belong to colonies is made twice, with the
 two results compared.
-Otherwise if the usual zigging, with simple consistency check on the rebuild addresses
-and sweeps fails, alarm is called.
+Otherwise if the usual zigging (with simple consistency check on the rebuild addresses
+and sweeps) fails, alarm is called.
 This will most likely start another rebuilding, which now will operate without a burst.
 Traces (say, marked cells) from the first, interrupted rebuilding might remain,
 the analysis will deal with this possibility.
@@ -3352,10 +3539,10 @@ the analysis will deal with this possibility.
 
 
 
-\section{Resisting Isolated Bursts of Faults}
+\section{Resisting isolated bursts}
 \label{sec:1-level-noise}
 
-In order to show what can be achieved by the recovery procedure,
+In order to show what can be achieved by the healing procedure,
 we extend the notions of annotation and admissibility to histories.
 
 
@@ -3370,24 +3557,21 @@ interval, the definition of annotation, and so on, for histories
 will be local for a certain space-time rectangle.
 But just as there, we will not keep mentioning this all over the definition.
 
-Recall the definition of (possibly centrally consistent)
-annotated configuration on an interval \( A \) given
-in Definition~\ref{def:annotated-config}.
-In such a configuration, a cell is free when it does not
-belong to an island or to the distress area.
-We also said that the head is free if the distress area is empty.
+In a configuration in which the workspace is free, a cell is free when it does not
+belong to an island or to the healing area.
+We also said that the head is free if the healing area is empty.
 
 \begin{definition}[Annotated history]\label{def:annotated-hist}
 % Let \( \tau = [t, t+k) \), for \( t, k\in\bbZ_{\geq 0} \), \( k>0 \),
 % and let \( A \) be a space interval.
 
-    An \df{annotated history} of
-     \begin{align*}
-        M=(\Gamma,\Sigma,\delta,q_{\start},F,B,\Tu{}),
+An \df{annotated history} of a generalized Turing machine
+    \begin{align*}
+        M=(\Gamma,\Sigma,\delta,q_{\start},F,B,\Tu{})
      \end{align*}
-    is a sequence of annotated configurations over a certain time interval,
-    if its sequence of underlying configurations is a 
-    (localized) trajectory satisfying some additional requirements given below.
+is a sequence of annotated configurations over a certain time interval,
+if its sequence of underlying configurations is a 
+(localized) trajectory satisfying some additional requirements given below.
 
     % Let
     % \begin{align}\label{eq:cB}
@@ -3396,33 +3580,27 @@ We also said that the head is free if the distress area is empty.
     % denote a constant value that we will
     % define later that we call the \df{damage attraction range}.
 
-    We require that over the whole time interval, the head stays by at least a
-    distance \( 3\B \) inside from the ends of the space interval considered.
+We require that over the whole time interval, the head stays by at least a
+distance \( 3\B \) inside from the ends of the space interval considered.
 
-    If the head is in a free cell, in normal mode, then
-    the time (and the configuration) will be called
-    \df{distress-free}.
-    If the annotated configuration at a certain time
-    is centrally consistent, then we call
-    that time \df{centrally consistent}.
-    A time that is not distress-free and was preceded by
-    a distress-free time
-    will be called a \df{distress event}.
+If the head is in a free cell, in normal mode, then
+the time (and the configuration) will be called \df{distress-free}.
+% If in the annotated configuration at a certain time the workspace is free, 
+% then we call that time \df{centrally consistent}.
+A time that is not distress-free and was preceded by
+a distress-free time will be called a \df{distress event}.
 
-    Consider a time interval \( \lint{t_1}{t_1+u} \) starting
-    with a distress event and ending with the head
-    becoming free again.
-    It is called a \df{relief event} of \df{duration} \( u \)
-    if the only possible islands that remains from the distress area
-    are due to some burst
-    that occurred at a time intersecting \( \lint{t_1}{t_1 + u} \).
-    Moreover, if such islands
-    exist, then the sweep direction from before the
-    distress event is preserved, except when the island is
-    outside the extended base colony---then it will be reversed.
+Consider a time interval \( \lint{t_1}{t_1+u} \) starting
+with a distress event and ending with the head becoming free again.
+It is called a \df{relief event} of \df{duration} \( u \)
+if the only possible islands that remains from the healing area
+are due to some burst that occurred at a time intersecting \( \lint{t_1}{t_1 + u} \).
+Moreover, if such islands exist, then the sweep direction from before the
+distress event is preserved, except when the island is
+outside the extended base colony---then it will be reversed.
 
-    The \df{extent} of a relief event is the maximum size
-    interval covering the distress area during the distress.
+The \df{extent} of a relief event is the maximum size
+interval covering the healing area during the distress.
 
     % Recall the definition of the parameter
     % \( K_\R \) in~\eqref{eq:K_R}.
@@ -3434,7 +3612,7 @@ We also said that the head is free if the distress area is empty.
             Islands (whose size do not exceed \( \beta\B \))
             are only created
             by bursts.
-            The distress area starts out as an island.
+            The healing area starts out as an island.
 
        % \item \label{i:annotated-hist.damage-progress}
        %      Islands  have
@@ -3495,20 +3673,14 @@ We also said that the head is free if the distress area is empty.
 %\end{remark}
 
 
-
-
-
-\subsection{The outline of the chapter}
-
- In this chapter, we will show how any trajectory \( (\eta, \Noise) \) 
+ In what follows we will show how any trajectory \( (\eta, \Noise) \) 
  of a generalized Turing machine \( M \) 
  that is annotated on a large interval \( I \), remains annotated
  as long as no larger bursts than \( \beta\B \) occur and the
  head does not leave \( I \).
 
- The main part of the proof is about obtaining a relief
- after a distress event.
- Unlike in~\cite{burstyTuring12Conf}, in this work, islands 
+ The main part of the proof is about obtaining relief  after a distress event.
+ Unlike in~\cite{burstyTuring13}, in this work, islands 
  may have their cell structure damaged.
  Hence, when the head is in an island for a certain
  time, we cannot talk immediately about the cells in it
@@ -3527,7 +3699,9 @@ trajectory introduced in Definition~\ref{def:traj}.
 
 \subsection{Escape}
 
-In the elimination of damage, we will rely on the following property of our transition rule.
+In the elimination of damage, we will use the following fact.
+Recall the constant \( \cDamClearT \) from Definition~\ref{def:traj}
+of trajectories.
 
 \begin{lemma}[Damage-free escape]\label{lem:dam-free-esc}
  There is a constant
@@ -3539,15 +3713,77 @@ Suppose that \( I \) is any interval of size \( \le n\B \) for an integer \( n \
 that contains no damage.
 Then the head spends at most \( \cDamFreeEsc  n^{2} \) noise-free steps inside without leaving it.
 \end{lemma}
+\begin{Proof}[Proof for the case \( n<Q \)]
+  The proof here begins a pattern of similar proofs that, unfortunately, involve a
+  number of case distinctions.
+\begin{step+}{step:dam-free-esc.normal}
+Assume that at the beginning, the mode is normal.
+Then either escape or an alarm call happens within \( O(\beta n) \) steps.
+\end{step+}
+\begin{pproof}
+The head begins or continues a sweeping motion that, with some zigging 
+switchbacks, passes over an area at least the size of a colony.
+If it does not discover any incoordination then it escapes \( I \)
+within \( \Z n \) steps, otherwise alarm will be called.
+\end{pproof} % step:dam-free-esc.normal
+\begin{step+}{step:damage-free-esc.alarm}
+Suppose that at some time \( t \) while the head is inside \( I \), alarm will be called.
+Then escape happens within \( O(\beta n) \) steps.
+\end{step+}
+\begin{pproof}
+In the absence of damage or noise, no alarm will be called before the end of 
+the healing procedure.
 
-We will prove this lemma later, since it relies on a detailed analysis of healing 
-and rebuilding.
-But at least, that analysis does not have to count with damage.
+If healing ends in a call to the rule \( \GiveUp \) then, as outlined in 
+Section~\ref{sec:rebuilding}, the rebuilding procedure is called.
+Since it started from failed healing, it starts from a sufficient base of
+marked cells to guarantee that no more alarm will be called before it ends.
+In its the first stage, the rebuilding procedure sweeps over an area of size greater
+than \( Q\B \), assuring escape from interval \( I \).
+
+Suppose therefore that healing ends successfully.
+In this case the configuration becomes healthy
+over the last interval \( \lint{a}{b} \) of the healing procedure.  
+The normal sweeping movement of the head is resumed.
+Lemma~\ref{lem:coordination2} implies that 
+before any new alarm is called, all the cells that the
+head passes over can be added to this healthy configuration.
+If no more alarm is called then the head escapes as above.
+Suppose now that a new alarm is called (sometimes
+even before any sweeping movement could start).
+
+The new alarm is called outside the last healing interval \( \lint{a}{b} \).
+It follows that the new healing interval \( \lint{a'}{b'} \) differs from the old one
+by an area of size \( \ge \E\B/2 \).
+By a combination of Lemmas~\ref{lem:coordination2}, and~\ref{lem:health-extension}, 
+at the time of success, the configuration is healthy on the smallest interval
+containing \( \lint{a}{b}\cup\lint{a'}{b'} \).
+
+Continuing the above reasoning shows that in \( O(\beta t)  \) steps,
+\Pnote{Estimate!}, the healthy area extends to a size \( t\B \), eventually 
+leading again to the escape from \( I \).
+\end{pproof} % step:damage-free-esc.alarm
+
+Now consider the possibilities for when the head is found in the interval \( I \).
+The case when we start from normal mode, or if alarm is called within \( O(\beta n) \) 
+steps is treated above.
+
+Suppose now that we start from the rebuilding mode.
+If alarm is not called within \( O(\beta n) \) steps and does not turn into normal mode
+before escaping then the rebuild procedure will take it outside \( I \) just as seen above.
+
+The case remains when we start in healing mode.
+If no new alarm is called within \( O(\beta n) \) steps then the healing terminates,
+either in rebuilding mode or normal mode, and we are back to one of the cases
+already treated.
+\end{Proof}
+
+We will prove the case \( |I|\ge Q\B \) of the above
+lemma later, since it relies on a detailed analysis of rebuilding.
 The upper bound \( O(n^{2}) \) is pessimistic, we may later improve it.
 
-We will apply Lemma~\ref{lem:dam-free-esc} together with
-the basic trajectory properties to prove a lemma that can be used to
-track the elimination of damage.
+Let us apply Lemma~\ref{lem:dam-free-esc} together with
+the basic trajectory properties to track the elimination of damage.
 First we need some definitions.
 Recall the trajectory properties in Definition~\ref{def:traj}, and the 
 definition of the constants \( \cDamClearS  \) and \( \cDamDist2  \)
@@ -3587,10 +3823,11 @@ and if it contains the head then it is damage-free.
 Such a structure \( C=(I,J_{1},\dots,J_{k}) \) 
 is called a \df{cheese of the configuration} with \( I \) called its \df{bulk} and
 the intervals \( J_{i} \)  called its \df{holes}.
+\Pnote{Picture?}
 
 In a trajectory, over a certain time interval \( K \),
 suppose that there is a cheese \( C(t) \) at each time \( t \).
-The whole sequence is called a \df{cheese of the trajectory}
+The whole sequence of cheeses is called a \df{cheese of the trajectory}
 if from  one switching time to the next only one of
 the following changes can occur, within distance \( \cDamClearS \B \)
 of the head: 
@@ -3607,7 +3844,7 @@ in a damage-free interval of size \( \cDamClearS \B  \) not contained in \( I \)
 \end{definition}
 
 Due to \( \cDamClearS \ge 2\cSpill \),
-the total volume of hole sizes in a cheese is at most twice the size of its bulk.
+the sum of hole sizes in a cheese is at most twice the size of its bulk.
 
 \begin{lemma}[Escape]\label{lem:escape}
 Suppose that at some noise-free time 
@@ -3626,7 +3863,7 @@ this increase becomes greater than \( 2|C(t_{0})| \).
   \end{lemma}
 
   \begin{proof}
-Since the damage inside the chees begins at least \( \cSpill \B \) removed from the edges 
+Since the damage inside the cheese begins at least \( \cSpill \B \) removed from the edges 
 of the bulk,
 the Spill property of a trajectory in Definition~\ref{def:traj} implies
 that during the time interval considered, damage never spills beyond the bulk.
@@ -3680,11 +3917,341 @@ The definition in Lemma~\ref{lem:dam-free-esc} implies
 \( \cDamFreeEsc n^{2} \ge \cDamClearT n \).
 Then \( t_{i+1}\le t_{i}+\cDamFreeEsc n^{2}\Tu \) 
 for each \( i \), and the sum of sizes of all the holes
-increases by at least \( \B \) from step \( i \) to step \( i+2 \).
+increases by at least \( \B \) from \( t_{i} \) to step \( t_{i+2} \).
   \end{sloppypar}
  \end{proof}
 
- 
+\subsection{Healing}
+
+In this section we will show how the healing procedure can
+eliminate islands.
+
+The main new complexity compared to the corresponding analyses in~\cite{burstyTuring13}
+(what is called ``healing'' here was called ``recovery'' there)
+is the presence of damage.
+In~\cite{burstyTuring13}, whenever healing started with an alarm, 
+the procedure was brought to its conclusion as long as no new burst occurred.
+Now this is no more the case.
+Every time the head emerges from a damaged area,
+its state is arbitrary (the trajectory properties do not allow any conclusion about it).
+The trajectory properties will allow the elimination of damage eventually;
+but we will just rely on the many zigzags both in normal and in healing mode to
+make sure that any other change will be limited before this elimination.
+
+First we consider the case with the fewest possible distractions of the main
+issue of damage elimination: no new burst, no other island nearby,
+and clearly no possibility for the head to leave without completed healing.
+Even in this case, we treat the elimination of the damage in first.
+
+\begin{lemma}\label{lem:healing.undisturbed.isolated.damage}
+    Suppose that in an annotated history, following a distress-free time interval,
+at some time \( t_{0} \)
+an island \( I \) is encountered at a head position \( x_{0}=\xi.\pos \) at the front,
+further the following holds.
+\begin{enumerate}[\upshape (i)]
+  \item No burst occurs during the following time interval of size
+\( c_{1}\beta^{3}\Tu \), where \( c_{1} \) will be obtained from the analysis. 
+\Pnote{Determine it!}
+  \item There is no other island within distance \( 2\E \) nearby.
+\item \( x_{0}=\chi.\front \), that is the island is encountered when the head is moving
+forward in its sweep.
+\end{enumerate}
+Then the following holds.
+\begin{alphenum}
+\item\label{i:healing.undisturbed.isolated.damage.erase} The annotation of
+the history can be extended to a certain time \( t'\le c_{1}\beta^{3}\Tu \) in such a way that
+the healing area will contain no more damage.
+ \item\label{i:healing.undisturbed.isolated.damage.size} 
+The island and the healing area during all this is contained 
+in a common interval of size \( c_{2}\beta\B \), where 
+\begin{align*}
+   c_{2}=(2\cns{island}+1) < \Z/2.
+ \end{align*}
+
+ \item\label{i:healing.undisturbed.isolated.damage.conserve} 
+By the time \( t' \),  in most cells, only the fields belonging 
+to healing or rebuilding will be changed, not the fields belonging to the main simulation.
+The exceptions are cells of island and possibly \( \beta \) more
+cells adjacent to it.
+ \end{alphenum}
+
+\end{lemma}
+The condition that the island is encountered at the front excludes
+only the possibility that it is encountered after the sweep is turned back,
+and the backward zig beyond the colony end encounters an island.
+(This case will be handled later.)
+
+\begin{Proof}
+At the beginning of the process, the healing area \( \H(t) \) coincides with the island \( I \).
+We will indicate below how it changes.
+Whenever a cell gets marked for healing or rebuilding, the healing area will be
+extended over the cell.
+But it will also be extended in some other cases.
+
+Let \( \D(t_{0})\subseteq I \) be the smallest interval enclosing the damage in island
+\( I \) at time \( t_{0} \).
+We will define for each subsequent time \( t \) an interval \( \D(t) \) enclosing the damage
+that is inherited from \( \D(t_{0}) \), and will find a time \( t \) with \( \D(t)=\emptyset \).
+The set \( \H(t)\setminus \D(t) \) is a disjoint union of two intervals.
+Let \( \R(t) \) denote the interval on the right.
+We will look at the times that the head spends on the right of the damage.
+The same arguments apply to the left.
+
+\begin{sloppypar}
+According to the Attacking Damage property of a trajectory in 
+Definition~\ref{def:traj}, every time the head enters damage and then leaves
+it again to a distance \( \cDamDist2\B \), damage will recede at least by an amount \( \B \).
+We will show that within a certain period this happens enough times to
+consume the whole damage.
+Let \( \ol \D(t) \) be the damage interval extended by \( \cDamDist2\B \) on both sides.
+Suppose that the head enters damage at a certain time \( t' \).
+Then by the Lemma~\ref{lem:dam-free-esc} (Damage-free escape),
+it has to leave \( \ol \D(t') \) within time \( O(\beta^{2}\Tu) \).
+When it leaves on a side where it entered any time earlier, the damage will
+be decreased by the amount \( \B \).
+By enough repeated enterings and escapes, damage will be consumed.
+  \end{sloppypar}
+
+The head cannot stay longer than \( O(\beta^{2}\Tu) \) in the set
+\( \R(t) \), again due to the escape lemma.
+It may leave on the side of the damage, leading to the decrease of damage when
+it emerges again.
+Or, it may leave on the other side: we should see that
+in this case, it returns soon without increasing \( \H(t) \) much.
+For concreteness we look at the right side of \( \H(t) \).
+We would like to claim that every one-cell increase of this right side
+is compensated by an attack on the damage, but this is not exactly
+true.
+The exception is that the healing procedure can extend the healing area by
+a length \( O(\beta\B) \).
+But, as we will see, this can happen essentially only once.
+Our analysis will also show
+claim~\eqref{i:healing.undisturbed.isolated.damage.conserve}.
+
+Call an interval \( I \)  \df{special}, if it has been marked
+by the marking part of the healing procedure or the rebuild procedure
+in one or several right sweeps (a later right sweep extending the marks further), 
+after time \( t_{0} \).
+The markings assume a starting point of healing or rebuilding to the left of \( I \).
+We will call that the damage-elimination process arrived at a \df{standard stage}
+on the right, if either the damage is empty or the head is in the damage and
+the left end of \( \R(t) \) is covered by a special interval.
+
+\begin{step+}{step:healing.undisturbed.isolated.damage.standard}
+Suppose that we are at a standard stage, and the head leaves the damage on the right.
+Then the head moves back into the damage within \( O(\beta) \) steps,
+leaving the process again in a standard stage, and increasing the healing area at most
+by \( 2\B \).
+\end{step+}
+\begin{pproof}
+If the mode is normal, alarm is called immediately.
+This starts a new healing, just overwriting the left end of \( \R(t) \) 
+by a new standard interval, and moving back to the left, into the damage.
+
+If the mode is healing or rebuilding then alarm is not called only if the head enters the left 
+end cell of \( \R(t) \)
+exactly in a stage that allows for the extension of the standard interval in
+continuation of the marking part of the healing or rebuilding procedure.
+In this case, alarm will not be called while this procedure
+continues, since what is seen on the right is also what is expected.
+The marking continues forward one step, then the head switches back again, and
+reaches damage.
+In all these cases, the healing area increases by at most one cell (a distance \( <2\B \)) 
+for a decrease of the damage size by \( \B \).
+\end{pproof} % step:healing.undisturbed.isolated.damage.standard
+
+\begin{step+}{step:healing.undisturbed.isolated.damage.start}
+Let \( t_{1} \) be the first time when the head steps to the right of the healing area, 
+onto a cell \( y \).
+Then after \( O(\beta^{2}) \) steps spent on the right of \( \D(t) \),
+we arrive at a standard stage.
+
+If in the process \( n \) cells outside \( I \) had some field modified that is not a 
+healing or rebuilding field, then these cells are adjacent to \( I \) and the damage
+decreased by at least \( n\B \).
+The healing area increases by at most \( 2\cns{island}\beta\B \).
+\end{step+}
+\begin{pproof}
+We distinguish cases depending on the mode at time \( t_{1} \).
+\begin{step+}{step:healing.undisturbed.isolated.damage.start.normal}
+Suppose that the mode is normal.
+\end{step+}
+\begin{prooofi}
+If alarm is not called immediately, 
+then it will not be called while the head is to the right of \( y \).
+The head will either be sweeping to the right or to the left.
+
+Suppose it is sweeping to the right: then it zigs back immediately from the front in \( y \).
+If alarm is called then the marking stage of alarm is entered, and as the marks spread,
+the head will enter the damage, creating a standard stage.
+This increases the healing area by at most one (not necessarily adjacent) cell
+for each cell encountered in the island along the way to the damage, 
+so at most by \( 2\cns{island}\beta\B \).
+
+Whenever alarm occurs below, the analysis continues in this way, so we will be content to
+note that alarm occurred.
+
+If alarm is not called then the head reaches the damage in \( O(\beta) \) steps,
+finding all cells along the way consistent with \( y \).
+When it comes out of the damage again, if it comes out in a state doing marking
+for healing or rebuilding, then a standard stage will be created.
+When it comes out in another state, it may call alarm immediately.
+Every time it does not,
+the front on the right can repeatedly be advanced by at most one cell, before
+zigging back to reach damage again.
+If this was repeated \( n \) times before reaching a standard stage, 
+then at most \( n \) cells had their non-healing,
+non-rebuilding fields modified: the ones to which the head advanced from \( y \) to the right.
+
+Suppose now that the head is sweeping to the left: then it is zigging
+to the right (without changing anything on the right of \( y \)).
+As long as alarm is not called, each cell the head steps onto
+is consistent with the healthy
+configuration on the right and can be added to it, removing it from \( \H(t) \).
+For the head to reach the damage may take \( O(\beta^{2}) \) steps due to the zigs.
+Only unmarked cells are left behind;
+from here on the above analysis applies to every time the head emerges
+from the damage.
+\end{prooofi} % step:healing.undisturbed.isolated.damage.start.normal
+
+\begin{step+}{step:healing.undisturbed.isolated.damage.start.healing}
+Suppose that the mode is healing.
+\end{step+}
+\begin{prooofi}
+If  the state is after the marking stage,
+then alarm is called immediately, since during this part of
+healing, the head should only step on marked cells.
+If the state is in the marking stage then either alarm is called
+immediately, or the marking task will be continued, creating a 
+special interval \( I_{1} \).
+Alarm may still be called if no marks are found on the left where they are
+expected: in this case, the left of \( I_{1} \) may be overwritten by a special
+interval \( I_{2} \), leading to a standard stage again.
+The maximum increase of the healing area is again at most \( 2\cns{island}\beta\B \).
+\end{prooofi} % step:healing.undisturbed.isolated.damage.start.healing
+
+\begin{step+}{step:healing.undisturbed.isolated.damage.start.rebuilding}
+Suppose that the mode is rebuilding.
+\end{step+}
+\begin{prooofi}
+The sweep can be left or right.
+If the sweep is left then alarm will be called in one or two steps:
+if not in the first step, then after zigging back and seeing that the right neighbor of
+ \( y \) is not marked for rebuilding.
+If the sweep is right then the head zigs back immediately, 
+and either calls alarm somewhere along the way or
+reaches the damage in \( O(\beta) \) steps, leading to a standard stage.
+The maximum increase of the healing area is again at most \( 2\cns{island}\beta\B \).
+\end{prooofi} % step:healing.undisturbed.isolated.damage.start.rebuilding
+\end{pproof} % step:healing.undisturbed.isolated.damage.start
+For the estimate of part~\eqref{i:healing.undisturbed.isolated.damage.size}
+of the lemma: the above analysis shows that marking on the right can add 
+at most \( 2\cns{island}\beta\B \) to the size.
+It can add at most the same amount on the left as well.
+We had additional \( n\le\beta \) increases due to \( n \) forward steps (left or right)
+that were followed by a backward zig: this leads to the estimate of the lemma.
+\end{Proof}
+
+Now we consider the whole healing process.
+The lemma below has the same assumptions as the lemma above,
+the form of its conclusions is also similar, but it goes much farther,
+eliminating the island.
+
+\begin{lemma}\label{lem:healing.undisturbed.isolated}
+    Suppose that in an annotated history, following a distress-free time interval,
+at some time \( t_{0} \)
+an island \( I \) is encountered at a head position \( x_{0}=\xi.\pos \) at the front,
+further the following holds.
+\begin{enumerate}[\upshape (i)]
+  \item No burst occurs during the following time interval of size
+\( c_{3}\beta^{3}\Tu \), where \( c_{3} \) will be obtained from the analysis. 
+\Pnote{Determine it!}
+  \item There is no other island within distance \( 2\E \) nearby.
+\item \( x_{0}=\chi.\front \), that is the island is encountered when the head is moving
+forward in its sweep.
+\end{enumerate}
+Then the following holds.
+\begin{alphenum}
+\item\label{i:healing.undisturbed.isolated.erase} The annotation of
+the history can be extended to a certain time \( t''\le c_{3}\beta^{3}\Tu \) in such a way that
+the island and the healing area disappear.
+ \item\label{i:healing.undisturbed.isolated.size} 
+The island and the healing area during all this is contained 
+in a common interval of size \( c_{4}\beta\B \), where \( c_{4}<\Z/2 \) will be obtained
+from the analysis. \Pnote{Determine it!}
+
+ \item\label{i:healing.undisturbed.isolated.conserve} 
+By the time \( t'' \),  in most cells, only the fields belonging 
+to healing or rebuilding will be changed, not the fields belonging to the main simulation.
+The exceptions are cells of island and possibly \( \beta \) more
+cells adjacent to it.
+\end{alphenum}
+
+\end{lemma}
+
+\begin{Proof}
+As the assumptions are stronger than for Lemma~\ref{lem:healing.undisturbed.isolated.damage},
+we can draw that lemma's conclusions.
+Thus, the annotation can be extended to some time \( t'\le c_{1}\beta^{3}\Tu \) 
+when the damage disappears.
+When this happens the head is in or next to the healing area, which
+at this point has a size \( \le c_{2}\beta\B \).
+Due to our assumption of the lemma, the island is originally encountered by
+the front.
+At time \( t' \) the front is still inside the healing area, since we
+added to that area in part~\ref{step:healing.undisturbed.isolated.damage.start.normal}
+of the proof in a way to avoid moving the front outside.
+
+\begin{step+}{step:healing.undisturbed.isolated.alarm}
+Suppose that alarm is called in \( \H(t') \) or in a cell neighboring it.
+\end{step+}
+\begin{prooofi}
+Now the healing procedure has an undisturbed run.
+We add all marked cells to the healing area at the time of their marking.
+The procedure can carry out its corrections as shown in its description.
+Once it removed its marks, we delete the healing area and the island.
+\end{prooofi} % step:healing.undisturbed.isolated.alarm
+
+\begin{step+}{step:healing.undisturbed.isolated.normal}
+Assume that at time \( t' \) the mode is normal.
+\end{step+}
+\begin{prooofi}
+In whichever direction the head starts moving, it may discover
+incoordination and call alarm, in which case 
+the analysis of part~\ref{step:healing.undisturbed.isolated.alarm} applies.
+If it does not alarm in the area \( \H(t') \) or immediately next to it,
+then it does not alarm farther from the area either. \Pnote{Elaborate!}
+And as long as alarm is not called then due to zigging, it will cross the
+whole area \( \H(t') \) in at most \( O(\beta^{2}\Tu) \) steps.
+Once this happens we can erase the island and the healing area, declaring
+the whole configuration normal. \Pnote{Elaborate!}
+\end{prooofi} % step:healing.undisturbed.isolated.normal
+
+\begin{step+}{step:healing.undisturbed.isolated.other}
+Assume that the mode is not normal.
+\end{step+}
+\begin{prooofi}
+Suppose that the mode is healing.
+
+If we are in the marking stage then the marking may continue, or alarm may be called.
+If alarm is called then it is called, either in \( \H(t') \) or next to it, in which case 
+the analysis of part~\ref{step:healing.undisturbed.isolated.alarm} applies.
+If alarm is not called then the healing will finish successfully.
+
+If we are in a later stage then, unless this is the last sweep of the healing procedure,
+it will be discovered in one sweep that the area marked is too small: alarm will be called,
+with analysis as above.
+In the last sweep it may happen that the mode returns to normal: then the
+analysis of part~\ref{step:healing.undisturbed.isolated.normal} applies.
+
+Suppose that the mode is rebuilding.
+The analysis is similar to the case of the healing mode, except that
+the marking stage will also always lead to alarm, since its zigging will
+always find that there is not a large enough interval already marked for rebuilding
+(by some earlier failed healing).
+\end{prooofi} % step:healing.undisturbed.isolated.other
+\end{Proof}
+
 
 \section{The simulation codes}
 
@@ -3700,16 +4267,16 @@ to \( \Last(+1)-1 \),  \( 1 \), and \( \Last(+1) \),  \( 1 \) respectively.
 In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
 In all other cells, these values are empty.
 The \( \cAddr \) fields of each colony are filled properly:
-the \( \cAddr \) of the \( j \)th cell of a colony
-is \( j \bmod \B^* \).
+the \( \cAddr \) of the \( j \) cell of a colony
+is \( j \bmod \B^* \). \Pnote{Picture?}
 
 The value \( \Noise^{(k+1)} \) is obtained by a residue operation
 just as in Definition~\ref{def:sparsity} of sparsity.
 It remains to define \( \eta^{*}=\eta^{(k+1)} \) when \( \eta=\eta^{k} \).
 Over a history that has been super admissible locally for a while,
-if no colony starts at \( x \) at time \( t \), set \( \eta^{*}(x,t)=\Vacant \).
+if no colony has its starting point at \( x \) at time \( t \), set \( \eta^{*}(x,t)=\Vacant \).
 Otherwise \( \eta^{*}(x,t) \) will be decoded from
-the \( \cInfo \) track of this colony, at the beginning of the its work period 
+the \( \cInfo \) track of this colony, at the beginning of its work period 
 containing time \( t \).
 In the non-super admissible case, \( \eta^{*}(x,t)=\Bad^{*} \), contributing to
 the set \( \Damage^{*} \).

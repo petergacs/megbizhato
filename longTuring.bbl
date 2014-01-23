@@ -1,13 +1,11 @@
 \begin{thebibliography}{1}
 
-\bibitem{burstyTuring12Conf}
+\bibitem{burstyTuring13}
 Ilir \c{C}apuni and Peter G\'acs.
 \newblock A {T}uring machine resisting isolated bursts of faults.
-\newblock In M\'aria Bielikov\'a, Gerhard Friedrich, Georg Gottlob, Stefan
-  Katzenbeisser, and Gy\"orgy Tur\'an, editors, {\em SOFSEM 2012: Theory and
-  Practice of Computer Science}, volume 7147 of {\em Lecture Notes in Computer
-  Science}, pages 165--176. Springer Berlin / Heidelberg, 2012.
-\newblock Full version in arXiv:1203.1335.
+\newblock {\em Chicago Journal of Theoretical Computer Science}, 2013.
+\newblock See also in arXiv:1203.1335. Extended abstract appeared in SOFSEM
+  2012.
 
 \bibitem{DurandRomashShenTiling12}
 Bruno Durand, Andrei Romashchenko, and Alexander Shen.
