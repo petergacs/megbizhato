@@ -10,9 +10,34 @@
 \RequirePackage{mathtools}
 \mathtoolsset{mathic} % Math italic correction (say in theorems).
 \RequirePackage{amsthm}
-\RequirePackage{enumerate}
-%\RequirePackage{fullpage}
+\RequirePackage{cheatpf2}
 \RequirePackage{graphicx}
+\RequirePackage[x11names]{xcolor}
+\@ifundefined{nopagecolor}{\newcommand{\nopagecolor}{\pagecolor{white}}}{}
+
+\RequirePackage{ifxetex}
+
+\ifxetex
+\RequirePackage{fontspec}
+\newfontfamily\optimaFont{Optima}
+% \newfontface\iowanFont[BoldFont = * Bold]{Iowan Old Style}
+% \charterFont in XeTeX fontspec allows scaling.
+%\newfontface\charterFont[BoldFont = * Bold]{Charter}
+%\newfontface\charterFont[Scale=MatchLowercase,BoldFont = * Bold]{Charter}
+%\newfontface\palatinoFont[BoldFont= * Bold]{Palatino}
+\else
+% \newcommand{\charterFont}{\fontfamily{bch}\selectfont}
+% \newcommand{\palatinoFont}{\fontfamily{ppl}\selectfont}
+% biolinum is like optima, but part of texlive, so can be used with pdftex.
+%\newcommand{\biolinumFont}{\fontfamily{LinuxBiolinumT-LF}\selectfont}
+\fi
+
+%\RequirePackage{enumerate}
+\RequirePackage{enumitem}
+\setlist[enumerate,1]{leftmargin=*}
+\setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.9}{\textbullet}}}
+\setlist[itemize,1]{leftmargin=*}
+\setlist[description]{font=\normalfont\textsf, leftmargin=1em}
 
 \pdfpagewidth=8.5in     % paper size of the pdf output (letter in this case)
 \pdfpageheight=11in
@@ -21,90 +46,104 @@
 % \pdfpagewidth=210mm     % paper size of the pdf output (letter in this case)
 % \pdfpageheight=297mm
 
+\raggedbottom  % Avoid strange spaces between paragraphs, at the price of having unequal page length.
 \setlength{\vfuzz}{4pt} % to ignore trivial vertical overfull boxes.
+% Now I use sloppypar where needed:
 %\sloppy  % To get fewer overfull boxes.
-\clubpenalty=1000
-%\widowpenalty=1000
+
+% maybe we do not need these with raggedbottom:
+\clubpenalty=1000 
+\widowpenalty=1000
+
+% For using medcirc from newtxmath.  Might as well declare the other symbols from symbolsC.
+  \DeclareSymbolFont{symbolsC}{U}{ntxsyc}{m}{n}
+  \SetSymbolFont{symbolsC}{bold}{U}{ntxsyc}{b}{n}
+  \DeclareFontSubstitution{U}{ntxsyc}{m}{n}
+  \DeclareMathSymbol{\medcirc}{\mathbin}{symbolsC}{7}
+%\newcommand{\medcirc}{\raisebox{0.3ex}{\scalebox{0.7}{\(\bigcirc\)}}}
+
+% In \newtxtmath[libertine] the liby option replaces an ugly math y, 
+% and I also replaced some unsightly font choices with the cm or AMS versions.
+\newcommand{\myLibertine}{
+\usepackage[T1]{fontenc} 
+%\usepackage[ttscaled=0.9]{libertine}
+\usepackage[tt=false]{libertine}
+\usepackage[libertine,liby,libaltvw,bigdelims]{newtxmath} 
+\renewcommand{\ttdefault}{lmtt}
+%\usepackage[cal=cm,bb=ams]{mathalfa}
+\usepackage[cal=cm,bb=boondox]{mathalfa}
+ }
+
+\newcommand{\myTimes}{
+ \usepackage{newtxtext} 
+ \usepackage{newtxmath} 
+ \renewcommand{\ttdefault}{lmtt}
+% Replace some bad-looking fonts of newtxmath.
+ \usepackage[cal=cm, bb=boondox]{mathalfa}
+  \renewcommand{\sfdefault}{cmss}
+  \DeclareMathAlphabet{\mathsf}{OT1}{cmss}{m}{n}
+  \SetMathAlphabet{\mathsf}{bold}{OT1}{cmss}{b}{n}
+}
 
 \newcommand{\myCentury}{
 \usepackage{lmodern} % T1 encoded cmr
 \usepackage{fouriernc}
-\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
-\DeclareSymbolFontAlphabet{\math@bb}{AMSb}
-}
-\newcommand{\myTimes}{
-  \usepackage{newtxtext} 
-  \usepackage{newtxmath} 
-  % Replace some bad-looking fonts of newtxmath.
-  \renewcommand{\sfdefault}{cmss}
-  \DeclareMathAlphabet{\mathsf}{OT1}{cmss}{m}{n}
-  \SetMathAlphabet{\mathsf}{bold}{OT1}{cmss}{b}{n}
-  % Does not help, still too wide:
- \renewcommand{\ttdefault}{cmtt}
- \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
- \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
-
-  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
-  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
-  % Somewhat big, but better looking:
-  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
-  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
+\usepackage[cal=cm]{mathalfa}  % not available in older texlive.
+% \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+% \DeclareSymbolFontAlphabet{\math@bb}{AMSb}
 }
 
 \newcommand{\myCharter}{
   \usepackage[bitstream-charter]{mathdesign} 
-  % Replace some bad-looking fonts.
-  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
-  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
+  \usepackage[cal=cm]{mathalfa}
 }
 
-\newcommand{\myLibertine}{
-\usepackage[T1]{fontenc} 
-\usepackage{libertine}
 
-  \renewcommand{\ttdefault}{cmtt}
-  \DeclareMathAlphabet{\mathtt}{OT1}{cmtt}{m}{n}
-  \SetMathAlphabet{\mathtt}{bold}{OT1}{cmtt}{b}{n}
-
-  \usepackage[libertine,liby,libaltvw,bigdelims]{newtxmath} 
-
-  \DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
-  \DeclareSymbolFontAlphabet{\mathcal}   {cmsymbols}
-  \DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
-  \DeclareSymbolFontAlphabet{\mathbb}{AMSb}
- }
-
-% Use with enumerate.sty, to delete annoying warnings.
-\def\@@enum@[#1]{%
-  \@enLab{}\let\@enThe\@enQmark
-  \@enloop#1\@enum@
-%   \ifx\@enThe\@enQmark\@warning{The counter will not be printed.%
-%    ^^J\space\@spaces\@spaces\@spaces The label is: \the\@enLab}\fi
-  \expandafter\edef\csname label\@enumctr\endcsname{\the\@enLab}%
-  \expandafter\let\csname the\@enumctr\endcsname\@enThe
-  \csname c@\@enumctr\endcsname7
-  \expandafter\settowidth
-            \csname leftmargin\romannumeral\@enumdepth\endcsname
-            {\the\@enLab\hspace{\labelsep}}%
-  \@enum@}
-
-% For enumerate.sty:
-\newenvironment{bullets}{\begin{enumerate}[\textbullet]}{\end{enumerate}}
-\newenvironment{dashes}{\begin{enumerate}[\bfseries\textendash]}{\end{enumerate}}
+% For enumitem.sty
+\newenvironment{bullets}{\begin{enumerate}[label=\textbullet]}{\end{enumerate}}
+\newenvironment{dashes}{\begin{enumerate}[label=\bfseries\textendash]}{\end{enumerate}}
 
 \newenvironment{flushdescription}{\leftmargini=1em\renewcommand
 {\descriptionlabel}[1]{\hspace\labelsep \textit{##1.}}\begin{description}}
 {\end{description}}
 
 \newenvironment{alphenum}
- {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+ {\begin{enumerate}[label=\upshape{(\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
+
+% The lemma counter is used by almost all theorem and definition environments.
+% The reference of {alphenumIn} attaches the alphabetic reference to this counter.
+\newenvironment{alphenumIn}
+ {\begin{enumerate}[label=\upshape{\alph*)},ref=\thelemma.\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{enumIn}
+ {\begin{enumerate}[label=\upshape{\arabic*)},ref=\thelemma.\upshape{\arabic*}]}{\end{enumerate}}
 
 \newenvironment{cjenum}
- {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+ {\begin{enumerate}[label=\upshape{(\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
 \newenvironment{djenum}
- {\begin{enumerate}[{\upshape (1)}]}{\end{enumerate}}
+ {\begin{enumerate}[label=\upshape{(\arabic*)},ref=\upshape{\arabic*}]}{\end{enumerate}}
 
-\newcommand{\BUhead}{
+% For enumerate.sty:
+% \newenvironment{bullets}{\begin{enumerate}[\textbullet]}{\end{enumerate}}
+% \newenvironment{dashes}{\begin{enumerate}[\bfseries\textendash]}{\end{enumerate}}
+% \newenvironment{alphenum}
+%  {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+
+% % Use with enumerate.sty, to delete annoying warnings.
+% \def\@@enum@[#1]{%
+%   \@enLab{}\let\@enThe\@enQmark
+%   \@enloop#1\@enum@
+% %   \ifx\@enThe\@enQmark\@warning{The counter will not be printed.%
+% %    ^^J\space\@spaces\@spaces\@spaces The label is: \the\@enLab}\fi
+%   \expandafter\edef\csname label\@enumctr\endcsname{\the\@enLab}%
+%   \expandafter\let\csname the\@enumctr\endcsname\@enThe
+%   \csname c@\@enumctr\endcsname7
+%   \expandafter\settowidth
+%             \csname leftmargin\romannumeral\@enumdepth\endcsname
+%             {\the\@enLab\hspace{\labelsep}}%
+%   \@enum@}
+
+
+\newcommand{\BUHeadEmailArg}[1]{
   {\renewcommand{\sfdefault}{phv}%
     \newlength{\widthdiff}
     \newlength{\leftshift}
@@ -120,17 +159,18 @@
         \sffamily {\bfseries College of Arts} \& {\bfseries Sciences}
         \hspace{0.5em} Department of Computer Science
         \\\footnotesize\sffamily 111 Cummington Street, Boston, MA 02215-2411, (617) 353-8919
-        \\ \footnotesize\sffamily gacs@bu.edu
+        \\ \footnotesize\sffamily #1
       \end{tabular}
     }
     \vspace{0.5in}
   }
 }
  
+\newcommand{\BUhead}{\BUHeadEmailArg{gacs@bu.edu}}
 
 % definitions, can be redefined to boldface or \textit\textbf, if desired.
-% \newcommand{\df}[1]{\emph{#1}}
- \newcommand{\df}[1]{\textit{\textbf{#1}}}
+\newcommand{\df}[1]{\emph{#1}}
+% \newcommand{\df}[1]{\textit{{\bfseries #1}}}
 
  \let\paragraphname\@empty  % an amsart bug
 
@@ -152,102 +192,33 @@
 
  \setcounter{tocdepth}{2}
 
-
-\newtheoremstyle{sfdefinition}% name
+\newcommand{\newThmHeads}[3]{ % #3 is the note  font
+  \newtheoremstyle{#1definition}
   {5pt}%      Space above
   {5pt}%      Space below
   {}%         Body font
   {}%         Indent amount (empty = no indent, \parindent = para indent)
-  {\sffamily\bfseries\upshape}% Thm head font
-  {.}%        Punctuation after thm head
+  {#2}% Thm head font
+%  {\fontfamily{ybv}\selectfont\bfseries\upshape} % Baskervald
+% {\fontfamily{bch}\selectfont\upshape}%
+  {}%        Punctuation after thm head
   {.5em}%     Space after thm head: " " = normal interword space;
-        %       \newline = linebreak
-  {}%         Thm head spec (can be left empty, meaning `normal')
-%
-\newtheoremstyle{sftheorem}% name
+        %       \newline = linebrea
+        %       Thm head spec (can be left empty, meaning `normal'):
+  {\thmname{##1}\thmnumber{~##2}\thmnote{~#3\mdseries(\hspace{0.05em}##3\hspace{0.1em})}}
+
+\newtheoremstyle{#1theorem}
   {5pt}%      Space above
   {5pt}%      Space below
   {\itshape}% Body font
   {}%         Indent amount (empty = no indent, \parindent = para indent)
-  {\sffamily\bfseries\upshape}% Thm head font
-  {.}%        Punctuation after thm head
+  {#2}% Thm head font
+  {}%        Punctuation after thm head
   {.5em}%     Space after thm head: " " = normal interword space;
         %       \newline = linebreak
-  {}%         Thm head spec (can be left empty, meaning `
-
-% For sf section headings:
-
-\newcommand{\sfHeadings}{
-\renewcommand\section{\@startsection {section}{1}{\z@}%
-                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
-                                   {2.3ex \@plus.2ex}%
-                                   {\normalfont\sffamily\Large\bfseries}%
-%                                   {\normalfont\sffamily\Large}%
-                                 }
-\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                     {1.5ex \@plus .2ex}%
-                                     {\normalfont\sffamily\large\bfseries}%
-%                                     {\normalfont\sffamily\large}%
-                                   }
-\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
-                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
-                                     {1.5ex \@plus .2ex}%
-                                     {\normalfont\sffamily\normalsize\bfseries}%
-                                   }
-\renewcommand\paragraph{\@startsection{paragraph}{4}{\z@}%
-                                    {3.25ex \@plus1ex \@minus.2ex}%
-                                    {-1em}%
-                                    {\normalfont\sffamily\normalsize\bfseries}}
-\renewcommand\subparagraph{\@startsection{subparagraph}{5}{\parindent}%
-                                       {3.25ex \@plus1ex \@minus .2ex}%
-                                       {-1em}%
-                                      {\normalfont\sffamily\normalsize\bfseries}}
-\renewcommand{\descriptionlabel}[1]{\hspace\labelsep \upshape\mdseries
-   \sffamily ##1.}
-% \if@titlepage
-%   \renewenvironment{abstract}{%
-%       \titlepage
-%       \null\vfil
-%       \@beginparpenalty\@lowpenalty
-%       \begin{center}%
-%         \bfseries\sffamily \abstractname
-%         \@endparpenalty\@M
-%       \end{center}}%
-%      {\par\vfil\null\endtitlepage}
-% \else
-  \renewenvironment{abstract}{%
-      \if@twocolumn
-        \section*{\abstractname}%
-      \else
-        \small
-        \begin{center}%
-          {\bfseries\sffamily\abstractname\vspace{-.5em}\vspace{\z@}}%
-        \end{center}%
-        \quotation
-      \fi}
-      {\if@twocolumn\else\endquotation\fi}
-%\fi
-\def\@maketitle{%
-  \newpage
-  \null
-  \vskip 2em%
-  \begin{center}%
-  \let \footnote \thanks
-    {\LARGE\sffamily % My addition. Gacs.
- \@title \par}%
-    \vskip 1.5em%
-    {\large
-      \lineskip .5em%
-      \begin{tabular}[t]{c}%
-        \@author
-      \end{tabular}\par}%
-    \vskip 1em%
-    {\large \@date}%
-  \end{center}%
-  \par
-  \vskip 1.5em}
-} % sfHeadings
+        %       Thm head spec (can be left empty, meaning `normal'):
+  {\thmname{##1}\thmnumber{ ##2}\thmnote{~#3\mdseries(\hspace{0.07em}##3\hspace{0.07em})}}
+}
 
 \newcommand{\customqed}[1]{{\renewcommand{\qedsymbol}{#1}\qed}}
 \newcommand{\varqed}{\customqed{\hbox{$\lrcorner$}}}
@@ -284,15 +255,20 @@
 
  \newtheorem{exercise}{Exercise}[section]
  \newtheorem{HwExercise}{Exercise}
- \newtheorem{problem}{Problem}
+% \newtheorem{problem}{Problem}
  
- \newtheorem{arule}{Rule}[section]
+ \newtheorem{aRule}{Rule}[section]
+ \newenvironment{arule}{\begin{aRule}}{\varqed\end{aRule}}
 
  \newtheorem{Remark}[lemma]{Remark}
+ \newtheorem*{Remarknonumber}{Remark} % 
  \newtheorem{Remarks}[lemma]{Remarks}
  
  \newenvironment{remark}{%
    \begin{Remark}}{\varqed\end{Remark}}
+ \newenvironment{remarknonumber}{%
+\begin{Remarknonumber}}{\varqed\end{Remarknonumber}}
+
  \newenvironment{remarks}{%
    \begin{Remarks}}{\varqed\end{Remarks}}
 
@@ -306,21 +282,33 @@
 
  \theoremstyle{remark}
 }
-
-\newcommand{\standardTheorems}{
-\theoremstyle{plain}
-\intheoremstyle
-\theoremstyle{definition}
-\indefinitionstyle
-}
-
-\newcommand{\sfTheorems}{
-\theoremstyle{sftheorem}
-\intheoremstyle
-\theoremstyle{sfdefinition}
-\indefinitionstyle
-}
 \newcommand{\restofTheorems}{} %othertheorems
+
+\newcommand{\newTheorems}[2]{
+\newThmHeads{#1}{#2}{\normalfont}
+\theoremstyle{#1theorem}
+\intheoremstyle
+\theoremstyle{#1definition}
+\indefinitionstyle
+\restofTheorems
+}
+
+% Arguments are the font names for headings and for descriptions.
+\newcommand{\newHeadings}[2]{
+\pretitle{\begin{center}#1\LARGE}
+\posttitle{\end{center}}
+\renewcommand{\abstractnamefont}{#1\bfseries}
+\renewcommand{\chaptitlefont}{#1\Large\bfseries}
+\renewcommand*{\cftchapterfont}{#1\bfseries}
+
+\setsecheadstyle{#1\Large\bfseries\raggedright}
+\setsubsecheadstyle{#1\large\bfseries\raggedright}
+\setsubsubsecheadstyle{#1\normalsize\bfseries\raggedright}
+\setparaheadstyle{#1\normalsize\bfseries\raggedright}
+\setsubparaheadstyle{#1\normalsize\bfseries\raggedright}
+
+\setlist[description]{font=#2,leftmargin=1em}
+} % newHeadings
 
  \newcounter{program}
  \newcounter{progpart}
@@ -331,12 +319,12 @@
                                  (\arabic{progpart})\hfill}}}
 
 % This version of the problem and solution environment is needed if you want to
-% float around some figure: list environments are not tolerated 
+% float around some figure: list environments like the theorem environment are not tolerated 
 % for example in the package floatflt.
 \newcounter{probl}
-\newenvironment{noListProblem}{\refstepcounter{probl}\par\medskip\noindent
-  \textbf{Problem \arabic{probl}~}}{\varqed}
-\newenvironment{noListSolution}{\par\medskip\noindent\textit{Solution.}}{}
+\newenvironment{problem}{\refstepcounter{probl}\par\medskip\noindent
+  \textbf{Problem \arabic{probl}~}}{}
+\newenvironment{solution}{\par\medskip\noindent\textit{Solution.}}{}
 
 
  \newenvironment{program}{
@@ -484,6 +472,7 @@
  \newcommand{\bbS}{\mathbb{S}}
  \newcommand{\bbT}{\mathbb{T}}
  \newcommand{\bbV}{\mathbb{V}}
+ \newcommand{\bbX}{\mathbb{X}}
  \newcommand{\bbZ}{\mathbb{Z}}
 
  \newcommand{\dA}{\mathbb{A}}
@@ -525,13 +514,14 @@
 %\newcommand{\pair}[2]{\mathopen\langle #1,#2\mathclose\rangle}
 \newcommand{\pair}[2]{(#1,#2)}
 \newcommand{\bigpair}[2]{\bigl(#1,#2\bigr)}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
  \newcommand\ang[1]{{\mathopen\langle #1\mathclose\rangle}}
  \newcommand\Ang[1]{{\left\langle #1\right\rangle}}
- \newcommand\bra[1]{{\langle #1|}}
- \newcommand\ket[1]{{| #1 \rangle}}
- \newcommand\braket[2]{{\mathopen\langle #1 | #2 \mathclose\rangle}}
- \newcommand\bigvert[1]{{\bigl|\verythinmathskip#1\verythinmathskip\bigr|}}
- \newcommand\Verti[1]{{\left|\verythinmathskip#1\verythinmathskip\right|}}
+ \newcommand\bra[1]{{\langle #1\rvert}}
+ \newcommand\ket[1]{{\lvert #1 \rangle}}
+ \newcommand\braket[2]{{\mathopen\langle #1 \vert #2 \mathclose\rangle}}
+ \newcommand\bigvert[1]{{\bigl\vert\verythinmathskip#1\verythinmathskip\bigr\vert}}
+ \newcommand\Verti[1]{{\left\vert\verythinmathskip#1\verythinmathskip\right\vert}}
  \newcommand\bigparen[1]{{\bigl(\verythinmathskip#1\verythinmathskip\bigr)}}
  \newcommand\Bigparen[1]{{\Bigl(\verythinmathskip#1\verythinmathskip\Bigr)}}
  \newcommand\biggparen[1]{{\biggl(#1\biggr)}}
@@ -548,8 +538,8 @@
  \newcommand{\flo}[1]{{\lfloor #1\rfloor}}
  \newcommand{\Cei}[1]{{\left\lceil #1\right\rceil}}
  \newcommand{\Flo}[1]{{\left\lfloor #1\right\rfloor}}
- \newcommand{\nm}[1]{{\| #1\|}} % stands for ``norm''
- \newcommand{\norm}[1]{{\| #1\|}} % stands for ``norm''
+ \newcommand{\nm}[1]{{\lVert #1\rVert}} % stands for ``norm''
+ \newcommand{\norm}[1]{{\lVert #1\rVert}} % stands for ``norm''
 
 % \newcommand\frto[2]{#1\mathinner{\ldotp\ldotp\/}#2}
 
@@ -590,8 +580,8 @@
 \newcommand{\foralls}[1]{\forall\, #1\;}
 
  % relation symbols, needs amssymb.
-  \renewcommand{\le}{\leqslant}
-  \renewcommand{\ge}{\geqslant}
+%  \renewcommand{\le}{\leqslant}
+%  \renewcommand{\ge}{\geqslant}
   \newcommand{\pmid}{\parallel} 
   \newcommand{\getseq}{\mathrel{\vcentcolon=}}
   \newcommand{\eqgets}{\mathrel{=\vcentcolon}}
@@ -650,17 +640,20 @@
    \sloppy
    \sfcode`\.=1000\relax}{\end{list}}
 
-% I use sometimes Lamport's pf.sty, which redefines the proof env, and uses kwfont.
+% I use sometimes Lamport's pf2.sty, which redefines the proof env, and uses kwfont.
 \let\kwfont\itshape
 
-\newenvironment{solution}{\begin{proof}[Solution]\renewcommand
-  {\qedsymbol}{}}{\end{proof}}
+% \newenvironment{solution}{\begin{proof}[Solution]\renewcommand
+%   {\qedsymbol}{}}{\end{proof}}
 
-\@ifundefined{stepsep}{}{\setlength{\stepsep}{1ex}}  
+% not in pf2 anymore
+%\@ifundefined{stepsep}{}{\setlength{\stepsep}{1ex}}  
 % space above and below prooof step
  
-\@ifundefined{pfshortnumbers}{}{\pfshortnumbers{4}}
+\@ifundefined{pfmixednumbers}{}{\pfmixednumbers{4}}
 % Use short step numbers for all levels >= 3
+
+\setlength{\pfindent}{0.8em}
 
 %\newcommand{\underscore}{\lower0.6ex\hbox{-}}
 \newcommand{\underscore}{\lower0.63ex\hbox{-}} % for mathpazo
@@ -696,7 +689,7 @@
 \hskip-\arraycolsep\right )}
 
 % equations in an array with less column separation
-\newenvironment{arreqs}[1]{\setlength{\arraycolsep}{0.1em}
+\newenvironment{arreqs}[1]{\setlength{\arraycolsep}{0.1em}%\renewcommand{\arraystretch}{1.2}
 \begin{array}{#1}}{\end{array}}
 
 \newcommand{\killtext}[1]{}
@@ -712,7 +705,7 @@
 
 \newcommand{\opint}[2]{(#1,#2)}
 \newcommand{\clint}[2]{[#1,#2]}
-\newcommand{\lint}[2]{[#1,#2)}
+\newcommand{\lint}[2]{\left[#1,#2\right)}
 \newcommand{\biglint}[2]{\bigl[#1,#2\bigr)}
 \newcommand{\Lint}[2]{\left[#1,#2\right)}
 \newcommand{\rint}[2]{(#1,#2]}
@@ -731,13 +724,34 @@
 % two dots
 \newcommand{\ldts}{\mathinner{\ldotp\ldotp}}
 
-\newcommand{\sfOption}{0}
-\DeclareOption{plain}{\let\sfOption0} 
-\DeclareOption{sf}{\let\sfOption1} 
-\ExecuteOptions{plain}
+
+\newif\if@fontoption{\@fontoptionfalse}
+\newif\if@classico{\@classicofalse}
+
+% Cannot be an option like the others, as it must be executed after ProcessOptions.
+\newcommand{\defaultOption}{\newTheorems{standard}{\bfseries}\restofTheorems}
+
+ \DeclareOption{sf}{\@fontoptiontrue
+\ifxetex\renewcommand{\sffamily}{\optimaFont}\else\@classicotrue\fi
+\newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems
+}
+\DeclareOption{sc}{\@fontoptiontrue\newHeadings{\scshape}{\sffamily\mdseries}\newTheorems{sc}{\scshape}\restofTheorems}
+% \DeclareOption{biolinum}{\@fontoptiontrue
+% \newHeadings{\biolinumFont}{\biolinumFont}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems}
+\DeclareOption{charter}{\@fontoptiontrue\newHeadings
+{\charterFont}{\charterFont\mdseries}\newTheorems{charter}{\charterFont\bfseries}\restofTheorems}
+\DeclareOption{palatino}{\@fontoptiontrue\newHeadings
+{\palatinoFont}{\palatinoFont\mdseries}\newTheorems{palatino}{\palatinoFont\bfseries}\restofTheorems} 
+
+% only with xetex
+\DeclareOption{iowan}{\ifxetex
+\@fontoptiontrue\newHeadings
+{\iowanFont}{\iowanFont\mdseries}\newTheorems{iowan}{\iowanFont\bfseries}\restofTheorems
+\else\@warning{The iowan option needs XeTeX.}\fi
+}
 \ProcessOptions\relax
 
-\if\sfOption0\standardTheorems\restofTheorems\else
-  \sfHeadings\sfTheorems\restofTheorems\fi
+\if@fontoption\else\defaultOption\fi
+\if@classico\RequirePackage{classico}\fi % Cannot be done within the option declaration
 
 \endinput
