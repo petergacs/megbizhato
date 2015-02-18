@@ -109,13 +109,19 @@
 
 \newenvironment{alphenum}
  {\begin{enumerate}[label=\upshape{(\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{Alphenum}
+ {\begin{enumerate}[label=\upshape{(\Alph*)},ref=\upshape{\Alph*}]}{\end{enumerate}}
 
 % The lemma counter is used by almost all theorem and definition environments.
 % The reference of {alphenumIn} attaches the alphabetic reference to this counter.
 \newenvironment{alphenumIn}
  {\begin{enumerate}[label=\upshape{\alph*)},ref=\thelemma.\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{AlphenumIn}
+ {\begin{enumerate}[label=\upshape{\Alph*)},ref=\thelemma.\upshape{\Alph*}]}{\end{enumerate}}
 \newenvironment{enumIn}
  {\begin{enumerate}[label=\upshape{\arabic*)},ref=\thelemma.\upshape{\arabic*}]}{\end{enumerate}}
+\newenvironment{romenumIn}
+ {\begin{enumerate}[label=\upshape{\roman*)},ref=\thelemma.\upshape{\roman*}]}{\end{enumerate}}
 
 \newenvironment{cjenum}
  {\begin{enumerate}[label=\upshape{(\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}

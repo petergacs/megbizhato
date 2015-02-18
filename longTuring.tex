@@ -1483,7 +1483,7 @@ Denote
   \end{sloppypar}
 \begin{description}
 
-\item[Transition function]\label{i:def.traj.transition}
+\item[Transition Function]\label{i:def.traj.transition}
 Suppose that there is a switch, and the shortest interval
 containing the body of the current cell \( x \) and the
 new cell \( y \) is to at least a distance \( \cCDepth1 \B \) inside
@@ -1547,7 +1547,8 @@ rectangle just as the definition of history was.
 \end{definition}
 
 The Attack property says essentially that if the head moves out on the right end
-of a clean interval then next time it comes in, it must extend this interval.
+of a clean interval then next time it comes in, it must extend the right end of the interval 
+by at least \( \B \) (while temporarily possibly withdrawing it by \( \cSpill\B \)).
 The Cleaning property says essentially 
 that if the head spends a certain amount of time in a small area
 then it either must clean out an interval of certain size around itself or move into
@@ -3067,7 +3068,7 @@ Any nonrigid boundary coincides with the front.
 % %In the following section, we will codify these, in
 % %the notion of an annotated configuration.
 
-\section{Healing}\label{sec:healing}
+\section{Healing and rebuilding}\label{sec:healing}
 
 \subsection{Admissibility, stitching}\label{sec:stitching}
 
@@ -3414,11 +3415,8 @@ This will be judged insufficient in some cases: for example if
 the healing interval contains many cells marked for the rebuilding procedure (see later),
 or the healing procedure fails in a way
 indicating that the underlying configuration is not admissible.
-This indicates a ``bigger mess'', and is followed by a call to the rule
-\begin{align*}
- \BigAlarm,
- \end{align*}
-starting the rebuilding procedure, that we will specify later.
+This indicates a ``bigger mess'', and is followed by a call for
+the rebuilding procedure, that we will specify later.
 We will also say that the healing program \df{gives up}.
 
 The description of the procedures looks as if we assumed that there is no noise or dirt.
@@ -3672,8 +3670,7 @@ and then calls a new alarm at the right end.
 \end{description}
 
 
-
-\section{Rebuilding}\label{sec:rebuilding}
+\subsection{Rebuilding}\label{sec:rebuilding}
 
 If healing fails, it calls the rebuilding procedure.
 This indicates that the colony structure is ruined in an interval of size larger than 
@@ -3684,25 +3681,19 @@ mention of dirt -- but the final analysis will take dirt into account.
 Since rebuilding makes changes on an interval of the length of several colonies,
 it is important not only that it is invoked when it is needed, but that it is not
 invoked otherwise!
-It will be invoked at the end of a failed healing, and it will be designed
-to fail immediately (to result in an alarm) 
-if launched under normal conditions into any of its stages from just a burst.
-What assures this is that a rebuild starts from a marked area of a failed
-healing.
-The failure is determined
-in two planning stages, storing the result on two different tracks.
-Then a final sweep, checking that the two tracks identically show failure, turns
-the heal marks into rebuild marks, and thus the healing region into the germ of a
-rebuilding region.
-Rebuilding starts by extending the germ to the right.
-It will use zigging, expecting marked cells on its backward zig.
-It can find these in the first time only in the germ, so if rebuilding 
-started from just a burst then alarm follows immediately.
+A failed healing ends on a ``germ'' of cells marked for rebuilding,
+and the state turning into rebuild mode.
+Rebuilding starts by extending the germ to the left, in a zigging way,
+expecting rebuild-marked cells on the backward zig.
+So a rebuilding started from just a burst will trigger alarm.
 
-The crude outline is this:
+The crude outline is this, for rebuilding that started from a cell \( z \) in the middle
+of the germ:
 \begin{description}
- \item[Mark] Mark a rebuilding area consisting of \( 4Q \) cells \Pnote{?}
-   extending in both directions from the germ, similarly to marking a healing area.
+ \item[Mark] Extend a rebuilding area 
+   over \( 3Q \) cells to the left and \( 3Q \) cells to the right 
+   from \( z \), similarly to marking a healing area
+   (but using zigging, instead of sweeping over the whole area with every extension).
 
  \item[Survey] Survey the rebuilding area, 
    keeping track of addresses just as in the healing procedure,
@@ -3716,19 +3707,23 @@ The crude outline is this:
  Mark this result on a track, distinguishing accepted colony cells from the
  rest, which will be marked as \df{stragglers}.
  Then repeat the whole operation and accept the end result only if the two tracks agree.
- Otherwise call alarm (which in due course may restart a rebuilding).
+ Otherwise call alarm (which in due course may restart a new rebuilding).
 
-\item[Create] If there is no colony at all, create one, overriding any stragglers.
+\item[Create] Look for a colony \( C_{1} \) to the left of \( z \); if there is none,
+  create one.
+  Then look for a colony to the right of \( C_{1} \).
+  If there is none, create one adjacent to \( C_{1} \).
  
 \item[Initialize] 
-  Declare one of the colonies the base colony, in starting sweep.
-  If there is only the base colony, grow other colonies from it in both directions.
-  Put all other colonies into end sweep with drift towards the base colony, and
-  grow bridges from them in the gaps between them towards the base colony.
+  Declare \( C_{1} \) the base colony, in starting sweep.
+  Put all other colonies in the rebuilding area
+  into end sweep with drift towards the base colony, and
+  grow bridges from them in the gaps between them towards \( C_{1} \).
   If any bridge gets \( Q \) cells, turn it into yet another colony.
   Throughout this, override any stragglers.
 
-\item[Mop] Remove the rebuild marks similarly to the healing procedure.
+\item[Mop] Remove the rebuild marks similarly to the healing procedure,
+  shrinking the rebuilding area onto the left end of \( C_{1} \).
 \end{description}
 
 Rebuilding also obeys feathering: in order not to interfere with the main simulation and healing,
@@ -3764,260 +3759,242 @@ too long.
 Recall the constant \( \cCleanT \) from Definition~\ref{def:traj}.
 
 \begin{lemma}[Clean escape]\label{lem:clean-esc}
+Assume that the following occurs during a noise-free time interval.
  There is a constant
 \begin{align}\label{eq:cns.clean-esc}
   \cEsc \ge\cCleanT 
  \end{align}
 with the following property.
 Suppose that \( \G \) is any clean interval of size \( \le n\B \) for an integer \( n \).
-Then the head spends at most \( \cEsc  n^{2} \) noise-free steps inside without leaving it.
+Then within at most \( \cEsc  \beta^{2}n \) steps one of the following
+cases happens to the head:
+\begin{Alphenum}
+  \item\label{i:clean-esc.leave}  it leaves \( G \): we say it \df{escapes},
+  \item\label{i:clean-esc.rebuild} it is in a complete clean rebuilding area (continuing the work of rebuilding),
+  \item\label{i:clean-esc.healthy} it is in a healthy interval in \( G \)
+that is the interior of a healthy colony. 
+\end{Alphenum}
 \end{lemma}
 When the head leaves \( \G \) we will say that it \df{escapes}.
-\begin{Proof}[Proof for the case \( n<Q \)]
-  The proof here begins a pattern of similar proofs that, unfortunately, involve a
-  number of case distinctions.
+\begin{Proof}
+\begin{step+}{step:clean-esc.rebuild}
+Suppose that at some time while the head is inside \( \G \), the rebuild procedure is started,
+from a base of rebuild-marked cells large enough not to result in alarm after the first zigging.
+Then case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.rebuild} 
+happens within \( O(\beta^{2} n) \) steps.
+\end{step+}
+\begin{pproof}
+The rebuilding procedure is outlined in Section~\ref{sec:rebuilding}.
+From a sufficiently large base, it 
+marks a whole rebuilding area (if it stays inside \( G \)), resulting
+in alternative~\eqref{i:clean-esc.rebuild}.
+This happens in \( O(\beta n) \) steps, with zigs of size \( O(\beta) \).  
+\end{pproof} % step:clean-esc.rebuild
+
 \begin{step+}{step:clean-esc.normal}
 Assume that at the beginning, the mode is normal.
-Then either escape or an alarm call happens within \( O(\beta n) \) steps.
+Then within \( O(\beta n) \) steps either an alarm call happens, or we have 
+case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.healthy}.
 \end{step+}
 \begin{pproof}
-The head begins or continues a sweeping motion that, with some zigging 
-switchbacks, passes over an area at least the size of a colony.
-If it does not discover any incoordination then it escapes \( \G \)
-within \( \Z n \) steps, otherwise alarm will be called.
+The head begins or continues a sweeping motion that, in case it does not escape
+and considers no incoordination to call alarm,
+passes (with zigging) over an area containing a healthy colony.
 \end{pproof} % step:clean-esc.normal
+
 \begin{step+}{step:clean-esc.alarm}
-Suppose that at some time \( t \) while the head is inside \( \G \), alarm will be called.
-Then escape happens within \( O(\beta n) \) steps.
+Suppose that at some time \( t \), at position \( x \),
+while the head is inside \( \G \), alarm will be called.
+Then one of the three cases of the lemma occur in \( O(\beta^{2} n) \) steps.
 \end{step+}
 \begin{pproof}
-In a clean interval in the absence of noise, no alarm will be called before the end of 
-the healing procedure.
+No more alarm will be called before the end of the healing procedure, which
+takes \( O(\beta^{2} n) \) steps,
+since it involves \( O(\beta) \) sweeps over an area of size \( O(\beta) \).
+If healing fails then it creates a base for rebuilding and calls the rebuilding
+procedure, leading to the case of part~\ref{step:clean-esc.rebuild} above.
+\emph{In the discussion below, we will not mention again the possibility that the head
+leaves \( G \) or that a healing ends unsuccessfully: the result in these cases is considered
+known.}
 
-If healing ends in a call to the rule \( \BigAlarm \) then, as outlined in 
-Section~\ref{sec:rebuilding}, the rebuilding procedure is called.
-Since it started from failed healing, it starts from a sufficient base of
-marked cells to guarantee that no more alarm will be called before it 
-ends or meets dirt.
-In its first stage, the rebuilding procedure sweeps over an area of size greater
-than \( Q\B \), assuring escape from interval \( \G \).
+Suppose that healing ends successfully.
+Then the head moves away from the supposed front, starting to erase the healing marks.
+Without loss of generality, suppose that this movement is to the left.
+It may encounter other marks, leading to a new alarm, at a distance of 
+about \( \E=O(\beta)  \) cells to the left from position \( x \).
+After possibly several repetitions of healing and left shift,
+the configuration becomes healthy over the healing area, and the head moves right.
+Possible new alarms may only shift the healing area right by about \( \E \) cells
+as long as the head is to the left of position \( x \).
+The area \( H \) that the head left behind becomes healthy:
+Lemmas~\ref{lem:coordination2} and~\ref{lem:health-extension} imply that 
+the overlapping successful healing areas can be combined.
+If the head has to pass over \( H \) again in normal mode, it will not call alarm.
 
-Suppose therefore that healing ends successfully.
-In this case the configuration becomes healthy
-over the last interval \( \lint{a}{b} \) of the healing procedure.  
-The normal sweeping movement of the head is resumed.
-Lemma~\ref{lem:coordination2} implies that 
-before any new alarm is called, all the cells that the
-head passes over can be added to this healthy configuration.
-If no more alarm is called then the head escapes as above.
-Suppose now that a new alarm is called (sometimes
-even before any sweeping movement could start).
-
-The new alarm is called outside the last healing interval \( \lint{a}{b} \).
-It follows that the new healing interval \( \lint{a'}{b'} \) differs from the old one
-by an area of size \( \ge \E\B/2 \).
-By a combination of Lemmas~\ref{lem:coordination2}, and~\ref{lem:health-extension}, 
-at the time of success, the configuration is healthy on the smallest interval
-containing \( \lint{a}{b}\cup\lint{a'}{b'} \).
-
-Continuing the above reasoning shows that in \( O(\beta t)  \) steps,
-\Pnote{Estimate!}, the healthy area extends to a size \( t\B \), eventually 
-leading again to the escape from \( \G \).
+If a healing succeeds, ending in normal mode, then the zigging head movement
+of normal mode starts.
+This may result in new alarm on the right of \( H \), continuing the 
+repeated healings and right shifts and extending \( H \).
+Eventually, the head -- along with the front -- 
+may be allowed to turn back at the end of a colony.
+It may now encounter new incoordination on the left of \( H \), resulting in new
+alarms, and extending \( H \) to the left.
+This continues until \( H \) becomes large enough to cover the interior of a colony,
+leading to case~\eqref{i:clean-esc.healthy}.
 \end{pproof} % step:clean-esc.alarm
 
-Now consider the possibilities for when the head is found in the interval \( \G \).
-The case when we start from normal mode, or if alarm is called within \( O(\beta n) \) 
-steps is treated above.
+To complete the proof, consider all the possibilities for the state at the beginning.
+We will again leave it unmentioned that the head can always escape (case~\eqref{i:clean-esc.leave}).
+The case when we start from normal mode is discussed in part~\ref{step:clean-esc.normal}.
+Suppose that head is in healing mode.
+Then it makes sweeping movements over a healing area possibly extending it.
+It may only end in alarm, taking us to part~\ref{step:clean-esc.alarm},
+an unsuccessful healing and thus part~\ref{step:clean-esc.rebuild}, or eventual normal mode,
+discussed in part~\ref{step:clean-esc.normal}.
 
-Suppose now that we start from the rebuilding mode.
-If alarm is not called within \( O(\beta n) \) steps and does not turn into normal mode
-before escaping then the rebuild procedure will take it outside \( \G \) just as seen above.
-
-The case remains when we start in healing mode.
-If no new alarm is called within \( O(\beta n) \) steps then the healing terminates,
-either in rebuilding mode or normal mode, and we are back to one of the cases
-already treated.
+Suppose now that the head is in rebuilding mode.
+If alarm is not called within \( O(\beta n) \) steps then the head either builds up or sweeps
+a whole rebuilding area, taking us to case~\eqref{i:clean-esc.rebuild},
+or starts or continues erasing the rebuild marks, ending eventually in either
+alarm or normal mode.
 \end{Proof}
-
-We will prove the case \( \abs{\G}\ge Q\B \) of the above
-lemma later, since it relies on a detailed analysis of rebuilding.
-The upper bound \( O(n^{2}) \) is pessimistic, we may later improve it.
 
 Let us apply Lemma~\ref{lem:clean-esc} together with
 the basic trajectory properties to track the cleaning.
 
 \begin{lemma}[Escape]\label{lem:escape}
+The following definition assumes events in a noise-free time interval.
 Let \( \G\supset D \) be intervals such that all \( D \) is 
 at least \( \ge\cSpill \B \) away from the edges of \( G \) and
 \( G\setminus D \) is clean,
-further \( \abs{D}\le n\B \), \( \abs{\G}\le m\B \).
-Suppose that at some time \( t_{0} \), the head is in \( D \).
- \begin{alphenumIn}
-  \item\label{i:escape.escape} As long as no more nose occurs, the 
-head escapes in time \( O(n^{3}\Tu) \) from \( D \).
-  \item\label{i:escape.clear} There is a constant \( c \) such that if in a noise-free time 
-interval of length \( c m^{2} n\Tu \) the head does not leave the box
-\( \G \) then \( \G \) becomes clean by this time.
-\end{alphenumIn}
+further \( \abs{G}\le n\B \).
+Suppose that at some time the head is in \( D \).
+Then within time \( O(\beta^{2}n) \) one of the cases of Lemma~\ref{lem:clean-esc} occurs.
   \end{lemma}
 
+In difference to Lemma~\ref{lem:clean-esc}, we do not assume 
+that the interval \( G \) is clean.
 Before proving the lemma, we introduce some definitions.
 Recall the trajectory properties in Definition~\ref{def:traj}, and the 
 definition of the constants \( \cCleanS  \) and \( \cCDepth2  \)
 there.
-
-\begin{definition}[Right-live]\label{def:right-live}
-Consider a clean interval \( \lint{a}{b} \) of size
-\( \ge \cCleanS \B \).
-Assume that an attacking event of the Attack property of a trajectory
-takes place at point \( x\le b-\B \)
-at the beginning time \( t \) of a noise-free time interval.
-So the body of cell \( x \) is contained in \(\lint{a}{b} \)
-where  \( a \) is at a distance \( \ge\cCDepth2  \) from the left edge of
-the body of cell \( x \), and \( b>x+\B \).
-From this time \( t \) on, we will call the interval \( \lint{a}{x+\B} \) a
-\df{right-live} interval until the first time when the head returns
-to the left of \( x-\cCDepth2 \B \).
-
-Left-live intervals are defined analogously.
+\begin{sloppypar}
+\begin{definition}[Attacked boundary]\label{def:right-live}
+The following definition assumes events in a noise-free time interval.
+Assume that a right attacking event of the Attack property in Definition~\ref{def:traj}
+of a trajectory takes place at point \( x \) (thus the interval
+\( \lint{x-\cCDepth2\B}{x+\B} \) is clean).
+After this event, until the head returns to the left of \( x-\cCDepth2 \B \),
+we will call the point \( x-\cSpill \B \) an \df{attacked boundary}.
 \end{definition}
+\end{sloppypar}
 
-While the interval \( \lint{a}{b} \) is right-live, 
-dirt may spill over on the left of \( y \) as far as \( \cSpill \B \), that is a clean subinterval
-may shrink as far as \( \lint{a}{b-\cSpill\B} \),
-but this is temporary: after the return, according to the Spill Bound and Attack
-properties, the whole interval \( \lint{a}{y+\B} \) will be clean.
+By the Spill property
+before the return of the head the right edge of the clean interval may shrink to
+\( {x-\cSpill \B} \), this is while the latter is called an attacked boundary.
+But this is temporary: after the return, it extends to \( {x+2\B} \).
 
 \begin{definition}[Cheese]\label{def:cheese}
 In a configuration, consider an interval \( \G \) 
 at a distance at least \( \cCDepth2 \B \) from any dirt outside it, 
-further an interval \( D\subset \G \) such that
-any dirt inside \( \G \) is also inside \( D \), farther than
-\(  \cSpill \B \) from the edges.
-Let us further have a sequence of subintervals \( J_{1},\dots,J_{k} \) of \( D \),
-where \( \abs{J_{i}}\ge (\cCDepth2 +1)\B \) and
-\( \abs{J_{i}\cap J_{i+1}}\le\cSpill \B \).
-For each \( J_{i} \) we require that if it is to the left of the head then it is 
-right-live, if it is to the right then it is left-live,
-and if it contains the head then it is clean.
+further an interval \( D\subset \G \) farther than
+\(  \cSpill \B \) from the edges, such that \( D\setminus\B \) is clean.
+Let us further have a sequence of disjoint clean
+subintervals \( J_{1},\dots,J_{k} \) of \( D \)
+with \( \abs{J_{i}}\ge (\cCDepth2 +1)\B \). % and \( \abs{J_{i}\cap J_{i+1}}\le\cSpill \B \).
+For each \( J_{i} \), if it does not contain the head
+then its edge closer to the head is an attacked boundary.
+
 Such a structure \( C=(\G,D,J_{1},\dots,J_{k}) \) 
 is called a \df{cheese of the configuration} with \( \G \) called its \df{box}, \( D \) its \df{bulk} and
-the intervals \( J_{i} \)  called its \df{holes}.
+the intervals \( J_{i} \)  its \df{holes}.
 \Pnote{Picture?}
-\end{definition}
 
-The inequality \( \cCleanS \ge 2\cSpill \) limits the proportional overlap of the holes
-so that the sum of hole sizes in a cheese is at most twice the size of its bulk.
+% The inequality \( \cCleanS \ge 2\cSpill \) limits the proportional overlap of the holes
+% so that the sum of hole sizes in a cheese is at most twice the size of its bulk.
 
-\begin{definition}[Cheese of trajectory]\label{def:cheese-traj}
 In a trajectory, over a certain time interval \( K \),
 suppose that there is a cheese \( C(t) \) at each time \( t \), where the
-box and the bulk of all these cheeses is the same.
+box and the bulk of all these cheeses does not change in time.
 The whole sequence is called a \df{cheese of the trajectory}
-if from  one switching time to the next only one of
-the following changes can occur, within distance \( \cCleanS \B \)
-of the head: 
-\begin{itemize}
-\item One of the holes gets enlarged.
-\item A new hole is created.
-\item The spill at a live end of a hole changes within its allowed limits.
-\end{itemize}
-In each case, if the union of two holes becomes a single hole then we replace them
-with the new one.
+if all its changes occur within distance \( \cCleanS \B \) of the head, resulting
+in the merging or enlarging of holes, creation of a new hole, or
+the shrinking of a hole within the bounds allowed by the Spill property of trajectories.
 
 We say that the head \df{escapes} the cheese if it is found at a distance at least
 \( \cCleanS \B  \) from \( D \).
 \end{definition}
 
-We will prove the escape lemma in a slightly stronger form.
+We will first prove a slightly more technical lemma from which
+Lemma~\ref{lem:escape} follows easily.
 
 \begin{lemma}[Partial escape]\label{lem:partial-escape}
-Assume the conditions of Lemma~\ref{lem:escape},
-they define a cheese at time \( t_{0} \) with box \( \G \), bulk \( D \) and no holes.
+Assume the conditions of Lemma~\ref{lem:escape};
+they define a cheese at the beginning time \( t_{0} \) 
+with box \( \G \), bulk \( D \) and no holes.
 Then besides the conclusions of that lemma, the following holds:
-If the head does not escape before some time
-\( t\ge t_{0}+ 2i\cdot\cEsc n^{2}\Tu \) such that \( \lint{t_{0}}{t} \) is
-noise-free then by that time, the sum of the sizes of holes increases by at least
-\( i\B \).
+if one of the outcomes does not occur before 
+\( t_{0}+ 2i\cdot\cEsc \beta^{2}n\Tu \) 
+then by that time, the sum of the sizes of holes increases by at least \( i\B \).
 \end{lemma}
   \begin{proof}
-We will first prove the assertion spelled out in this lemma: deriving 
-the assertions of Lemma~\ref{lem:escape} from them will be easy.
-
-Since any dirt inside the cheese begins at least \( \cSpill \B \) removed from the edges 
+Since any dirt inside the cheese is at least \( \cSpill \B \) removed from the edges 
 of the bulk,
 the Spill Bound property of a trajectory in Definition~\ref{def:traj} implies
-that during the time interval considered, dirt never spills beyond the bulk.
+that during the time interval considered, dirt stays within the bulk.
 
 We will define a sequence of times \( t_{0}<t_{1}<t_{2}<\dotsm<t \),
 where between \( t_{i} \) and \( t_{i+1} \) always some progress will be made.
 
-Suppose that at time \( t_{i} \) the head is in a clean part of a hole.
+Suppose that at time \( t_{i} \) the head is in a hole of size \( k\B \).
 By Lemma~\ref{lem:clean-esc}, the head does not stay longer than
 \begin{align*}
-\cEsc n^{2}\Tu
+\cEsc k\beta^{2}\Tu
  \end{align*}
-in the clean part of the hole.
+inside.
 At some time \( t_{i+1} \) it either escapes, or steps onto dirt, say on the right side. 
-In the latter case the hole does not decrease, though it becomes right-live, 
-possibly with some new spilled-over dirt.
+In the latter case the hole may decrease by \( \cSpill\B \), and its right end becomes attacked.
 
-Suppose that at time \( t_{i} \) the head is not in one of the clean intervals.
-Then it is either between (the clean parts of) two holes, say \( J_{p} \) and \( J_{p+1} \), 
+Suppose that at time \( t_{i} \) the head is not in one of the holes.
+Then it is either between two holes, say \( J_{p} \) and \( J_{p+1} \).
 or between a hole and the outside of the bulk.
-Assume that the head does not escape before an additional time
-\begin{align*}
- t'=t_{i}+\cCleanT n\Tu.
+Let \( L \) denote this interval, and assume it has size \( l\B \).
+Let us show that within time
+ \begin{align*}
+   \cCleanT l \Tu
  \end{align*}
-Suppose at some time \( t_{i+1} \le t' \) 
-it steps into a hole, for example into \( J_{p+1} \) (possibly by merging to it
-another hole from the left).
-Since \( J_{p+1} \) was left-live, the Attack property in 
-Definition~\ref{def:traj} implies that the possible spilled-over dirt
-on the left of \( J_{p+1} \) disappears -- moreover \( J_{p+1} \)
-gets enlarged by at least the amount \( \B \).
-
-Suppose that this does not happen.
-Let us partition the bulk into \( n \) subintervals of size \( \B \).
-Until time \( t' \) the head spends on average at least
+the head either escapes, or steps into a hole (enlarging it since this happens through
+an attacked edge), or creates a new hole.
+If the first two cases do not occur then
+let us partition \( L \) into \( l \) subintervals of size \( \B \).
+Until time \( t_{i}+l\cCleanT\Tu \) the head spends on average at least
 \( \cCleanT \Tu \) over these subintervals,  so 
-there will be some subinterval over which it spent 
-at least this much time.
+there will be one over which it spent at least this much time.
 By the trajectory property called Cleaning, 
 at some time \( t_{i+1} \) the head will be found in some clean
 interval \( K \) of size \( \cCleanS \B \).
-If we had \( K\not\subseteq \G \) then the head would have escaped, 
-contrary to the assumption; so we have \( K\subseteq \G \).
+If we had \( K\not\subseteq D \) then the head would have escaped, 
+contrary to the assumption; so we have \( K\subseteq D \).
 Also, \( K \) is not merged with another hole, since this
 possibility already was excluded above.
 Therefore \( K \) is contained in a new hole.
 
-\begin{sloppypar}
-The definition in Lemma~\ref{lem:clean-esc} implies
-\( \cEsc n^{2} \ge \cCleanT n \).
-Then \( t_{i+1}\le t_{i}+\cEsc n^{2}\Tu \) 
-for each \( i \), and the sum of sizes of all the holes
-increases by at least \( \B \) from \( t_{i} \) to step \( t_{i+2} \).
-  \end{sloppypar}
-
-Now~\ref{i:escape.clear}
-follows immediately: if the head stays long enough in \( D \) then the holes grow
-so much that \( D \) becomes clean (the total area covered by the holes is at
-least half of the sum of their sizes).
-
-To prove part~\ref{i:escape.escape}, 
-let \( D(t) \) be the smallest interval such that \( G\setminus D(t) \) is clean.
-Consider the two intervals whose union is \( \G\setminus D(t) \).
-As soon as the head enters into one of them, that interval also becomes a hole of the cheese.
-This way, the above reasoning can be easily extended.
+Now the definition of the constants guarantees that \( \cCleanT \le \cEsc\beta^{2} \),
+\( t_{i+1}\le t_{i}+\cEsc \beta^{2}n\Tu \) 
+for each \( i \).
+For at least every second \( i \) the sum of the hole sizes increases by at least \( \B \).
+Indeed, it may decrease by \( \cSpill\B \) when the head leaves a hole but then it must
+increase by at least \( (\cSpill+1)\B \) another hole where it enters.
  \end{proof}
 
 
-\section{Isolated bursts}
-\label{sec:1-level-noise}
+\section{Annotation and scale-up}
 
-\begin{sloppypar}
-Here, we will prove that the healing procedure indeed deals with isolated bursts.
+It is convenient to introduce some additional structures when discussing
+the effects of moderate noise and their repair.
+
+\subsection{Annotation}\label{sec:annotation}
+
 As indicated in Section~\ref{sec:model}, when dealing with the behavior
 of machine \( M \) over some space-time rectangle, we will assume that the noise
 over this rectangle is \( (\beta\pair{\B}{\Tu}, \pair{\B^{*}}{\Tu^{*}}) \)-sparse.
@@ -4025,10 +4002,7 @@ With Definition~\ref{def:Tu} of \( \Tu^{*} \) this means
 in simpler terms that at most one noise \df{burst} affecting an
 area of size at most \( \beta\B \) can occur in any two consecutive work periods.
 In the present section, histories will always be assumed to have this property.
-  \end{sloppypar}
 
-
-\subsection{Annotation}\label{sec:annotation}
 
 Some histories lend themselves to be viewed as a healthy development
 that is disturbed only in some well-understood ways.
@@ -4165,6 +4139,11 @@ changing the \( \cInfo \) and \( \cState \) track in the stains.
 decoded from its \( \cInfo \) track has \( \cCanTurn=\false \).
 \end{alphenumIn}
 \end{definition}
+
+A configuration may allow several possible super annotations;
+however, in this case the valid codewords (referred to above in the definition
+of super health) that can be recovered from it do not depend on the choice of the
+annotation.
 
 One stain can arise and remain somewhere for example if a burst occurs in the
 last sweep of a work period at the bottom of a zig.
@@ -4311,10 +4290,65 @@ This division is only possible for an observer: the machine has no
 trajectory introduced in Definition~\ref{def:traj}.
 
 
-\subsection{Cleaning}
+\subsection{The simulation codes}\label{sec:sim-codes}
 
+Let us now define formally the codes \( \varphi_{*k},\Phi_{k}^{*} \) that are needed
+for the simulation of history \( (\eta^{k+1},\Noise^{(k+1)}) \) by history \( (\eta^{k},\Noise^{(k)}) \).
+Omitting the index \( k \) we will write \( \varphi_{*},\Phi^{*} \).
+To compute the configuration encoding \( \varphi_{*} \) we proceed first as
+done in Section~\ref{sec:hier-codes}, using the code \( \psi_{*} \) there,
+and then add some initializations:
+In cells of the base colony and its left neighbor  colony,
+the \( \cSweep \) and \( \cDrift \) fields are set 
+to \( \Last(1)-1 \),  \( 1 \), and \( \Last(1) \),  \( 1 \) respectively.
+In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
+In all other cells, these values are empty.
+The \( \cAddr \) fields of each colony are filled properly:
+the \( \cAddr \) of the \( j \) cell of a colony
+is \( j \bmod \B^* \). \Pnote{Picture?}
+
+The value \( \Noise^{(k+1)} \) is obtained by a residue operation
+just as in Definition~\ref{def:sparsity} of sparsity.
+It remains to define \( \eta^{*}=\eta^{(k+1)} \) when \( \eta=\eta^{k} \).
+Parts of the history that are locally super-annotated will be called clean.
+In the clean part,
+if no colony has its starting point at \( x \) at time \( t \), set \( \eta^{*}(x,t)=\Vacant \).
+Otherwise \( \eta^{*}(x,t) \) will be decoded from
+the \( \cInfo \) track of this colony, at the beginning of its work period 
+containing time \( t \).
+More precisely:
+
+\begin{definition}[Cleanness scale-up]\label{def:cleanness-scaleup}
+Let \( (\eta,\Noise) \) be a history of \( M \), where \( \Noise=\Noise^{(k)} \)
+as in Definition~\ref{def:sparsity}.
+We define \( (\eta^{*},\Noise^{*})=\Phi^{*}(\eta,\Noise) \) as follows.
+Let \( \Noise^{*}=\Noise^{{(k+1)}} \).
+Consider position \( x \), and let \( I=\lint{x-2Q\B}{x+3Q\B} \),
+\( J=\rint{t-\Tus}{t} \).
+If the history \( (\eta,\Noise) \) cannot be super-annotated on \( I\times J \)
+then \( \eta^{*}(x,t)=\Bad^{*} \); assume now that it is, and let
+\( \chi(\cdot,u) \) be some super healthy configuration satisfying \( \eta \) over 
+\( I \) at time \( u \).
+If \( x \) is not a start of a colony \( C=\lint{x}{x+Q\B} \) in \( \chi(\cdot,t) \)
+then let \( \eta^{*}(x,t)=\Vacant \); assume now that it is.
+Then let \( t'\in J \) be the starting time in \( \chi \) of the work period of \( C \)
+containing \( t \),
+and let \( \eta^{*}(x,t) \) be the value decoded from \( \eta(C,t') \).
+In more detail, as said at the end of Section~\ref{sec:coding}, we the decoding
+\( \psi^{*} \) to the interior of the colony it to obtain \( \eta(x,t) \).
+\end{definition}
+
+
+
+
+\section{Isolated bursts}\label{sec:1-level-noise}
+
+Here, we will prove that the healing procedure indeed deals with isolated bursts.
 Our goal is to show that the healing procedure provides relief, as required in an
 admissible annotated trajectory.
+
+\subsection{Cleaning}
+
 In~\cite{burstyTuring13}, whenever healing started with an alarm, the procedure
 was brought to its conclusion as long as no new burst occurred.
 Now, however, the trajectory properties do not allow any conclusion about the
@@ -5072,55 +5106,26 @@ during it are confined to the carpet \( K \).
 \end{proof}
 
 
+\section{After a large burst}
+
+Our goal is to show that the simulation \( M\to M^{*} \)
+defined in Section~\ref{sec:sim-codes} is indeed a simulation.
+Section~\ref{sec:1-level-noise} shows this as long as the head operates in an
+area that is clean for the simulated machine\( M^{*} \) (can be super-annotated), 
+and has no noise for machine \( M^{*} \) (that is its bursts on the level of machine \( M \)
+are isolated).
+In other words, essentially the Transition Function property of Definition~\ref{def:traj} of
+trajectories for the simulated machine \( M^{*} \) has been taken care of.
+
+The new element is the possibility of large areas that cannot be super-annotated: they
+may not even be clean, even on the level of machine \( M \).
+Even in this environment, the Spill Bound, Attack and Cleaning properties must be proven.
 
 
-\section{The simulation codes}
 
-Let us now define formally the codes \( \varphi_{*k},\Phi_{k}^{*} \) that are needed
-for the simulation of history \( (\eta^{k+1},\Noise^{(k+1)}) \) by history \( (\eta^{k},\Noise^{(k)}) \).
-Omitting the index \( k \) we will write \( \varphi_{*},\Phi^{*} \).
-To compute the configuration encoding \( \varphi_{*} \) we proceed first as
-done in Section~\ref{sec:hier-codes}, using the code \( \psi_{*} \) there,
-and then add some initializations:
-In cells of the base colony and its left neighbor  colony,
-the \( \cSweep \) and \( \cDrift \) fields are set 
-to \( \Last(1)-1 \),  \( 1 \), and \( \Last(1) \),  \( 1 \) respectively.
-In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
-In all other cells, these values are empty.
-The \( \cAddr \) fields of each colony are filled properly:
-the \( \cAddr \) of the \( j \) cell of a colony
-is \( j \bmod \B^* \). \Pnote{Picture?}
 
-The value \( \Noise^{(k+1)} \) is obtained by a residue operation
-just as in Definition~\ref{def:sparsity} of sparsity.
-It remains to define \( \eta^{*}=\eta^{(k+1)} \) when \( \eta=\eta^{k} \).
-Over a history that has been super admissible locally for a while,
-if no colony has its starting point at \( x \) at time \( t \), set \( \eta^{*}(x,t)=\Vacant \).
-Otherwise \( \eta^{*}(x,t) \) will be decoded from
-the \( \cInfo \) track of this colony, at the beginning of its work period 
-containing time \( t \).
-In the non-super admissible case, \( \eta^{*}(x,t)=\Bad^{*} \).
-More precisely:
 
-\begin{definition}[Cleanness scale-up]\label{def:cleanness-scaleup}
-Let \( (\eta,\Noise) \) be a history of \( M \), where \( \Noise=\Noise^{(k)} \)
-as in Definition~\ref{def:sparsity}.
-We define \( (\eta^{*},\Noise^{*})=\Phi^{*}(\eta,\Noise) \) as follows.
-Let \( \Noise^{*}=\Noise^{{(k+1)}} \).
-Consider position \( x \), and let \( I=\lint{x-2Q\B}{x+3Q\B} \),
-\( J=\rint{t-\Tus}{t} \).
-If the history \( (\eta,\Noise) \) has not been super admissible on \( I\times J \)
-then \( \eta^{*}(x,t)=\Bad^{*} \); assume now that it is, and let
-\( \chi(\cdot,u) \) be some healthy configuration satisfying \( \eta \) over 
-\( I \) at time \( u \).
-If \( x \) is not a start of a colony \( C=\lint{x}{x+Q\B} \) in \( \chi(\cdot,t) \)
-then let \( \eta^{*}(x,t)=\Vacant \); assume now that it is.
-Then let \( t'\in J \) be the starting time in \( \chi \) of the work period of \( C \)
-containing \( t \),
-and let \( \eta^{*}(x,t) \) be the value decoded from \( \eta(C,t') \).
-In more detail, as said at the end of Section~\ref{sec:coding}, we the decoding
-\( \psi^{*} \) to the interior of the colony it to obtain \( \eta(x,t) \).
-\end{definition}
+
 
 
 \bibliographystyle{plain}
