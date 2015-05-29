@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  3 MAR 2015 18:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2014) (preloaded format=pdflatex 2014.5.25)  29 MAY 2015 09:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -857,44 +857,39 @@ LaTeX Info: Redefining \scshape on input line 37.
 )))
 (./gacs-algo.sty
 \captionskip=\skip220
-)
-(/usr/local/texlive/2014/texmf-dist/tex/latex/pagecolor/pagecolor.sty
-Package: pagecolor 2012/02/23 v1.0e Provides thepagecolor (HMM)
-\GPT@outputbox=\box41
-)
-(./longTuring.aux)
+) (./longTuring.aux)
 \openout1 = `longTuring.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for U/ntxsyc/m/n on input line 204.
-LaTeX Font Info:    Try loading font information for U+ntxsyc on input line 204
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for U/ntxsyc/m/n on input line 195.
+LaTeX Font Info:    Try loading font information for U+ntxsyc on input line 195
 .
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/newtx/untxsyc.fd
 File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 )
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 204.
-LaTeX Font Info:    ... okay on input line 204.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 204.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 204.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 195.
+LaTeX Font Info:    ... okay on input line 195.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 195.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 195.
 
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
-LaTeX Font Info:    ... okay on input line 204.
-\AtBeginShipoutBox=\box42
-Package hyperref Info: Link coloring ON on input line 204.
+LaTeX Font Info:    ... okay on input line 195.
+\AtBeginShipoutBox=\box41
+Package hyperref Info: Link coloring ON on input line 195.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
@@ -906,15 +901,15 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 Redoing nameref's sectioning
 Redoing nameref's label
-LaTeX Info: Redefining \nameref on input line 204.
-LaTeX Info: Redefining \ref on input line 204.
-LaTeX Info: Redefining \pageref on input line 204.
-LaTeX Info: Redefining \nameref on input line 204.
+LaTeX Info: Redefining \nameref on input line 195.
+LaTeX Info: Redefining \ref on input line 195.
+LaTeX Info: Redefining \pageref on input line 195.
+LaTeX Info: Redefining \nameref on input line 195.
 (/usr/local/texlive/2014/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count203
 \scratchdimen=\dimen178
-\scratchbox=\box43
+\scratchbox=\box42
 \nofMPsegments=\count204
 \nofMParguments=\count205
 \everyMPshowfont=\toks38
@@ -941,22 +936,22 @@ e
 \c@mv@tabular=\count209
 \c@mv@boldtabular=\count210
 LaTeX Font Info:    Try loading font information for OT1+URWClassico-LF on inpu
-t line 215.
+t line 206.
 
 (/usr/local/texlive/texmf-local/tex/latex/classico/OT1URWClassico-LF.fd
 File: OT1URWClassico-LF.fd 2014/08/27 (autoinst) Font definitions for OT1/URWCl
 assico-LF.
 )
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 215.
+(Font)              scaled to size 12.0pt on input line 206.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 20.74pt on input line 215.
-LaTeX Font Info:    Try loading font information for U+msa on input line 215.
+(Font)              scaled to size 20.74pt on input line 206.
+LaTeX Font Info:    Try loading font information for U+msa on input line 206.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 215.
+LaTeX Font Info:    Try loading font information for U+msb on input line 206.
 
 (/usr/local/texlive/2014/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -964,87 +959,87 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <12> not avail
 able
 (Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 216.
+line 207.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 216.
+(Font)              scaled to size 12.0pt on input line 207.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 220.
+(Font)              scaled to size 17.28pt on input line 211.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <17.28> not av
 ailable
 (Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 220.
+line 211.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 17.28pt on input line 220.
+(Font)              scaled to size 17.28pt on input line 211.
 
 (./longTuring.toc [1
 
 {/usr/local/texlive/2014/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 14.4pt on input line 224.
+(Font)              scaled to size 14.4pt on input line 215.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <14.4> not ava
 ilable
 (Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 224.
+line 215.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 14.4pt on input line 224.
+(Font)              scaled to size 14.4pt on input line 215.
  [2] [3] [4]
-Overfull \hbox (3.11635pt too wide) in paragraph at lines 374--377
+Overfull \hbox (3.11635pt too wide) in paragraph at lines 365--368
 []\OT1/cmr/m/n/12 A care-ful or-ga-ni-za-tion of the heal-ing pro-ce-dure makes
 
  []
 
 [5] [6] [7] [8] [9]
-Overfull \hbox (1.22516pt too wide) in paragraph at lines 669--671
+Overfull \hbox (1.22516pt too wide) in paragraph at lines 660--662
 []\OT1/cmr/m/n/12 For a given num-ber $\OML/cmm/m/it/12 x$ \OT1/cmr/m/n/12 and
  []
 
 [10] [11] [12] [13]
-Overfull \hbox (10.3598pt too wide) in paragraph at lines 865--868
+Overfull \hbox (10.3598pt too wide) in paragraph at lines 856--859
 \OT1/cmr/m/n/12 called only a con-stant num-ber of times in the whole pro-gram,
  the parametrized
  []
 
 [14] [15] [16] [17] [18] [19] [20]
-Overfull \hbox (1.28629pt too wide) in paragraph at lines 1282--1294
+Overfull \hbox (1.28629pt too wide) in paragraph at lines 1277--1289
 \OT1/cmr/m/n/12 Standard Tur-ing ma-chines do not have op-er-a-tions like ``cre
 -ation'' or ``killing''
  []
 
-
-Overfull \hbox (2.31004pt too wide) in paragraph at lines 1327--1329
+[21]
+Overfull \hbox (2.31004pt too wide) in paragraph at lines 1322--1324
 []\OT1/URWClassico-LF/b/n/12 Definition 6.2 \OT1/cmr/m/n/12 ( Con-fig-u-ra-tion
  ) []Con-sider a gen-er-al-ized Tur-ing ma-chine [].
  []
 
-[21] [22] [23] [24] [25] [26] [27] [28] [29] [30]
+[22] [23] [24] [25] [26] [27] [28] [29] [30]
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 1858.
+(Font)              scaled to size 10.0pt on input line 1853.
  [31] [32] [33]
-Overfull \hbox (1.0603pt too wide) in paragraph at lines 2085--2090
+Overfull \hbox (1.0603pt too wide) in paragraph at lines 2080--2085
 []\OT1/cmr/m/n/12 The heal-ing and the re-build-ing pro-ce-dures
  []
 
 [34] [35] [36] [37] [38] [39] [40]
-Overfull \hbox (3.01341pt too wide) in paragraph at lines 2623--2626
+Overfull \hbox (3.01341pt too wide) in paragraph at lines 2618--2621
 []\OT1/cmr/m/n/12 A se-quence of ad-ja-cent neigh-bor cells, with ad-dresses gr
 ow-
  []
 
 [41] [42] [43]
-Overfull \hbox (0.58588pt too wide) in paragraph at lines 2917--2921
+Overfull \hbox (0.58588pt too wide) in paragraph at lines 2912--2916
 []\OT1/URWClassico-LF/b/n/12 Lemma 8.5 []\OT1/cmr/m/it/12 In a healthy con-fig-
 u-ra-tion, each $[] \OT1/cmr/m/n/12 = ([]\OML/cmm/m/it/12 ; []; []; []\OT1/cmr/
 m/n/12 )$
  []
 
 [44]
-Overfull \hbox (0.95573pt too wide) in paragraph at lines 2954--2956
+Overfull \hbox (0.95573pt too wide) in paragraph at lines 2949--2951
 []\OT1/cmr/m/n/12 In a healthy con-fig-u-ra-tion, the pos-si-bil-i-ties of find
 -ing non-adjacent neigh-
  []
 
 [45] [46] [47] [48] [49] [50] [51] [52] [53] [54] [55] [56]
-Overfull \hbox (8.9501pt too wide) in paragraph at lines 4000--4002
+Overfull \hbox (8.9501pt too wide) in paragraph at lines 3995--3997
 []\OT1/cmr/m/n/12 We will first prove a slightly more tech-ni-cal lemma from wh
 ich Lemma [][]10.2[][]
  []
@@ -1060,21 +1055,21 @@ bibitemlist
 \tf@toc=\write5
 \openout5 = `longTuring.toc'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 5244.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 5244.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 5239.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 5239.
  (./longTuring.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 5244.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 5244.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 5239.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 5239.
 
 Package rerunfilecheck Info: File `longTuring.brf' has not changed.
 (rerunfilecheck)             Checksum: C7EE8CC0322CEABC3A4135AFE0E2BF6E;469.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 5244.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 5239.
  ) 
 Here is how much of TeX's memory you used:
- 15412 strings out of 493117
- 216200 string characters out of 6135433
- 388663 words of memory out of 5000000
- 18387 multiletter control sequences out of 15000+600000
+ 15391 strings out of 493117
+ 215683 string characters out of 6135433
+ 388082 words of memory out of 5000000
+ 18368 multiletter control sequences out of 15000+600000
  43966 words of font info for 103 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
  45i,14n,37p,356b,681s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1105,10 +1100,10 @@ mf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/local/texlive/2014
 /texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/texlive/
 2014/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/20
 14/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb>
-Output written on longTuring.pdf (74 pages, 510875 bytes).
+Output written on longTuring.pdf (74 pages, 508734 bytes).
 PDF statistics:
- 1016 PDF objects out of 1200 (max. 8388607)
- 905 compressed objects within 10 object streams
- 287 named destinations out of 1000 (max. 500000)
+ 1018 PDF objects out of 1200 (max. 8388607)
+ 907 compressed objects within 10 object streams
+ 288 named destinations out of 1000 (max. 500000)
  329 words of extra memory for PDF output out of 10000 (max. 10000000)
 

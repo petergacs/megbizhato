@@ -9,6 +9,7 @@
 \setcounter{secnumdepth}{2}
 \counterwithout{section}{chapter}
 \counterwithin{equation}{section}
+%\numberwithin{equation}{section} % in amsmath
 %\counterwithout{figure}{chapter}
 \counterwithin{figure}{section}
 
@@ -36,20 +37,10 @@
  % After hyperref:
 \usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
 \usepackage[sf]{gacs} % Process with XeTeX
-%\ifxetex\else\usepackage{classico}\fi
 \usepackage{gacs-algo} % After hyperref.
 % After gacs.sty
 
-\usepackage[pagecolor={Honeydew1}]{pagecolor}
-
-
-%\numberwithin{equation}{section} % in amsmath
-
-% % customizations for the enumitem package
-% \setlist[enumerate]{leftmargin=*}
-% \setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.8}{\textbullet}}}
-% %\setlist[description]{font=\mdseries\textsf, leftmargin=1em}
-
+%\usepackage[pagecolor={Honeydew1}]{pagecolor}
 
 \hyphenation{com-plex-ity des-tin-at-ion co-lon-ies}
 
@@ -1087,14 +1078,19 @@ Let
 \end{definition}
 
 \begin{definition}[Sparsity]\label{def:sparsity}
-Let \( \beta\ge 9 \) be a constant, and let 
-\( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \) be 
+Let
+\begin{align}\label{eq:beta}
+ \beta\ge 9 
+ \end{align}
+be a constant, and let 
+\( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \), 
+\( 1\le\gamma_{1}\le\gamma_{2}\le\dotsm \) be 
 sequences of positive integers to be fixed later.
 
 For a two-dimensional set \( E \), let \( E^{(1)} = E \).
 For \( k>1 \) we define recursively:
 \begin{align}\label{eq:noise^k}
-    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \pair{\B_{k+1}}{\Tu_{k+1}}).
+    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \gamma_{k}\pair{\B_{k+1}}{\Tu_{k+1}}).
 \end{align}
 Set \( E^{(k)} \) is called the \df{\( k \)-th residue} of \( E \).
 It is \( k \)-\df{sparse} if \( E^{(k+1)}=\emptyset \).
@@ -1106,13 +1102,12 @@ then we will denote \( E^{(k+1)} \) simply by \( E^{*} \).
 
 The following lemma connects the above defined sparsity notions to the requirement
 of small fault probability.
+It is formulated somewhat redundantly, for easier application.
 
 \begin{lemma}[Sparsity]\label{lem:sparsiness}
-Let \( 1=\B_{1}\le  \B_{2}\le\dotsm \) and 
-\( 1=\Tu_{1}<T_{2}<\dotsm \) be sequences of integers with
-\( Q_k = \B_{k+1}/\B_{k} \), \( \U_k = \Tu_{k+1}/\Tu_{k} \), and
+Let \( Q_k = \B_{k+1}/\B_{k} \), \( \U_k = \Tu_{k+1}/\Tu_{k} \), and
 \begin{align}\label{eq:assumption}
-  \lim_{k\rightarrow\infty}\frac{\log(\U_{k} Q_k)}{1.5^k}=0,
+  \lim_{k\rightarrow\infty}\frac{\log(\gamma_{k}\U_{k} Q_k)}{1.5^k}=0.
 \end{align}
 For sufficiently small \( \varepsilon \), for every \( k\ge 1 \) the following holds.
 Let \( E\subseteq \bbZ\times \bbZ_{\ge 0} \)
@@ -1138,25 +1133,25 @@ Let
 \begin{align*}
    p_{k}=2\varepsilon\cdot 2^{-1.5^{k}}.
 \end{align*}
-Suppose \( \vek{y} \in E^{(k)}\cap B(\vek{x},(\B_{k+1}, \Tu_{k+1})  ) \).
+Suppose \( \vek{y} \in E^{(k)}\cap B(\vek{x},\gamma_{k}(\B_{k+1}, \Tu_{k+1})  ) \).
 Then, according to the definition of \( E^{(k)} \),  there is a point
 \begin{align}\label{eq:sparse-as}
  \vek{z} \in
- B(\vek{y},(\B_{k+1},\Tu_{k+1}))\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
+ B(\vek{y},\gamma_{k}(\B_{k+1},\Tu_{k+1}))\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
  \end{align}
 Consider a standard partition of the (two-dimensional) space-time into
 rectangles \( K_{p}=\vek{c}_{p}+\lint{-\B_{k}}{\B_k}\times \lint{-\Tu_{k}}{\Tu_{k}} \)
 with centers \( \vek{c}_{1},\vek{c}_{2},\dots \).
 The rectangles \( K_{i},K_{j} \) containing \( \vek{y} \) and \( \vek{z} \)
-respectively intersect \( B(\vek{x}, 2(\B_{k+1}, \Tu_{k+1})) \).
+respectively intersect \( B(\vek{x}, 2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \).
 The triple-size rectangles 
 \( K'_{i}=c_{i} + \lint{-3\B_{k}}{3\B_k}\times \lint{-3\Tu_{k}}{3\Tu_{k}} \) and
-\( K'_{j} \) are disjoint, since \eqref{eq:sparse-as} implies
+\( K'_{j} \) are disjoint, since \eqref{eq:beta} and~\eqref{eq:sparse-as} imply
  \( \abs{y_1 - z_1}>\beta\B_{k} \) and \( \abs{y_2 - z_2}>\beta\Tu_{k} \).
 
 The set \( E^{(k)} \) must intersect two rectangles \( K_{i} \),
 \( K_{j} \) of size \( 2(\B_{k}, \Tu_{k}) \) separated by at least \( 4(\B_{k}, \Tu_{k}) \),
-of the big rectangle \( B(\vek{x},2(\B_{k+1}, \Tu_{k+1})) \).
+of the big rectangle \( B(\vek{x},2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \).
 
 By the inductive hypothesis, the event \( \cF_{i} \) that
 \( K_{i} \) intersects \( E_{k} \) has probability bound \( p_{k} \).
@@ -1165,9 +1160,9 @@ only on the triple size disjoint rectangles \( K'_{i} \) and \( K'_{j} \).
 
 The probability that both of these events hold is at most \( p_{k}^{2} \).
 The number of possible rectangles
-\( K_{p} \) intersecting \( B(\vek{x},2(\B_{k+1}, \Tu_{k+1})) \) is
+\( K_{p} \) intersecting \( B(\vek{x},2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \) is
 at most
-\( C_{k}:=((2\U_{k} Q_{k})+2)^{2} \), so the number of possible pairs of rectangles
+\( C_{k}:=((2\gamma_{k}^{2}\U_{k} Q_{k})+2)^{2} \), so the number of possible pairs of rectangles
 is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
  \begin{align*}
    C_{k}^{2}p_{k}^{2}/2
@@ -1176,7 +1171,7 @@ is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
    \\ &=2\varepsilon 2^{-1.5^{k+1}} \cdot \varepsilon
         C_{k}^{2}2^{-0.5\cdot 1.5{k}}.
  \end{align*}
-Since \( \lim_{k}\frac{\log{(\U_{k} Q_k)}}{1.5^k}=0 \),
+Since \( \lim_{k}\frac{\log{(\gamma_{k}\U_{k} Q_k)}}{1.5^k}=0 \),
 the last factor is \( \le 1 \) for sufficiently small  \( \varepsilon \).
 \end{proof}
 
