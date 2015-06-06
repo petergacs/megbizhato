@@ -133,21 +133,22 @@
 \newcommand{\ZigDir}{\fld{ZigDir}}
 
 %\newcommand{\Bridge}{\mathrm{Bridge}}
+\newcommand{\Committing}{\mathrm{Committing}}
 \newcommand{\Coordinated}{\mathrm{Coordinated}}
 \newcommand{\decode}{\mathrm{decode}}
 \newcommand{\dir}{\mathrm{dir}}
 \newcommand{\encode}{\mathrm{encode}}
 \newcommand{\front}{\mathrm{front}}
-\newcommand{\Rebuilding}{\mathrm{Rebuilding}}
 \newcommand{\Histories}{\mathrm{Histories}}
 \newcommand{\Last}{\mathrm{Last}}
 \newcommand{\Marking}{\mathrm{Marking}}
 \newcommand{\Member}{\mathrm{Member}}
-\newcommand{\Committing}{\mathrm{Committing}}
+\newcommand{\Normal}{\mathrm{Normal}}
 \newcommand{\patch}{\mathrm{patch}}
 \newcommand{\Planning}{\mathrm{Planing}}
+\newcommand{\Rebuilding}{\mathrm{Rebuilding}}
+\newcommand{\score}{\mathrm{score}}
 \newcommand{\Target}{\mathrm{Target}}
-\newcommand{\Normal}{\mathrm{Normal}}
 
 \newcommand{\PadLen}{\mathit{PadLen}}
 \newcommand{\Interpr}{\mathit{Interpr}}
@@ -186,10 +187,12 @@
 \newcommand{\Zg}{\mathcal{Z}_g}
 
 \newcommand{\cns}[1]{c_{\textrm{\upshape #1}}}
+\newcommand{\cDecr}{\cns{decr}}
 \newcommand{\cEsc}{\cns{escape}}
 \newcommand{\cCleanS}{\cns{clean-s}}
 \newcommand{\cCleanT}{\cns{clean-t}}
 \newcommand{\cCDepth}[1]{\cns{c-depth-#1}}
+\newcommand{\cIncr}{\cns{incr}}
 \newcommand{\cSpill}{\cns{spill}}
 
 \begin{document}
@@ -243,7 +246,7 @@ there is a set \( F \) of \df{final states}.
     where \( q\in\Gamma \) is the \df{current state}, 
 \( \h\in\bbZ \) is the current \df{head position}, or \df{observed cell},
 and \( A\in\Sigma^{\bbZ} \) is the \df{tape content}: 
-at position \( p \), the tape contains the symbol \( A[p] \).
+at position \( p \), the tape contains the symbol \( A(p) \).
 If \( C=(q,A,\h) \) is a configuration then we will write
         \begin{align*}
              C.\state=q,\quad C.\pos=\h, \quad C.\tape=A.
@@ -318,7 +321,7 @@ at any time \( t' \) after
  \begin{align*}
    t\cdot (\log t)^{\alpha_{2}},
  \end{align*}
-we have \( \eta(t').\tape[0].\Output= y \)
+we have \( \eta(t').\tape(0).\Output= y \)
 with probability at least \( 1 - O(\varepsilon) \).
 \end{theorem}
 
@@ -1080,17 +1083,17 @@ Let
 \begin{definition}[Sparsity]\label{def:sparsity}
 Let
 \begin{align}\label{eq:beta}
- \beta\ge 9 
+ \beta\ge 9, \gamma\gg\beta
  \end{align}
-be a constant, and let 
+constants (we will choose \( \gamma \) sufficiently large as the proof requires), and let 
 \( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \), 
-\( 1\le\gamma_{1}\le\gamma_{2}\le\dotsm \) be 
-sequences of positive integers to be fixed later.
+% \( 1\le\gamma_{1}\le\gamma_{2}\le\dotsm \) 
+be sequences of positive integers to be fixed later.
 
 For a two-dimensional set \( E \), let \( E^{(1)} = E \).
 For \( k>1 \) we define recursively:
 \begin{align}\label{eq:noise^k}
-    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \gamma_{k}\pair{\B_{k+1}}{\Tu_{k+1}}).
+    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \gamma\pair{\B_{k+1}}{\Tu_{k+1}}).
 \end{align}
 Set \( E^{(k)} \) is called the \df{\( k \)-th residue} of \( E \).
 It is \( k \)-\df{sparse} if \( E^{(k+1)}=\emptyset \).
@@ -1100,6 +1103,11 @@ When \( E=E^{(k)} \) and \( k \) is known
 then we will denote \( E^{(k+1)} \) simply by \( E^{*} \).
 \end{definition}
 
+% \begin{remark}
+%   In the application later, it will probably be enough to make \( \gamma_{k} \)
+% constant, just rather larger than \( \beta \).
+% \end{remark}
+
 The following lemma connects the above defined sparsity notions to the requirement
 of small fault probability.
 It is formulated somewhat redundantly, for easier application.
@@ -1107,7 +1115,8 @@ It is formulated somewhat redundantly, for easier application.
 \begin{lemma}[Sparsity]\label{lem:sparsiness}
 Let \( Q_k = \B_{k+1}/\B_{k} \), \( \U_k = \Tu_{k+1}/\Tu_{k} \), and
 \begin{align}\label{eq:assumption}
-  \lim_{k\rightarrow\infty}\frac{\log(\gamma_{k}\U_{k} Q_k)}{1.5^k}=0.
+  \lim_{k\rightarrow\infty}\frac{\log(\U_{k} Q_k)}{1.5^k}=0.
+%  \lim_{k\rightarrow\infty}\frac{\log(\gamma_{k}\U_{k} Q_k)}{1.5^k}=0.
 \end{align}
 For sufficiently small \( \varepsilon \), for every \( k\ge 1 \) the following holds.
 Let \( E\subseteq \bbZ\times \bbZ_{\ge 0} \)
@@ -1133,17 +1142,17 @@ Let
 \begin{align*}
    p_{k}=2\varepsilon\cdot 2^{-1.5^{k}}.
 \end{align*}
-Suppose \( \vek{y} \in E^{(k)}\cap B(\vek{x},\gamma_{k}(\B_{k+1}, \Tu_{k+1})  ) \).
+Suppose \( \vek{y} \in E^{(k)}\cap B(\vek{x},\gamma(\B_{k+1}, \Tu_{k+1})  ) \).
 Then, according to the definition of \( E^{(k)} \),  there is a point
 \begin{align}\label{eq:sparse-as}
  \vek{z} \in
- B(\vek{y},\gamma_{k}(\B_{k+1},\Tu_{k+1}))\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
+ B(\vek{y},\gamma(\B_{k+1},\Tu_{k+1}))\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
  \end{align}
 Consider a standard partition of the (two-dimensional) space-time into
 rectangles \( K_{p}=\vek{c}_{p}+\lint{-\B_{k}}{\B_k}\times \lint{-\Tu_{k}}{\Tu_{k}} \)
 with centers \( \vek{c}_{1},\vek{c}_{2},\dots \).
 The rectangles \( K_{i},K_{j} \) containing \( \vek{y} \) and \( \vek{z} \)
-respectively intersect \( B(\vek{x}, 2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \).
+respectively intersect \( B(\vek{x}, 2\gamma(\B_{k+1}, \Tu_{k+1})) \).
 The triple-size rectangles 
 \( K'_{i}=c_{i} + \lint{-3\B_{k}}{3\B_k}\times \lint{-3\Tu_{k}}{3\Tu_{k}} \) and
 \( K'_{j} \) are disjoint, since \eqref{eq:beta} and~\eqref{eq:sparse-as} imply
@@ -1151,7 +1160,7 @@ The triple-size rectangles
 
 The set \( E^{(k)} \) must intersect two rectangles \( K_{i} \),
 \( K_{j} \) of size \( 2(\B_{k}, \Tu_{k}) \) separated by at least \( 4(\B_{k}, \Tu_{k}) \),
-of the big rectangle \( B(\vek{x},2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \).
+of the big rectangle \( B(\vek{x},2\gamma(\B_{k+1}, \Tu_{k+1})) \).
 
 By the inductive hypothesis, the event \( \cF_{i} \) that
 \( K_{i} \) intersects \( E_{k} \) has probability bound \( p_{k} \).
@@ -1160,9 +1169,9 @@ only on the triple size disjoint rectangles \( K'_{i} \) and \( K'_{j} \).
 
 The probability that both of these events hold is at most \( p_{k}^{2} \).
 The number of possible rectangles
-\( K_{p} \) intersecting \( B(\vek{x},2\gamma_{k}(\B_{k+1}, \Tu_{k+1})) \) is
+\( K_{p} \) intersecting \( B(\vek{x},2\gamma(\B_{k+1}, \Tu_{k+1})) \) is
 at most
-\( C_{k}:=((2\gamma_{k}^{2}\U_{k} Q_{k})+2)^{2} \), so the number of possible pairs of rectangles
+\( C_{k}:=((2\gamma^{2}\U_{k} Q_{k})+2)^{2} \), so the number of possible pairs of rectangles
 is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
  \begin{align*}
    C_{k}^{2}p_{k}^{2}/2
@@ -1171,7 +1180,8 @@ is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
    \\ &=2\varepsilon 2^{-1.5^{k+1}} \cdot \varepsilon
         C_{k}^{2}2^{-0.5\cdot 1.5{k}}.
  \end{align*}
-Since \( \lim_{k}\frac{\log{(\gamma_{k}\U_{k} Q_k)}}{1.5^k}=0 \),
+%Since \( \lim_{k}\frac{\log{(\gamma_{k}\U_{k} Q_k)}}{1.5^k}=0 \),
+Since \( \lim_{k}\frac{\log{(\U_{k} Q_k)}}{1.5^k}=0 \),
 the last factor is \( \le 1 \) for sufficiently small  \( \varepsilon \).
 \end{proof}
 
@@ -1279,8 +1289,8 @@ operations like ``creation'' or ``killing'' of cells, nor
 do they allow for cells to be non-adjacent.
 We introduce here a \df{generalized Turing machine}.
 It depends on an integer \( \B \ge 1 \) that denotes the cell body size,
-and an upper bound \( \Tu \) on the transition time, as well as a \df{pass number} \( \pi \),
-whose meaning will become clear in Definition~\ref{def:traj}.
+and an upper bound \( \Tu \) on the transition time, as well as a \df{level number} \( \lambda \),
+whose meaning will be explained in the definition of configurations.
 These parameters are convenient since they provide the illusion that the different Turing
 machines in the hierarchy of simulations all operate on the same linear space.
 Even if the notions of cells, alphabet
@@ -1291,7 +1301,7 @@ at least the notion of a \emph{location on the tape} is the same.
 \begin{definition}[Generalized Turing machine]\label{def:gen-TM}
     A \df{generalized Turing machine} \( M \) is defined by a tuple
         \begin{align}\label{eq:gen-TM}
-             (\Gamma, \Sigma, \tau, \NonAdj, \cDir, q_{\start},F, \B, \Tu, \pi),
+             (\Gamma, \Sigma, \tau, \NonAdj, \cDir, q_{\start},F, \B, \Tu, \lambda),
        \end{align}
     where \( \Gamma \) and \( \Sigma \) are finite sets
     called the \df{set of states} and the \df{alphabet} respectively,
@@ -1310,7 +1320,7 @@ if \( (a',q',j)=\tau(a,q) \) then \( a'.\cDir=j \).
 The role of starting state \( q_{\start} \) and final states in \( F \) is as before.
 The integer \( \B\ge 1 \) is called the \df{cell body size},
 and the real number \( \Tu \) is a bound on the transition time.
-The pass number \( \pi \) will play a role in the definition of trajectories.
+The level \( \lambda \) will play a role in the definition of trajectories.
 
 Among the elements of the tape alphabet \( \Sigma \), 
 we distinguish the elements \( 0,1,\Bad,\Vacant \).
@@ -1322,24 +1332,32 @@ The role of the symbols \( \Bad \) and \( \Vacant \) will be clarified below.
      Consider a generalized Turing machine~\eqref{eq:gen-TM}.
     A \df{configuration} is a tuple
         \begin{align*}
-             (q,A,\h,\hc),
+             (q,L,A,\h,\hc,),
         \end{align*}
-    where \( q\in\Gamma \), \( \h,\hc\in\bbZ \) and \( A\in\Sigma^{\bbZ} \).
-As before, the array \( A \) is the tape configuration.
-A point is \df{clean} if  \( A[p]\ne\Bad \).
-A set of points is clean if it consists of clean points.
+    where \( q\in\Gamma \), 
+\( L:\bbZ\to \clint{0}{\lambda}\cap\bbN\),
+\( A:\bbZ\to\Sigma \), \( \h,\hc\in\bbZ \).
+The arrays \( L,A \) make up the tape configuration.
+The value \( 0\le L(p) \le\lambda \) shows the \df{level} of a position \( p \) on the tape.
+A point is \df{clean} if  \( L(p)=\lambda \), the maximum possible level.
+Informally, 
+even in unclean points \( p \), the value \( L(p) \) measures the level of ``organization'' of a certain
+neighborhood of \( p \).
+% It is convenient to allow fractional values of \( L(p) \).
+The cell state \( A(p) \) will have importance only in case \( L(p)=\lambda \).
+A set of points is \df{clean} if it consists of clean points.
 
 We say that there is a \df{cell} at a position \( p\in\bbZ \) if the interval
-\( p+\lint{0}{\B} \) is clean and \( A[p]\ne \Vacant \).
+\( p+\lint{0}{\B} \) is clean and \( A(p)\ne \Vacant \).
 In this case, we call the interval \( p+\lint{0}{\B} \) the \df{body} of this cell.
 Cells must be at distance \( \ge\B \) from each other, that is their
 bodies must not intersect.
 They are called \df{adjacent} if the distance is exactly \( \B \).
 
-For all cells \( p \), the value \( A[p].\cDir \) is required to point towards 
-the head \( \h \), that is 
+For all cells \( p \), the value \( A(p).\cDir \) is required to point towards 
+the head position \( \h \), that is 
  \begin{align*}
-   A[p].\cDir=\sign(\h-p).
+   A(p).\cDir=\sign(\h-p).
  \end{align*}
 If the head is within a clean interval, at a distance
 
@@ -1358,7 +1376,7 @@ Let
 
 \end{definition}
 
-It is clear that all the above definition can be localized to define a configuration
+All the above definitions can clearly be localized to define a configuration
 \df{over a space interval} \( I \), where it is always understood that \( \h\in I \), that is 
 \( I \) contains the head.
 
@@ -1389,13 +1407,11 @@ It is clear that all the above definition can be localized to define a configura
   \( \zeta.\state \).
 \end{definition}
 
-
-
 It is natural to name a sequence of configurations that is conceivable as a computation
 (faulty or not) of a Turing machine as ``history''.
 The histories that obey the transition function then could be called ``trajectories''.
 In what follows we will 
-stretch and generalize this notion to encompass also some limited violations of the
+stretch this notion to encompass also some limited violations of the
 transition function.
 
 In connection with any underlying Turing machine with a given starting configuration, we will
@@ -1410,10 +1426,11 @@ a fault occurs at time \( t \) when the head is at position \( p \).
   \begin{sloppypar}
     Let us be given a generalized Turing machine~\eqref{eq:gen-TM}.
     Consider a sequence \( \eta = (\eta(0), \eta(1), \dots) \) of configurations with
-    \( \eta(t) = \) \( (q(t), A(t), \h(t), \hc(t)) \), along with a noise set \( \Noise \).
+    \( \eta(t) = \) \( (q(t), L(t), A(t), \h(t), \hc(t)) \), along with a noise set \( \Noise \).
     The \df{switching times} of this sequence 
 are the times when one of the following can change:
-the state, the position \( \hc(t) \) of the current cell, or the state of the current cell.
+the state, the position \( \hc(t) \) of the current cell, the level and the state of the current cell.
+(The level can also change at non-switching times.)
 The interval between two consecutive switching times is the \df{dwell period}.
 The pair
       \end{sloppypar}
@@ -1424,10 +1441,11 @@ The pair
         \begin{itemize}
             \item We have \( \abs{\h(t) - \h(t')} \le \abs{t' - t} \).
 
-            \item In two consecutive configurations, the content \( A(t)[p] \) of the positions not in
-                  \( \h(t) + \lint{-\B}{\B} \), remains the same:
-                  \( A(t+1)[n] = A(t)[n] \) for all \( n \notin \h(t) + \lint{-\B}{\B} \).
-
+            \item In two consecutive configurations, the level \( L(p,t) \) and content \( A(p,t) \) 
+              of the positions \( p \)
+              not in \( \h(t) + \lint{-\B}{\B} \), remains the same: for example
+                  \( A(n,t+1) = A(n,t) \) for all \( n \notin \h(t) + \lint{-\B}{\B} \).
+\Pnote{Maybe for the level we will use \( \lint{-2\B}{2\B} \).}
             \item At each noise-free switching time the head is on the new current cell, that is
 \( \hc(t)=\h(t) \).
 In particular, when at a switching time a current cell becomes
@@ -1473,12 +1491,12 @@ if \( j=0 \) or the new current cell is adjacent, and \( \true \) otherwise.
 \begin{sloppypar}
    A history  \( (\eta, \Noise) \) of a generalized Turing 
 machine~\eqref{eq:gen-TM} with \(\eta(t) =\)
-\( (q(t), A(t), \h(t), \hc(t)) \)
+\( (q(t), L(T), A(t), \h(t), \hc(t)) \)
 is called a \df{trajectory} of \( M \) if the following conditions hold, during any 
 noise-free time interval.
 Denote 
 \begin{align*}
-     (a, q, p) &= (A(t)[\hc(t)], q(t),\hc(t)),
+     (a, q, p) &= (A(\hc(t),t), q(t),\hc(t)),
 \\ (a',q',j)   &= \tau(a,q).
  \end{align*}
   \end{sloppypar}
@@ -1508,16 +1526,16 @@ Further the length of the dwell period is bounded by \( \Tu \).
 % \( 2.1\cns{cleaning-unit}\Tu \) in any interval of size \( \cns{cleaning-unit}\B \).
 
 \item[Spill Bound]\label{i:spill-bound}
-For constant
-\begin{align}\label{eq:cns.spill}
-   \cSpill =4,
- \end{align}
-consider a noise-free space-time rectangle 
-\( \lint{a}{b}\times \lint{u}{v} \) in which \( \lint{a}{b} \) is
-clean at time \( u \).
-Then \( \lint{a+\cSpill\B}{b-\cSpill\B} \) is clean at time \( v \).
+Recall the constant \( \gamma \) introduced in Definition~\ref{def:sparsity}.
+Consider a noise-free space-time rectangle 
+\( \lint{a}{b}\times \lint{u}{v} \) in which \( \lint{a}{b} \) is clean at time \( u \).
+Let 
+\begin{align*}
+ s= (b-a)(\beta/\gamma).
+ \end{align*}
+Then \( \lint{a+s}{b-s} \) is clean at time \( v \).
 
-\item[Attack] \label{i:def.traj.attack-from-outside}
+\item[Attack Cleaning] \label{i:def.traj.attack-from-outside}
 For constant
 \begin{align}\label{eq:cns.clean-depth-2}
    \cCDepth2 =3,
@@ -1538,18 +1556,26 @@ For constants
 \quad   \cCleanS =\cCDepth2 +1,
  \end{align}
 suppose that during a noise-free time interval \( \clint{u}{v} \), 
-the head spends a cumulative time 
- \( \cCleanT \Tu \)  in a certain interval of size \( \B \)
-(possibly while entering and exiting repeatedly).
+the head spends time \( \cCleanT \Tu \)  in a certain interval of size \( \B \)
+without leaving it.
 Then at time \( v \), the interval 
 \( h+\lint{\cCleanS \B}{\cCleanS\B}  \) around its position \( h \) is clean.
 
 \item[Pass Cleaning]\label{i:def.traj.pass-cleaning}
-Suppose that in a noise-free space-time rectangle \( \lint{a}{b}\times J \).
-the head passes \( \pi \) times across the interval \( \lint{a}{b} \).
-Then \( \lint{a+2\B}{b-2\B} \) %?
-becomes clean.
-
+Consider a noise-free time interval \( J \), and the space interval \( I \)
+of all positions of the head during \( J \).
+Let \( p(t) \) be the head position at time \( t \).
+Suppose \( L(p(t))<\lambda \) for all \( t \) in \( J \)/
+For appropriate constants 
+\begin{align*}
+   0<\cDecr<\cIncr,
+ \end{align*}
+the score\( \score(I) \) increases by at least 
+\begin{align*}
+ \cIncr(1+2^{-\lambda})|I|-\cDecr\B .
+ \end{align*}
+The subtracted term needs to be present only if the head starts but does not end
+on a clean position.
 \end{description}
 
 \end{definition}

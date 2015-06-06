@@ -87,6 +87,7 @@
 \newcommand{\Plus}{\oplus}
 \newcommand{\Minus}{\ominus}
 \newcommand{\pos}{\mathrm{pos}}
+\newcommand{\score}{\mathrm{score}}
 \newcommand{\R}{R}
 \newcommand{\Tu}{T}
 \newcommand{\Tus}{T^{*}}
@@ -192,6 +193,7 @@
 \newcommand{\cCDepth}[1]{\cns{c-depth-#1}}
 \newcommand{\cSpill}{\cns{spill}}
 \newcommand{\cSpace}{\cns{space}}
+\newcommand{\cDecr}{\cns{decr}}
 \newcommand{\cIncr}{\cns{incr}}
 
 \begin{document}
@@ -224,22 +226,30 @@ Here, still many details must be worked out, but I feel that this has more chanc
 
 Let us have a parameter \( \lambda \) (for ``level'').
 There is also a new property of positions, called \df{level}, and written \( L(x) \),
-taking integer and half-integer values between 0 and \( \lambda \).
+taking integer values between 0 and \( \lambda \).
+Clean cells will be the ones with level \( \lambda \).
+The \df{score} \( \score(I) \) over an interval is defined as
+ \begin{align}\label{eq:score}
+  \score(I)=\sum_{x\in I}2^{L(x)}.
+ \end{align}
 
-Let \( G(\lambda) \) be some function of \( \lambda \) with \( 1\ll G(\lambda)\ll 2^{\lambda} \).
-It will be chosen roughly as \( \gamma_{\lambda} \) where \( \gamma_{k} \) was newly introduced
+% Let \( G(\lambda) \) be some function of \( \lambda \) with \( 1\ll G(\lambda)\ll 2^{\lambda} \).
+% It will be chosen roughly as \( \gamma_{\lambda} \) where \( \gamma_{k} \) was newly introduced
+% in the new definition of sparsity, see the long paper.
+
+I introduced a new constant \( \gamma \) 
 in the new definition of sparsity, see the long paper.
-The role of \( \gamma_{k} \) is to require that bursts at level \( k \) be
-not just one colony but \( \gamma_{k} \) colonies separated from each other.
+Its role is to require that bursts at level \( k \) be
+not just one colony but \( \gamma \) colonies separated from each other.
 
-Here are the rules for clean cells:
-\begin{enumerate}[label=\upshape{(L\arabic*)}, ref=L\arabic*]
-\item\label{i:level.whole}
- If a cell \( x \) has a clean neighborhood including its body and at least \( B \) on both 
-sides of it, then \( L(x) = \lambda \).
-\item\label{i:level.half} Even if the cleanness extends only to the side of \( x \) away from the head 
-then we have already \( L(x)\ge\lambda-1/2 \).
-\end{enumerate}
+% Here are the rules for clean cells:
+% \begin{enumerate}[label=\upshape{(L\arabic*)}, ref=L\arabic*]
+% \item\label{i:level.whole}
+%  If a cell \( x \) has a clean neighborhood including its body and at least \( B \) on both 
+% sides of it, then \( L(x) = \lambda \).
+% \item\label{i:level.half} Even if the cleanness extends only to the side of \( x \) away from the head 
+% then we have already \( L(x)\ge\lambda-1/2 \).
+% \end{enumerate}
 
 We will fix some  constants \( c_{i} \).
 Consider a noise-free time interval \( J \), and a space interval \( I \).
@@ -249,14 +259,15 @@ Consider a noise-free time interval \( J \), and a space interval \( I \).
 The old Spill Bound axiom bounded the amount by which the dirt can spill out
 of \( I \) during \( J \).
 I may have to replace this with a weaker one, saying
-that it can be spilled out by at most an amount of \( \beta |I|/G(\lambda) \).
+that it can be spilled out by at most an amount of \( \beta |I|/\gamma \).
 
 \item[Dwell Cleaning]
 The old Dwell Cleaning axiom says the following.
 If \( |I| \le \cSpace\B \), and the head spends a cumulative time  \( \Tu \)  during \( J \)
 in \( I \) (possibly while entering and exiting repeatedly),
 then at time \( v \), a clean point appears in \( I \).
-The new one will be similar.
+The new one will be similar, but requiring the head to spend the time continuously in \( J \),
+not only cumulatively.
 
 % The new one achieves the effect already if the time spent was \( \Tu/G(\lambda) \).
 % (The Rebuild procedure takes less time than a work period.)
@@ -265,17 +276,21 @@ The new one will be similar.
 Let \( p(t) \) be the head position at time \( t \).
 Suppose \( L(p(t))<\lambda \) for all \( t \) in \( J \), moreover
 during the time interval \( J \) the head covers the whole of \( I \).
-Then the \df{average score} over \( I \):
- \begin{align}\label{eq:score}
-  \frac{1}{|I|} \sum_{x\in I}2^{L(x)}
- \end{align}
-increases by \( \cIncr(1+2^{-\lambda}) \) for some constant \( \cIncr>0 \).
+We will have appropriate constants 
+\begin{align*}
+   0<\cDecr<\cIncr.
+ \end{align*}
+The score\( \score(I) \) increases by at least 
+\begin{align*}
+ \cIncr(1+2^{-\lambda})|I|-\cDecr\B .
+ \end{align*}
+The subtracted term needs to be present only if the head starts but does not end
+on a clean position.
 
-\item[Exit Cleaning]
-This replaces the Attack Cleaning axiom (which could stay, but this seems simpler):
-when the head steps on an area with \( L=\lambda \), 
-this area increases by an amount \( \ge\B \) in the direction where the 
-head is coming from.
+\item[Attack Cleaning]
+This remains essentially the same.
+Maybe it can be  simplified, not requiring the attack, if cleanness of a cell of \( M^{*} \) is
+defined to include the health of the neighbor colonies.
 \end{description}
 
 
@@ -291,10 +306,10 @@ Assume that \( x \) is in direction \( j \) from the head.
 It has level \( \lambda+1 \)
 if it is in a healthy area containing a colony with at least a whole colony to the left and to the right
 of \( x \).
-If it only contains a colony in the direction \( j \) then it has level \( \lambda+1/2 \).
-There may come some finer distinctions here.
-The goal is to amortize potential loss or no gain at the time we leave a clean
-area, towards the gain at Exit Cleaning when entering again.
+% If it only contains a colony in the direction \( j \) then it has level \( \lambda+1/2 \).
+% There may come some finer distinctions here.
+% The goal is to amortize potential loss or no gain at the time we leave a clean
+% area, towards the gain at Exit Cleaning when entering again.
 
 
 \subsection{Dwell Cleaning}
@@ -329,8 +344,8 @@ this increases the average score by \( \gem 1 \).
 At a burst the level of an area of size \( \beta\B \) may go from \( \lambda \) to 0,
 losing \( 2^{\lambda}\beta\B \).
 However, given that no new colony is found/created, bursts are as far apart as 
-\( G(\lambda)Q\B =G(\lambda)2^{\lambda}\B \), so they decrease the average score 
-only by \( \beta/G(\lambda)\ll 1 \).
+\( \gamma Q\B =\gamma 2^{\lambda}\B \), so they decrease the average score 
+only by \( \beta/\gamma\ll 1 \).
 
 The role of the factor \( 1+2^{-\lambda} \) in the Pass Cleaning axiom is that
 even when we only apply the axiom in recursion, the bursts will take away
@@ -364,14 +379,14 @@ interval that the head spends in \( I \) and is free from \( M^{*} \)-noise.
 
 Essentially dirt could only spill into \( K \) via bursts near the boundary \( x \).
 Between these bursts, the head would have to pass an interval of size 
-\( \ge G(\lambda)\B^{*} =G(\lambda)2^{\lambda}\B \), and to increase the score of \( I \) 
-by \( \gem G(\lambda)\B^{*} \), while the burst decreased it only by 
-\( \lem \beta 2^{\lambda}\B\lem\beta\B^{*}\ll G(\lambda)\B^{*} \).
+\( \ge \gamma\B^{*} =\gamma 2^{\lambda}\B \), and to increase the score of \( I \) 
+by \( \gem \gamma\B^{*} \), while the burst decreased it only by 
+\( \lem \beta 2^{\lambda}\B\lem\beta\B^{*}\ll \gamma\B^{*} \).
 The total number of such times before the score of \( I \) reaches \( 2^{\lambda+1} \) is
 \begin{align*}
-   \lem 2^{\lambda+1}|I|/G(\lambda)\B^{*} = 2(|I|/\B^{*}) Q/G(\lambda).
+   \lem 2^{\lambda+1}|I|/\gamma\B^{*} = 2(|I|/\B^{*}) Q/\gamma.
  \end{align*}
 The size of the spill is about \( \beta\B \) times bigger than this,
-that is \( \lem \beta |I|/G(\lambda) \).
+that is \( \lem \beta |I|/\gamma \).
 
 \end{document}
