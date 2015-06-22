@@ -40,7 +40,7 @@
 \usepackage{gacs-algo} % After hyperref.
 % After gacs.sty
 
-%\usepackage[pagecolor={Honeydew1}]{pagecolor}
+\usepackage[pagecolor={Honeydew1}]{pagecolor}
 
 \hyphenation{com-plex-ity des-tin-at-ion co-lon-ies}
 
@@ -3837,12 +3837,12 @@ However, tha analysis will show that in the absence of bursts, cleaning happens
 in a reasonable time.
 
 
-\section{Escape}
+\section{Escape}\label{sec:escape}
 
 Recall the notions of history and trajectory in Definitions~\ref{def:history} 
 and~\ref{def:traj}.
-Here we will draw some consequences of the Attack and Cleaning properties:
-these will be used in showing that an area affected by a noise burst cannot
+Here we will draw some consequences of the trajectory properties
+showing that an area affected by a noise burst cannot
 capture the head too long: it will escape, to possibly attack the dirty area
 from outside.
 
@@ -4440,6 +4440,13 @@ In more detail, as said at the end of Section~\ref{sec:coding}, we the decoding
 Here, we will prove that the healing procedure indeed deals with isolated bursts.
 Our goal is to show that the healing procedure provides relief, as required in an
 admissible annotated trajectory.
+
+% Bursts can create small unclean areas.
+% For their elimination we will rely only on the Spill Bound and the Attack Cleaning
+% properties of a trajectory, see Definition~\ref{def:traj}.
+% The other properties helping the cleaning will only be used on larger unclean areas,
+% see for example Section~\ref{sec:escape}.
+
 
 \subsection{Cleaning}
 

@@ -186,7 +186,8 @@
 \newcommand{\N}{\mathbf{N}}
 \newcommand{\Zg}{\mathcal{Z}_g}
 
-\newcommand{\cns}[1]{c_{\textrm{\upshape #1}}}
+\newcommand{\Cns}[2]{#1_{\textrm{\upshape #2}}}
+\newcommand{\cns}[1]{\Cns{c}{#1}}
 \newcommand{\cEsc}{\cns{escape}}
 \newcommand{\cCleanS}{\cns{clean-s}}
 \newcommand{\cCleanT}{\cns{clean-t}}
@@ -195,6 +196,9 @@
 \newcommand{\cSpace}{\cns{space}}
 \newcommand{\cDecr}{\cns{decr}}
 \newcommand{\cIncr}{\cns{incr}}
+\newcommand{\mHalfTurn}{\Cns{\mu}{half-turn}}
+\newcommand{\mTurnDone}{\Cns{\mu}{turn-done}}
+\newcommand{\mRebuild}{\Cns{\mu}{rebuild}}
 
 \begin{document}
 
@@ -224,32 +228,82 @@ Here, still many details must be worked out, but I feel that this has more chanc
 
 \section{Proposed new axioms}
 
+The new axioms are getting too complex.
+Maybe one can announce only part of them at the beginning, enough to be
+able to prove the bursty case, and postpone the rest of them later.
+
 Let us have a parameter \( \lambda \) (for ``level'').
 There is also a new property of positions, called \df{level}, and written \( L(x) \),
-taking integer values between 0 and \( \lambda \).
+taking values between 0 and \( \lambda \).
 Clean cells will be the ones with level \( \lambda \).
+There will be also some non-integer values: a non-clean are near the boundary may get
+various values
+\begin{align*}
+ \lambda-\mu_{i}
+ \end{align*}
+for some constants \( 0<\mu_{i}<1 \), where
+\begin{align*}
+     0 &<\mRebuild<\mTurnDone<\mHalfTurn<1,
+\\
+   3\mRebuild &<\mTurnDone.
+ \end{align*}
+A site can get a value \( >\lambda-1 \) only within distance \( \B \) from 
+clean cells.
+More precisely, we will distinguish the following kinds of boundary.
+Let \( x \) a cell on the right of a clean interval.
+\begin{sloppypar}
+\begin{enumerate}[label=\upshape{(B\arabic*)}, ref=B\arabic*]
+
+\item \( x \) is \df{neutral} if the head is on its left,
+\( L(y)=\lambda \) over \( \lint{x}{x+\B} \), 
+it is \( \le\lambda-1 \) over \( \lint{x+\B}{x+2\B} \), % {how about a small dirt?}
+and \( \cCanTurn(x)=\true \).
+
+\item \( x \) is in a \df{half turn} if the head is on the right of \( x+\B \),
+ \( L(y)=\lambda \) over \( \lint{x}{x+\B} \),
+\( L(y)=\lambda-\mHalfTurn \) over \( \lint{x+\B}{x+2\B} \),
+and \( \cCanTurn(x)=\false \).
+
+\item \( x \) is in a \df{completed turn} if the head is on its left,
+\( L(y)=\lambda \) over \( \lint{x}{x+\B} \),
+\( L(y)=\lambda-\mTurnDone \) over \( \lint{x+\B}{x+2\B} \),
+and \( \cCanTurn(x)=\false \).
+
+\item \( x \) is \df{a rebuilding boundary} if the head is on the right of \( x+\B \),
+ and \( L(y)=\lambda-\mRebuild \) over \( \lint{x-2\B}{x+2\B} \). % Possibly more?
+
+\end{enumerate}
+  
+\end{sloppypar}
+
 The \df{score} \( \score(I) \) over an interval is defined as
  \begin{align}\label{eq:score}
   \score(I)=\sum_{x\in I}2^{L(x)}.
  \end{align}
 
-% Let \( G(\lambda) \) be some function of \( \lambda \) with \( 1\ll G(\lambda)\ll 2^{\lambda} \).
-% It will be chosen roughly as \( \gamma_{\lambda} \) where \( \gamma_{k} \) was newly introduced
-% in the new definition of sparsity, see the long paper.
+The following is required, which will make sure that every passing of the right
+boundary \( x \) of a clean interval increases the score around it.
+
+\begin{enumerate}
+\item If the head passes a neutral \( x \) from left \Pnote{how far?}
+then \( x \) becomes either a half turn or a rebuilding boundary.
+
+\item If the head passes a rebuilding boundary \( x \) from right then \Pnote{how far?}
+the clean area advances to \( x+\B \).
+
+\item If the head passes a half turn \( x \) from right or turns back from a neutral \( x \)
+to the left without passing it, then either \( x \) becomes
+a completed turn or the clean area advances to \( x+\B \).
+
+\item If the head passes a completed turn \( x \) from left then \( x \)
+becomes a rebuilding boundary.
+
+\end{enumerate}
 
 I introduced a new constant \( \gamma \) 
 in the new definition of sparsity, see the long paper.
 Its role is to require that bursts at level \( k \) be
 not just one colony but \( \gamma \) colonies separated from each other.
-
-% Here are the rules for clean cells:
-% \begin{enumerate}[label=\upshape{(L\arabic*)}, ref=L\arabic*]
-% \item\label{i:level.whole}
-%  If a cell \( x \) has a clean neighborhood including its body and at least \( B \) on both 
-% sides of it, then \( L(x) = \lambda \).
-% \item\label{i:level.half} Even if the cleanness extends only to the side of \( x \) away from the head 
-% then we have already \( L(x)\ge\lambda-1/2 \).
-% \end{enumerate}
 
 We will fix some  constants \( c_{i} \).
 Consider a noise-free time interval \( J \), and a space interval \( I \).
