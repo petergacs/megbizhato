@@ -196,6 +196,7 @@
 \newcommand{\cSpace}{\cns{space}}
 \newcommand{\cDecr}{\cns{decr}}
 \newcommand{\cIncr}{\cns{incr}}
+\newcommand{\mPlainEdge}{\Cns{\mu}{plain-edge}}
 \newcommand{\mHalfTurn}{\Cns{\mu}{half-turn}}
 \newcommand{\mTurnDone}{\Cns{\mu}{turn-done}}
 \newcommand{\mRebuild}{\Cns{\mu}{rebuild}}
@@ -236,45 +237,19 @@ Let us have a parameter \( \lambda \) (for ``level'').
 There is also a new property of positions, called \df{level}, and written \( L(x) \),
 taking values between 0 and \( \lambda \).
 Clean cells will be the ones with level \( \lambda \).
-There will be also some non-integer values: a non-clean are near the boundary may get
-various values
+There will be also some non-integer values: the boundary area of a clean interval will
+be an interval of size between \( \B \) and \( 3\B \) and will have a constant
+value of \( L(x) \) equal to one of the values
 \begin{align*}
  \lambda-\mu_{i}
  \end{align*}
 for some constants \( 0<\mu_{i}<1 \), where
 \begin{align*}
-     0 &<\mRebuild<\mTurnDone<\mHalfTurn<1,
-\\
-   3\mRebuild &<\mTurnDone.
+     0 &<\mRebuild<\mTurnDone<\mHalfTurn<\mPlainEdge<1.
  \end{align*}
-A site can get a value \( >\lambda-1 \) only within distance \( \B \) from 
-clean cells.
-More precisely, we will distinguish the following kinds of boundary.
-Let \( x \) a cell on the right of a clean interval.
-\begin{sloppypar}
-\begin{enumerate}[label=\upshape{(B\arabic*)}, ref=B\arabic*]
-
-\item \( x \) is \df{neutral} if the head is on its left,
-\( L(y)=\lambda \) over \( \lint{x}{x+\B} \), 
-it is \( \le\lambda-1 \) over \( \lint{x+\B}{x+2\B} \), % {how about a small dirt?}
-and \( \cCanTurn(x)=\true \).
-
-\item \( x \) is in a \df{half turn} if the head is on the right of \( x+\B \),
- \( L(y)=\lambda \) over \( \lint{x}{x+\B} \),
-\( L(y)=\lambda-\mHalfTurn \) over \( \lint{x+\B}{x+2\B} \),
-and \( \cCanTurn(x)=\false \).
-
-\item \( x \) is in a \df{completed turn} if the head is on its left,
-\( L(y)=\lambda \) over \( \lint{x}{x+\B} \),
-\( L(y)=\lambda-\mTurnDone \) over \( \lint{x+\B}{x+2\B} \),
-and \( \cCanTurn(x)=\false \).
-
-\item \( x \) is \df{a rebuilding boundary} if the head is on the right of \( x+\B \),
- and \( L(y)=\lambda-\mRebuild \) over \( \lint{x-2\B}{x+2\B} \). % Possibly more?
-
-\end{enumerate}
-  
-\end{sloppypar}
+This area will be called a \df{buffer}, and could be called \df{plain} buffer, a \df{half-turn} buffer, a
+\df{full-turn} buffer, and a \df{rebuilding} buffer.
+Their role will be understood in the definition of the simulation code.
 
 The \df{score} \( \score(I) \) over an interval is defined as
  \begin{align}\label{eq:score}
@@ -282,23 +257,37 @@ The \df{score} \( \score(I) \) over an interval is defined as
  \end{align}
 
 The following is required, which will make sure that every passing of the right
-boundary \( x \) of a clean interval increases the score around it.
+buffer of a clean interval increases the score of any large interval around it.
 
-\begin{enumerate}
-\item If the head passes a neutral \( x \) from left \Pnote{how far?}
-then \( x \) becomes either a half turn or a rebuilding boundary.
+\begin{enumerate}[label=\upshape{(T\arabic*)}, ref=T\arabic*]
+\item\label{i:trans.to-half-turn} If a plain buffer is passed over from left
+then it becomes either a half-turn or a rebuilding buffer.
 
-\item If the head passes a rebuilding boundary \( x \) from right then \Pnote{how far?}
-the clean area advances to \( x+\B \).
+\item If a rebuilding buffer is passed over rom right then
+it turns into a plain buffer, with its left end moved right by at least \( \B \).
 
-\item If the head passes a half turn \( x \) from right or turns back from a neutral \( x \)
-to the left without passing it, then either \( x \) becomes
-a completed turn or the clean area advances to \( x+\B \).
+\item If the head passes a half-turn from right or turns back from a plain buffer
+to the left without passing it, then the buffer becomes
+full-turn or plain; in the latter case the clean area advances by at least
+\( \B \) to the right.
 
-\item If the head passes a completed turn \( x \) from left then \( x \)
-becomes a rebuilding boundary.
+\item If a full-turn buffer is passed by the head from left then it
+becomes a rebuilding or plain buffer; 
+in the latter case the clean area advances by at least \( \B \) to the right.
 
 \end{enumerate}
+
+For~\eqref{i:trans.to-half-turn}, we must make sure in simulation of a transition at
+cell \( x \) of \( M^{*} \),
+that the head will not be captured at \( x+\B^{*} \) during the computation of the transition
+that makes it turn back to the left.
+To achieve this, the last turn in the simulation will go (significantly)
+closer to the colony end \( x+\B^{*} \) than the previous turns.
+This way, capturing followed by a return that does not trigger a rebuild
+will only be possible if the computation of the simulated transition in the colony of \( x \)
+terminates first.
+If a rebuild is triggered then a rebuilding buffer is obtained, which is one of the possibilities
+in~\eqref{i:trans.to-half-turn}.
 
 I introduced a new constant \( \gamma \) 
 in the new definition of sparsity, see the long paper.
