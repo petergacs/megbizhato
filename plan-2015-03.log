@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  3 AUG 2015 14:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  3 AUG 2015 14:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -973,31 +973,31 @@ LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <12> not avail
 able
 (Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 249.
+line 247.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 249.
+(Font)              scaled to size 12.0pt on input line 247.
  [1
 
 {/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 276.
+(Font)              scaled to size 10.0pt on input line 270.
  [2] [3] [4]
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 14.4pt on input line 439.
+(Font)              scaled to size 14.4pt on input line 433.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <14.4> not ava
 ilable
 (Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 439.
+line 433.
 LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 14.4pt on input line 439.
+(Font)              scaled to size 14.4pt on input line 433.
  [5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 462.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 462.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 456.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 456.
 
 (./plan-2015-03.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 462.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 462.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 462.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 456.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 456.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 456.
  ) 
 Here is how much of TeX's memory you used:
  14836 strings out of 493089
@@ -1006,7 +1006,7 @@ Here is how much of TeX's memory you used:
  18135 multiletter control sequences out of 15000+600000
  35520 words of font info for 72 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 45i,12n,37p,358b,468s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,37p,358b,470s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/texmf-local/fonts/enc/dvips/classico/clsc_kxvyln.enc}</us
 r/local/texlive/texmf-local/fonts/type1/urw/classico/URWClassico-Bold.pfb></usr
 /local/texlive/texmf-local/fonts/type1/urw/classico/URWClassico-Regular.pfb></u
@@ -1014,16 +1014,15 @@ sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
 r/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr
 /local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
 ocal/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/loc
-al/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
-texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
-ive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texliv
-e/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/
-2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on plan-2015-03.pdf (5 pages, 163147 bytes).
+al/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/
+texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
+exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/tex
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on plan-2015-03.pdf (5 pages, 153706 bytes).
 PDF statistics:
- 120 PDF objects out of 1000 (max. 8388607)
- 100 compressed objects within 1 object stream
+ 116 PDF objects out of 1000 (max. 8388607)
+ 97 compressed objects within 1 object stream
  16 named destinations out of 1000 (max. 500000)
  57 words of extra memory for PDF output out of 10000 (max. 10000000)
 
