@@ -240,7 +240,6 @@ Let us have a parameter \( \pi \) (for ``pass number'').
 It may not be necessary, as the cell size \( \B \) is also a function of the pass number
 (both are functions of level), it seems simpler to use a separate parameter.
 
-We will fix some  constants \( c_{i} \).
 Consider a noise-free time interval \( J \), and a space interval \( I \).
 
 \begin{description}
@@ -250,9 +249,9 @@ of \( I \) during \( J \), by \( 2\B \).
 
 \item[Dwell Cleaning]
 The Dwell Cleaning axiom stays essentially how it was.
-For a constant
+For a constant \( \cDwell \) satisfying
 \begin{align}\label{eq:cDwell}
- \cDwell < \gamma,
+ 8\beta<\cDwell < \gamma,
  \end{align}
  if the head stays in an interval of size \( \cDwell\B \) for time \( \gamma\Tu \)
 then the interval becomes clean.
@@ -280,28 +279,33 @@ terminates first.
 
 \section{Sketch of the inductive proof}
 
-In the inductive construction, we will set \( \pi^{*}=c_{2}\pi \), \( \Q=\Omega(\pi) \),
-for a constant \( c_{2} \) to be determined later.
+In the inductive construction, we will set 
+\begin{align*}
+\pi^{*}=2\pi,\ \Q>8\beta^{2}\pi .
+ \end{align*}
 In the hierarchy this makes \( \Q \) an exponential function of the level, which is still
 OK for the sparsity lemma.
 
 \begin{lemma}\label{lem:dirty-passes}
-(The constants \( c_{1},c_{3}>0 \) will be specified later.)
-Consider an interval \( I \) of size \( |I|\ge c_{1}\pi \) 
-that will be passed by \( n\ge c_{2}\pi \) times
+Consider an interval \( I \) of size \( |I|\ge 2\pi \) 
+that will be passed by \( n\ge 2\pi \) times
 by the head in a burst-free way during some time interval \( J \).
 There could be some other times in \( J \) when the head is subject to a burst inside \( I \).
-Assume that the total number of these times is \( \le c_{3} n \).
+Assume that the total number of these times is \( < n/4\beta \).
 (We don't count the times when the head enters and leaves \( I \) without
 any burst.)
 Then there is some time during \( J \) when \( I \) becomes clean.
 \end{lemma}
 \begin{proof}[Proof sketch]
+Let 
+\begin{align}\label{eq:dirty-passes-const}
+ c_{1}=1/4\beta .
+\end{align}
 In this sketch I am ignoring the corrections having to do with the
 limited spilling effects.
-It is sufficient to conside the case \( n=c_{2}\pi \), since otherwise
-we can subdivide the \( n \) passes into segments of size \( c_{2}\pi \),
-and one of them must contain fewer than \( c_{3}c_{2}\pi \) bursts.
+It is sufficient to conside the case \( n=2\pi \), since otherwise
+we can subdivide the \( n \) passes into segments of size \( 2\pi \),
+and one of them must contain fewer than \(  c_{1}(2\pi) \) bursts.
 
 Let us introduce a new \df{virtual} time counting.
 We only count the times in \( J \) when the head either passes \( I \)
@@ -309,10 +313,10 @@ or is subject to a burst in \( J \).
 Let this virtual time interval be denoted by \( K \): we can assume it starts at 0.
 
 There is a subset \( C \) of the interval \( I \),
-of size \( \ge |I|-c_{3}c_{2}\beta\pi \), in which no burst occurs at all.
-Then at some virtual time \( u_{0}=O(\beta\pi) \), the set \( C \) becomes clean.
+of size \( \ge |I|-c_{1}(2\beta\pi)=|I|-\pi/2>0 \), in which no burst occurs at all.
+Then at virtual time \( \pi \) the set \( C \) becomes clean.
 We will actually take for \( C \) the larger set of points in which no burst occurred until
-\( u_{0} \).
+this time.
 From this time on, we are looking at the shrinking of the set \( I\setminus C \)
 in the space-virtual-time rectangle \( I\times K \).
 
@@ -358,9 +362,8 @@ By the above remark \( \sum_{T\in \cT}|T| = \sum_{T\in \cT'}|T| \).
 The Attack Cleaning property will show that the complement of these triangles
 is clean.
 The sum of their heights (ignoring the boundary effect, which brings in at most a factor 2) is
-at most \( 2 c_{3}c_{2}\beta\pi \).
-If \( c_{3} \) is small compared to \( c_{1}  \) and \( c_{2}\beta, \) 
-then therefore there will be virtual
+at most \( c_{1}(2\beta\pi)< \pi/2 \) by definition of \( c_{1} \).
+Therefore there will be virtual
 times in \( K \) not intersecting with any element of \( \cT' \).
 At the corresponding real times, the interval \( I \) is clean.
 \end{proof}
@@ -379,15 +382,16 @@ or completes a rebuilding operation.
 
 In this lemma the constants will probably change.
 \begin{lemma}\label{lem:burst-density}
-  Consider an interval \( K \) of size \( 3 \Q\B \) and a time interval \( J \) in which
+Consider an interval \( K \) of size \( 3 \Q\B \) and a time interval \( J \) in which
 no burst of \( M^{*} \) occurs.
-If \( c_{2}\pi \) bursts occur in \( K \) during \( J \) then at some time in \( J \)
+If \( 4\beta\pi) \) bursts occur in \( K \) during \( J \) then at some time in \( J \)
 the interval \( K \) becomes clean in \( M^{*} \).
 \end{lemma}
 \begin{proof}[Proof sketch]
+Let us use the constant \( c_{1} \) in~\eqref{eq:dirty-passes-const}.
 For 
 \begin{align*}
- d=\cDwell/3
+ d=\cDwell
 \end{align*}
 (where \( \cDwell \) was introduced in~\eqref{eq:cDwell}),
 both positive and negative \( i \), and \( j=0,\dots,d-1 \), let
@@ -396,7 +400,7 @@ both positive and negative \( i \), and \( j=0,\dots,d-1 \), let
 K_{i}=\bigcup_{j=0}^{d-1}K_{ij}=x+3\Q\B\lint{di}{d(i+1)},
  \end{align*}
 so \( K=K_{00} \).
-Consider the sweeps corresponding to the \( c_{2}\pi \) bursts in \( K \).
+Consider the sweeps corresponding to the \( \pi/c_{1} \) bursts in \( K \).
 If a sweep does not exit \( K \) on either side then Dwell Cleaning and Attack Cleaning
 of \( M^{*} \) becomes applicable.
 Assume this does not happen; then
@@ -405,31 +409,33 @@ Without loss of generality assume that they pass on the right.
 Then they will have to pass the whole interval \( K_{0} \) (otherwise again Dwell Cleaning
 and Attack Cleaning of \( M^{*} \)
 applies), and thus each interval \( K_{0,j} \) gets at least this many passes.
-So, the interval \( K_{0} \) gets \( (c_{2}/2)\pi \) noise-free passes.
+So, the interval \( K_{0} \) gets \( \pi/2c_{1} \) noise-free passes.
 Also, none of the \( K_{0j} \) becomes clean for \( M^{*} \) during the first half of these passes,
 since then the Attack Cleaning property would clean \( K_{00} \) as well during the remaining
 passes.
 
 Now, for \( i=1,2,\dots \) we will show that there is 
-an \( i'  \) with \( |i'|\le i \) such that each \( K_{i'j} \)
-gets at least \( c_{2} 2^{i-1}\pi \) burst-free overpasses  during \( J \), 
+an \( i'  \) with \( |i'|\le i \) such that each \( K_{i'j} \) gets at least 
+\begin{align*}
+  n_{i}= 2^{i-1}\pi/c_{1} 
+\end{align*}
+ burst-free overpasses  during \( J \), 
 and \( K_{i'j} \) does not become clean during the first half of these.
 This clearly must break down somewhere, leading to a contradiction.
 
+We have just proved the case \( i=0 \).
 Suppose that the statement was proved up to some \( i \), we will prove it for \( i+1 \).
 In order for the interval \( K_{i'j} \) not to become clean for \( M^{*} \), 
 by Lemmas~\ref{lem:dirty-passes}, \ref{lem:rebuild-pass}
-the total number of bursts happening in it and belonging to sweeps not 
-passing it must be at least \( c_{3}c_{2} 2^{i-1}\pi \).
+the total number of bursts happening in it must be at least \( c_{1} n_{i} = 2^{i-1}\pi \).
 This is true of all \( j \), so the total number of bursts whose sweeps do not pass \( K_{i'} \)
-is at least \( d c_{3}c_{2} 2^{i-1}\pi \).
+is at least \( d 2^{i-1}\pi \).
 If a sweep does not exit \( K_{i'} \) on either side then Dwell Cleaning becomes applicable,
 so either half of these sweeps exits \( K_{i'} \) on the left, or half of them exits it on the right.
 If they pass on the right then let \( (i+1)'=i'+1 \), otherwise \( (i+1)'=i'-1 \).
 Then they will have to pass the whole interval \( K_{(i+1)'} \) (again, otherwise Dwell Cleaning
-applies), and thus each interval \( K_{(i+1)',j} \) gets at least this many passes.
-Now choosing \( d \) (and thus \( \cDwell \)) large enough 
-to get \( d c_{3}>2 \) finishes the proof.
+applies), and thus each interval \( K_{(i+1)',j} \) gets at least \( d 2^{i-2}\pi \) passes.
+Now the inequality~\eqref{eq:cDwell} implies \( d > 8\beta=2/c_{1} \), finishing the proof.
 \end{proof}
 
 
@@ -440,10 +446,11 @@ where \( I \) is clean for \( M^{*} \).
 We want to limit the amount that \( K \) is going to spill over to \( I \) during a time
 interval \( J \) that the head spends in \( K \) and is free from \( M^{*} \)-noise.
 
-Spill into \( I \) can occur in two ways: one, as regulated by the Spill Bound axiom, the other way is via bursts near the boundary \( x \).
+Spill into \( I \) can occur in two ways: 
+one, as regulated by the Spill Bound axiom, the other way is via bursts near the boundary \( x \).
 The first way is limited by \( 2\B \), so the important one to consider are the bursts.
 In order to extend the boundary to the right by \( \Q\B \),
-we need \( \Q/\beta \) bursts near \( x \).
+we need \( \Q/\beta > 8\beta\pi \) bursts near \( x \).
 This can be excluded using Lemma~\ref{lem:burst-density}.
 
 \subsection{Dwell Cleaning, Attack Cleaning}
