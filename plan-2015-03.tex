@@ -77,7 +77,9 @@
 \newcommand{\Configs}{\mathrm{Configs}}
 \newcommand{\D}{D}
 \newcommand{\E}{E}
+
 \def\G{G}
+
 \newcommand{\h}{h}
 \renewcommand{\H}{H}
 \newcommand{\hc}{\tilde h}
@@ -87,6 +89,9 @@
 \newcommand{\Plus}{\oplus}
 \newcommand{\Minus}{\ominus}
 \newcommand{\pos}{\mathrm{pos}}
+
+\newcommand{\Q}{Q}
+
 \newcommand{\score}{\mathrm{score}}
 \newcommand{\R}{R}
 \newcommand{\Tu}{T}
@@ -191,7 +196,9 @@
 \newcommand{\cEsc}{\cns{escape}}
 \newcommand{\cCleanS}{\cns{clean-s}}
 \newcommand{\cCleanT}{\cns{clean-t}}
+\newcommand{\cDwell}{\cns{dwell}}
 \newcommand{\cCDepth}[1]{\cns{c-depth-#1}}
+\newcommand{\cPass}{\Cns{c}{pass}}
 \newcommand{\cSpill}{\cns{spill}}
 \newcommand{\cSpace}{\cns{space}}
 \newcommand{\cDecr}{\cns{decr}}
@@ -200,6 +207,9 @@
 \newcommand{\mHalfTurn}{\Cns{\mu}{half-turn}}
 \newcommand{\mTurnDone}{\Cns{\mu}{turn-done}}
 \newcommand{\mRebuild}{\Cns{\mu}{rebuild}}
+\newcommand{\sPass}{\Cns{\sigma}{pass}}
+\newcommand{\sQ}{\Cns{\sigma}{Q}}
+\newcommand{\sScore}{\Cns{\sigma}{score}}
 
 \begin{document}
 
@@ -221,7 +231,7 @@ comes back \( \Tu^{*} \) time later to leave an island in a burst,
 then repeats this many times.
 This way, the dirt seems to be capable of spilling out without bound.
 The solution I proposed in an earlier letter was to add a parameter \( \lambda \)
-corresponding roughly to the level, require \( Q \) to be many times bigger than \( \lambda \),
+corresponding roughly to the level, require \( \Q \) to be many times bigger than \( \lambda \),
 and add an axiom that passing over an area \( \lambda \) times will clean it.
 However, I was not able to apply this in induction, and am proposing now a significantly
 more complex model.
@@ -229,55 +239,44 @@ Here, still many details must be worked out, but I feel that this has more chanc
 
 \section{Proposed new axioms}
 
-The new axioms are getting too complex.
-Maybe one can announce only part of them at the beginning, enough to be
-able to prove the bursty case, and postpone the rest of them later.
-
 Let us have a parameter \( \lambda \) (for ``level'').
-There is also a new property of positions, called \df{level}, and written \( L(x) \),
-taking values between 0 and \( \lambda \).
-Clean cells will be the ones with level \( \lambda \).
-There will be also some non-integer values: the boundary area of a clean interval will
-be an interval of size between \( \B \) and \( 3\B \) and will have a constant
-value of \( L(x) \) equal to one of the values
-\begin{align*}
- \lambda-\mu_{i}
- \end{align*}
-for some constants \( 0<\mu_{i}<1 \), where
-\begin{align*}
-     0 &<\mRebuild<\mTurnDone<\mHalfTurn<\mPlainEdge<1.
- \end{align*}
-This area will be called a \df{buffer}, and could be called \df{plain} buffer, a \df{half-turn} buffer, a
-\df{full-turn} buffer, and a \df{rebuilding} buffer.
-Their role will be understood in the definition of the simulation code.
+It may not be necessary, as the cell size \( \B \) is also a function of the level, but
+the way things depend on the level seems simpler than how they would depend on the
+cell size.
 
-The \df{score} \( \score(I) \) over an interval is defined as
- \begin{align}\label{eq:score}
-  \score(I)=\sum_{x\in I}2^{L(x)}.
+We will fix some  constants \( c_{i} \).
+Consider a noise-free time interval \( J \), and a space interval \( I \).
+
+\begin{description}
+\item[Spill Bound] 
+The Spill Bound axiom bounds the amount by which the dirt can spill out
+of \( I \) during \( J \), by \( 2\B \).
+
+\item[Dwell Cleaning]
+The Dwell Cleaning axiom stays essentially how it was.
+For a constant
+\begin{align}\label{eq:cDwell}
+ \cDwell,
  \end{align}
+ if the head stays in an interval of size for time \( \Omega(\Tu) \)
+(constants to be determined), then the interval becomes clean.
 
-The following is required, which will make sure that every passing of the right
-buffer of a clean interval increases the score of any large interval around it.
+\item[Pass Cleaning]
+If the head passes an interval in a noise-free way
+\begin{align*}
+\pi(\lambda) = 2^{\sPass\lambda} 
+ \end{align*}
+ times (constant \( \sPass \) to be determined) then
+the interval becomes clean.
 
-\begin{enumerate}[label=\upshape{(T\arabic*)}, ref=T\arabic*]
-\item\label{i:trans.to-half-turn} If a plain buffer is passed over from left
-then it becomes either a half-turn or a rebuilding buffer.
+\item[Attack Cleaning]
+If the head exits and enters a clean area from the same side
+twice, then the area will be extended.
 
-\item If a rebuilding buffer is passed over rom right then
-it turns into a plain buffer, with its left end moved right by at least \( \B \).
+\end{description}
 
-\item If the head passes a half-turn from right or turns back from a plain buffer
-to the left without passing it, then the buffer becomes
-full-turn or plain; in the latter case the clean area advances by at least
-\( \B \) to the right.
-
-\item If a full-turn buffer is passed by the head from left then it
-becomes a rebuilding or plain buffer; 
-in the latter case the clean area advances by at least \( \B \) to the right.
-
-\end{enumerate}
-
-For~\eqref{i:trans.to-half-turn}, we must make sure in simulation of a transition at
+\Pnote{Do we need yet this following paragraph?}
+For this, we must make sure in simulation of a transition at
 cell \( x \) of \( M^{*} \),
 that the head will not be captured at \( x+\B^{*} \) during the computation of the transition
 that makes it turn back to the left.
@@ -286,150 +285,180 @@ closer to the colony end \( x+\B^{*} \) than the previous turns.
 This way, capturing followed by a return that does not trigger a rebuild
 will only be possible if the computation of the simulated transition in the colony of \( x \)
 terminates first.
-If a rebuild is triggered then a rebuilding buffer is obtained, which is one of the possibilities
-in~\eqref{i:trans.to-half-turn}.
-
-I introduced a new constant \( \gamma \) 
-in the new definition of sparsity, see the long paper.
-Its role is to require that bursts at level \( k \) be
-not just one colony but \( \gamma \) colonies separated from each other.
-
-We will fix some  constants \( c_{i} \).
-Consider a noise-free time interval \( J \), and a space interval \( I \).
-
-\begin{description}
-\item[Spill Bound] 
-The old Spill Bound axiom bounded the amount by which the dirt can spill out
-of \( I \) during \( J \).
-I may have to replace this with a weaker one, saying
-that it can be spilled out by at most an amount of \( \beta |I|/\gamma \).
-
-\item[Dwell Cleaning]
-The old Dwell Cleaning axiom says the following.
-If \( |I| \le \cSpace\B \), and the head spends a cumulative time  \( \Tu \)  during \( J \)
-in \( I \) (possibly while entering and exiting repeatedly),
-then at time \( v \), a clean point appears in \( I \).
-The new one will be similar, but requiring the head to spend the time continuously in \( J \),
-not only cumulatively.
-
-% The new one achieves the effect already if the time spent was \( \Tu/G(\lambda) \).
-% (The Rebuild procedure takes less time than a work period.)
-
-\item[Pass Cleaning]
-Let \( p(t) \) be the head position at time \( t \).
-Suppose \( L(p(t))<\lambda \) for all \( t \) in \( J \), moreover
-during the time interval \( J \) the head covers the whole of \( I \).
-We will have appropriate constants 
-\begin{align*}
-   0<\cDecr<\cIncr.
- \end{align*}
-The score\( \score(I) \) increases by at least 
-\begin{align*}
- \cIncr(1+2^{-\lambda})|I|-\cDecr\B .
- \end{align*}
-The subtracted term needs to be present only if the head starts but does not end
-on a clean position.
-
-\item[Attack Cleaning]
-This remains essentially the same.
-Maybe it can be  simplified, not requiring the attack, if cleanness of a cell of \( M^{*} \) is
-defined to include the health of the neighbor colonies.
-\end{description}
-
 
 \section{Sketch of the inductive proof}
 
-In the inductive construction, we will set \( Q=2^{\lambda} \), \( \lambda^{*}=\lambda+1 \).
-For the hierarchy this gives \( Q_{k}=2^{k} \), which is still OK for the sparsity argument.
+In the inductive construction, we will set \( \Q=2^{\Omega(\lambda)} \), \( \lambda^{*}=\lambda+1 \).
 
-\subsection{Definition of level}
+\begin{lemma}\label{lem:dirty-passes}
+(The constants \( c_{1},c_{2},c_{3}>0 \) will be specified later.)
+Consider an interval \( I \) of size \( |I|\ge c_{1}\pi(\lambda) \) 
+that will be passed by \( n\ge c_{2}\pi(\lambda) \) times
+by the head in a burst-free way during some time interval \( J \).
+There could be some other times in \( J \) when the head is subject to a burst inside \( I \).
+Assume that the total number of these times is \( \le c_{3} n \).
+(We don't count the times when the head enters and leaves \( I \) without
+any burst.)
+Then there is some time during \( J \) when \( I \) becomes clean.
+\end{lemma}
+\begin{proof}[Proof sketch]
+In this sketch I am ignoring the corrections having to do with the
+limited spilling effects.
+It is sufficient to conside the case \( n=c_{2}\pi(\lambda) \), since otherwise
+we can subdivide the \( n \) passes into segments of size \( c_{2}\pi(\lambda) \),
+and one of them must contain fewer than \( c_{3}c_{2}\pi(\lambda) \) bursts.
 
-The level \( L(x) \) should essentially be defined as expected.
-Assume that \( x \) is in direction \( j \) from the head.
-It has level \( \lambda+1 \)
-if it is in a healthy area containing a colony with at least a whole colony to the left and to the right
-of \( x \).
-% If it only contains a colony in the direction \( j \) then it has level \( \lambda+1/2 \).
-% There may come some finer distinctions here.
-% The goal is to amortize potential loss or no gain at the time we leave a clean
-% area, towards the gain at Exit Cleaning when entering again.
+Let us introduce a new \df{virtual} time counting.
+We only count the times in \( J \) when the head either passes \( I \)
+or is subject to a burst in \( J \).
+Let this virtual time interval be denoted by \( K \): we can assume it starts at 0.
 
+There is a subset \( C \) of the interval \( I \),
+of size \( \ge |I|-c_{3}c_{2}\beta\pi(\lambda) \), in which no burst occurs at all.
+Then at some virtual time \( u_{0}=O(\beta\pi(\lambda)) \), the set \( C \) becomes clean.
+We will actually take for \( C \) the larger set of points in which no burst occurred until
+\( u_{0} \).
+From this time on, we are looking at the shrinking of the set \( I\setminus C \)
+in the space-virtual-time rectangle \( I\times K \).
 
-\subsection{Dwell Cleaning}
-
-The proof of the Dwell Cleaning property should go similarly to before.
-
-
-\subsection{Pass Cleaning}
-
-There are different cases  to consider, but in order to understand the choice of the
-score function~\eqref{eq:score}, the following example is characteristic.
-Let \( I \) consist of two adjacent intervals \( I_{1} \) and \(  I_{2} \) where  
-where \( L(x)<\lambda \) on \( I_{1} \) and \( =\lambda \) on \( I_{2} \), with
-\( |I_{2}|\le Q\B \).
-Suppose that the head passes through \( I \), first through \( I_{1} \) then \( I_{2} \).
-The average score increases by \( \cIncr(1+2^{-(\lambda-1)}) \) on \( I_{1} \).
-The problem is that it may not increase \( I_{2} \).
-If \( |I_{2}| \) was significantly larger than \( Q\B \) then some colonies will be
-found/created on it, raising the average level to \( \lambda+1 \).
-The axiom needs only to consider the time interval before this happens.
-When it is not happening, we rely on the Exit Cleaning axiom: the interval \( I_{2} \)
-will increase by \( \B \), thus the average score will increase by at least \( 2^{\lambda-1} \)
-from \( 2^{\lambda-1} \) to \( 2^{\lambda} \) on an interval of size \( \B \).
-Since \( Q=2^{\lambda} \), we increase the average score of \( I_{2} \) by \( \gem 1 \).
-
-The general case is messier, but the example shown is motivating the choice of \( 2^{L(x)} \) in
-the score function.
-We want the amount gained by Exit Cleaning to be
-comparable with the amount lost by a burst.
-At Exit Cleaning we gain \( 2^{\lambda-1}\B \); even on a clean area of size \( Q\B \)
-this increases the average score by \( \gem 1 \).
-At a burst the level of an area of size \( \beta\B \) may go from \( \lambda \) to 0,
-losing \( 2^{\lambda}\beta\B \).
-However, given that no new colony is found/created, bursts are as far apart as 
-\( \gamma Q\B =\gamma 2^{\lambda}\B \), so they decrease the average score 
-only by \( \beta/\gamma\ll 1 \).
-
-The role of the factor \( 1+2^{-\lambda} \) in the Pass Cleaning axiom is that
-even when we only apply the axiom in recursion, the bursts will take away
-a fraction \( 2^{-\lambda} \), and
-\begin{align*}
- 1+2^{-(\lambda-1)}-2^{-\lambda} = 1 + 2^{-\lambda}.
+Given a space-virtual-time segment \( \lint{a}{b}\times u \),
+let us mount on it a triangle \( T\subset I\times K \)
+which at time \( u+j \) covers the interval
+ \begin{align*}
+ \lint{a+(j/4)\B}{v-(j/4)\B}.
  \end{align*}
+thus \( T \) reaches to virtual time \( v=u+2(b-a)/\B \).
+We will call \( v-u \) the \df{height} of \( T \), denoted by \( |T| \).
+If the complement of \( \lint{a}{b} \) is clean at virtual time \( u \)
+and no burst occurs until virtual time 
+\( v \), then the Attack Cleaning property implies that the dirt
+is confined to \( T \) and thus disappears by virtual time \( v \).
+(In the special case when \( \lint{a}{b} \) reaches to the end of the interval \( I \),
+we extend the base beyond the end, creating a rectangle (with the same slopes)
+at most twice as large whose tip reaches the end as well.)
 
-% Let us subdivide the time interval \( J \) by the bursts that happen during it,
-% into burst-free time intervals \( J_{1},J_{2},\dots \).
-% Let \( I_{1}, I_{2},\dots \) be the space intervals between these bursts.
-% We will show that for each \( r=1,2,\dots \), the score increases during \( J_{r} \) by
-% at least \( \cIncr(1+2^{-\lambda})|I_{r}| \).
+Let us now mount a triangle over each interval of the set \( I\setminus C \)
+at virtual time 0, creating a set \( \cT_{0} \) of disjoint triangles.
 
-% If \( |I_{r}|\le \cSpace Q\B \) then this will come from the Dwell Cleaning axiom
-% for \( M^{*} \).
+If no burst occurs in \( J \) 
+then the Attack Cleaning property implies that the dirt is confined to these triangles.
+Now, every time a burst affects the head, it may create a dirt interval 
+size \( \lint{x}{x+\beta\B} \), at some virtual time \( u \).
+Let us mount a triangle over each such \( \lint{x}{x+\beta\B}\times\{u\} \).
+Let us add all these triangles to the set \( \cT_{0} \) to get a set of
+triangles \( \cT \).
+These are not necessarily disjoint anymore.
 
-% Suppose \( |I_{r}|>\cSpace Q\B \).
-% If \( L(x)<\lambda \) over \( I_{r} \) then this increase comes by induction, by an amount
-% \( \cIncr(1+2^{-(\lambda-1)})|I_{r}| \).
+If two virtual triangles \( T_{1},T_{2} \) intersect,
+and \( T \) be the smallest virtual triangle containing both,
+then it is easy to see that \( |T|\le|T_{1}|+|T_{2}| \).
+We will denote \( T=T_{1}+T_{2} \).
 
-% Suppose that \( L(x)=\lambda \) in some subintervals of \( I_{r} \).
+Let us now perform the following operation that will create a disjoint set
+of triangles.
+We start with \( \cT \) and if we find two intersecting triangles 
+in it, then we replace them with their sum.
+We repeat this until the remaining set \( \cT' \) consists of disjoint triangles.
+By the above remark \( \sum_{T\in \cT}|T| = \sum_{T\in \cT'}|T| \).
+The Attack Cleaning property will show that the complement of these triangles
+is clean.
+The sum of their heights (ignoring the boundary effect, which brings in at most a factor 2) is
+at most \( 2 c_{3}c_{2}\beta\pi(\lambda) \).
+If \( c_{3} \) is small compared to \( c_{1}  \) and \( c_{2}\beta, \) 
+then therefore there will be virtual
+times in \( K \) not intersecting with any element of \( \cT' \).
+At the corresponding real times, the interval \( I \) is clean.
+\end{proof}
+
+\begin{lemma}\label{lem:rebuild-pass}
+  Let \( \lint{a}{b} \) be a clean interval of size \( \ge 6 \Q\B \).
+If the head passes it without a burst then \( \lint{a+2\B}{b-2\B} \)
+becomes clean for \( M^{*} \).
+\end{lemma}
+The factors \( 6,2 \) will probably need to be changed.
+\begin{proof}[Proof sketch]
+  The machine, passing the interval will either find it healthy, in which case
+the normal operation of the simulation makes it clean for \( M^{*} \),
+or completes a rebuilding operation.
+\end{proof}
+
+In this lemma the constants will probably change.
+\begin{lemma}\label{lem:burst-density}
+  Consider an interval \( K \) of size \( 3 \Q\B \) and a time interval \( J \) in which
+no burst of \( M^{*} \) occurs.
+If \( c_{2}\pi(\lambda) \) bursts occur in \( K \) during \( J \) then at some time in \( J \)
+the interval \( K \) becomes clean in \( M^{*} \).
+\end{lemma}
+\begin{proof}[Proof sketch]
+For 
+\begin{align*}
+ d=\cDwell/3
+\end{align*}
+(where \( \cDwell \) was introduced in~\eqref{eq:cDwell}),
+both positive and negative \( i \), and \( j=0,\dots,d-1 \), let
+\begin{align*}
+   K_{ij}=x+3\Q\B\lint{d i+j}{d i+j+1},\ 
+K_{i}=\bigcup_{j=0}^{d-1}K_{ij}=x+3\Q\B\lint{di}{d(i+1)},
+ \end{align*}
+so \( K=K_{00} \).
+Consider the sweeps corresponding to the \( c_{2}\pi(\lambda) \) bursts in \( K \).
+If a sweep does not exit \( K \) on either side then Dwell Cleaning and Attack Cleaning
+of \( M^{*} \) becomes applicable.
+Assume this does not happen; then
+either half of these sweeps exits \( K \) on the left, or half of them exits it on the right.
+Without loss of generality assume that they pass on the right.
+Then they will have to pass the whole interval \( K_{0} \) (otherwise again Dwell Cleaning
+and Attack Cleaning of \( M^{*} \)
+applies), and thus each interval \( K_{0,j} \) gets at least this many passes.
+So, the interval \( K_{0} \) gets \( (c_{2}/2)\pi(\lambda) \) noise-free passes.
+Also, none of the \( K_{0j} \) becomes clean for \( M^{*} \) during the first half of these passes,
+since then the Attack Cleaning property would clean \( K_{00} \) as well during the remaining
+passes.
+
+Now, for \( i=1,2,\dots \) we will show that there is 
+an \( i'  \) with \( |i'|\le i \) such that each \( K_{i'j} \)
+gets at least \( c_{2} 2^{i-1}\pi(\lambda) \) burst-free overpasses  during \( J \), 
+and \( K_{i'j} \) does not become clean during the first half of these.
+This clearly must break down somewhere, leading to a contradiction.
+
+Suppose that the statement was proved up to some \( i \), we will prove it for \( i+1 \).
+In order for the interval \( K_{i'j} \) not to become clean for \( M^{*} \), 
+by Lemmas~\ref{lem:dirty-passes}, \ref{lem:rebuild-pass}
+the total number of bursts happening in it and belonging to sweeps not 
+passing it must be at least \( c_{3}c_{2} 2^{i-1}\pi(\lambda) \).
+This is true of all \( j \), so the total number of bursts whose sweeps do not pass \( K_{i'} \)
+is at least \( d c_{3}c_{2} 2^{i-1}\pi(\lambda) \).
+If a sweep does not exit \( K_{i'} \) on either side then Dwell Cleaning becomes applicable,
+so either half of these sweeps exits \( K_{i'} \) on the left, or half of them exits it on the right.
+If they pass on the right then let \( (i+1)'=i'+1 \), otherwise \( (i+1)'=i'-1 \).
+Then they will have to pass the whole interval \( K_{(i+1)'} \) (again, otherwise Dwell Cleaning
+applies), and thus each interval \( K_{(i+1)',j} \) gets at least this many passes.
+Now choosing \( d \) (and thus \( \cDwell \)) large enough 
+to get \( d c_{3}>2 \) finishes the proof.
+\end{proof}
 
 
 \subsection{Spill bound}
 
 Consider the neighboring intervals \( I,K \) separated by point \( x \),
-where \( K \) is clean for \( M^{*} \).
-We want to limit the amount that \( I \) is going to spill over to \( K \) during a time
-interval that the head spends in \( I \) and is free from \( M^{*} \)-noise.
+where \( I \) is clean for \( M^{*} \).
+We want to limit the amount that \( K \) is going to spill over to \( I \) during a time
+interval \( J \) that the head spends in \( K \) and is free from \( M^{*} \)-noise.
 
-Essentially dirt could only spill into \( K \) via bursts near the boundary \( x \).
-Between these bursts, the head would have to pass an interval of size 
-\( \ge \gamma\B^{*} =\gamma 2^{\lambda}\B \), and to increase the score of \( I \) 
-by \( \gem \gamma\B^{*} \), while the burst decreased it only by 
-\( \lem \beta 2^{\lambda}\B\lem\beta\B^{*}\ll \gamma\B^{*} \).
-The total number of such times before the score of \( I \) reaches \( 2^{\lambda+1} \) is
-\begin{align*}
-   \lem 2^{\lambda+1}|I|/\gamma\B^{*} = 2(|I|/\B^{*}) Q/\gamma.
- \end{align*}
-The size of the spill is about \( \beta\B \) times bigger than this,
-that is \( \lem \beta |I|/\gamma \).
+Spill into \( I \) can occur in two ways: one, as regulated by the Spill Bound axiom
+for level \( \lambda \), the other way is via bursts near the boundary \( x \).
+The first way is limited by \( 2\B \), so the important one to consider are the bursts.
+In order to extend the boundary to the right by \( \Q\B \),
+we need \( \Q/\beta \) bursts near \( x \).
+This can be excluded using Lemma~\ref{lem:burst-density}.
+
+\subsection{Dwell Cleaning, Attack Cleaning}
+
+The proof these properties should go similarly to before.
+
+\subsection{Pass Cleaning}
+
+The proof relies on Lemma~\ref{lem:burst-density}, and then 
+Lemmas~\ref{lem:dirty-passes} and~\ref{lem:rebuild-pass}.
 
 \end{document}
