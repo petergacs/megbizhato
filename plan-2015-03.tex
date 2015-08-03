@@ -280,10 +280,13 @@ terminates first.
 
 \section{Sketch of the inductive proof}
 
-In the inductive construction, we will set \( \Q=\Omega(\pi) \).
+In the inductive construction, we will set \( \pi^{*}=c_{2}\pi \), \( \Q=\Omega(\pi) \),
+for a constant \( c_{2} \) to be determined later.
+In the hierarchy this makes \( \Q \) an exponential function of the level, which is still
+OK for the sparsity lemma.
 
 \begin{lemma}\label{lem:dirty-passes}
-(The constants \( c_{1},c_{2},c_{3}>0 \) will be specified later.)
+(The constants \( c_{1},c_{3}>0 \) will be specified later.)
 Consider an interval \( I \) of size \( |I|\ge c_{1}\pi \) 
 that will be passed by \( n\ge c_{2}\pi \) times
 by the head in a burst-free way during some time interval \( J \).
@@ -437,8 +440,7 @@ where \( I \) is clean for \( M^{*} \).
 We want to limit the amount that \( K \) is going to spill over to \( I \) during a time
 interval \( J \) that the head spends in \( K \) and is free from \( M^{*} \)-noise.
 
-Spill into \( I \) can occur in two ways: one, as regulated by the Spill Bound axiom, 
-the other way is via bursts near the boundary \( x \).
+Spill into \( I \) can occur in two ways: one, as regulated by the Spill Bound axiom, the other way is via bursts near the boundary \( x \).
 The first way is limited by \( 2\B \), so the important one to consider are the bursts.
 In order to extend the boundary to the right by \( \Q\B \),
 we need \( \Q/\beta \) bursts near \( x \).
