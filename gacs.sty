@@ -1,4 +1,4 @@
-\ProvidesPackage{gacs}[2008/11/25]
+\ProvidesPackage{gacs}
  % my header file for articles.  Peter Gacs
 % Use \usepackage{fullpage} normally.
  % If you want very full page in tenpoint, write \textwidth 6.5in,
@@ -8,6 +8,7 @@
 
 %\RequirePackage{amsmath}
 \RequirePackage{mathtools}
+\RequirePackage{amssymb}
 \mathtoolsset{mathic} % Math italic correction (say in theorems).
 \RequirePackage{amsthm}
 \RequirePackage{cheatpf2}
@@ -18,21 +19,28 @@
 \RequirePackage{ifxetex}
 
 \ifxetex
-\RequirePackage{fontspec}
+\RequirePackage[math]{mathspec}
 \newfontfamily\optimaFont{Optima}
-% \newfontface\iowanFont[BoldFont = * Bold]{Iowan Old Style}
+\newfontfamily\libertineFont[Scale=1.1]{LinLibertine}
+\newfontface\iowanFont[BoldFont = * Bold]{Iowan Old Style}
+\newfontface\goudyFont{Goudy Oldstyle Std Bold}
 % \charterFont in XeTeX fontspec allows scaling.
-%\newfontface\charterFont[BoldFont = * Bold]{Charter}
+\newfontface\charterFont[BoldFont = * Bold]{Charter}
 %\newfontface\charterFont[Scale=MatchLowercase,BoldFont = * Bold]{Charter}
-%\newfontface\palatinoFont[BoldFont= * Bold]{Palatino}
+\newfontface\palatinoFont[BoldFont= * Bold]{Palatino}
 \else
-% \newcommand{\charterFont}{\fontfamily{bch}\selectfont}
-% \newcommand{\palatinoFont}{\fontfamily{ppl}\selectfont}
-% biolinum is like optima, but part of texlive, so can be used with pdftex.
+\newcommand{\charterFont}{\fontfamily{bch}\selectfont}
+\newcommand{\palatinoFont}{\fontfamily{ppl}\selectfont}
+\newcommand{\newCenturyFont}{\fontfamily{fnc}\selectfont}
+\newcommand{\libertineFont}{\fontfamily{LinuxLibertineT-LF}\selectfont}
+% biolinum is like optima, but part of texlive, so can be used with pdftex.  Does not look as pleasant.
 %\newcommand{\biolinumFont}{\fontfamily{LinuxBiolinumT-LF}\selectfont}
 \fi
 
-%\RequirePackage{enumerate}
+% I you want mathbf with for example bch:
+%\DeclareMathAlphabet      {\mathbf}{T1}{bch}{bx}{n}
+
+
 \RequirePackage{enumitem}
 \setlist[enumerate,1]{leftmargin=*}
 \setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.9}{\textbullet}}}
@@ -55,8 +63,14 @@
 \clubpenalty=1000 
 \widowpenalty=1000
 
+\newcommand{\textbsf}[1]{\textbf{\sffamily #1}}
+
+% For using cmforall and cmexists in libertine.
+\DeclareSymbolFont{cmsymbols}     {OMS}{cmsy}{m}{n}
+\DeclareMathSymbol{\cmforall}{\mathord}{cmsymbols}{"38}
+\DeclareMathSymbol{\cmexists}{\mathord}{cmsymbols}{"39}
 % For using medcirc from newtxmath.  Might as well declare the other symbols from symbolsC.
-  \DeclareSymbolFont{symbolsC}{U}{ntxsyc}{m}{n}
+\DeclareSymbolFont{symbolsC}{U}{ntxsyc}{m}{n}
   \SetSymbolFont{symbolsC}{bold}{U}{ntxsyc}{b}{n}
   \DeclareFontSubstitution{U}{ntxsyc}{m}{n}
   \DeclareMathSymbol{\medcirc}{\mathbin}{symbolsC}{7}
@@ -72,6 +86,10 @@
 \renewcommand{\ttdefault}{lmtt}
 %\usepackage[cal=cm,bb=ams]{mathalfa}
 \usepackage[cal=cm,bb=boondox]{mathalfa}
+\DeclareMathSymbol{\cmforall}{\mathord}{cmsymbols}{"38}
+\DeclareMathSymbol{\cmexists}{\mathord}{cmsymbols}{"39}
+\renewcommand{\forall}{\cmforall}
+\renewcommand{\exists}{\cmexists}
  }
 
 \newcommand{\myTimes}{
@@ -109,17 +127,19 @@
 
 \newenvironment{alphenum}
  {\begin{enumerate}[label=\upshape{(\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{romanenum}
+ {\begin{enumerate}[label=\upshape{(\roman*)},ref=\upshape{\roman*}]}{\end{enumerate}}
 \newenvironment{Alphenum}
  {\begin{enumerate}[label=\upshape{(\Alph*)},ref=\upshape{\Alph*}]}{\end{enumerate}}
 
 % The lemma counter is used by almost all theorem and definition environments.
 % The reference of {alphenumIn} attaches the alphabetic reference to this counter.
+\newenvironment{enumIn}
+ {\begin{enumerate}[label=\upshape{\arabic*)},ref=\thelemma.\upshape{\arabic*}]}{\end{enumerate}}
 \newenvironment{alphenumIn}
  {\begin{enumerate}[label=\upshape{\alph*)},ref=\thelemma.\upshape{\alph*}]}{\end{enumerate}}
 \newenvironment{AlphenumIn}
  {\begin{enumerate}[label=\upshape{\Alph*)},ref=\thelemma.\upshape{\Alph*}]}{\end{enumerate}}
-\newenvironment{enumIn}
- {\begin{enumerate}[label=\upshape{\arabic*)},ref=\thelemma.\upshape{\arabic*}]}{\end{enumerate}}
 \newenvironment{romenumIn}
  {\begin{enumerate}[label=\upshape{\roman*)},ref=\thelemma.\upshape{\roman*}]}{\end{enumerate}}
 
@@ -213,7 +233,7 @@
         %       Thm head spec (can be left empty, meaning `normal'):
   {\thmname{##1}\thmnumber{~##2}\thmnote{~#3\mdseries(\hspace{0.05em}##3\hspace{0.1em})}}
 
-\newtheoremstyle{#1theorem}
+  \newtheoremstyle{#1theorem}
   {5pt}%      Space above
   {5pt}%      Space below
   {\itshape}% Body font
@@ -224,10 +244,12 @@
         %       \newline = linebreak
         %       Thm head spec (can be left empty, meaning `normal'):
   {\thmname{##1}\thmnumber{ ##2}\thmnote{~#3\mdseries(\hspace{0.07em}##3\hspace{0.07em})}}
+  % Problems are not theorems, see below.
+  \renewcommand{\problemfont}{#2}
 }
 
 \newcommand{\customqed}[1]{{\renewcommand{\qedsymbol}{#1}\qed}}
-\newcommand{\varqed}{\customqed{\hbox{$\lrcorner$}}}
+\newcommand{\varqed}{\customqed{\hbox{$\lrcorner$}}} % amssymb?
 %\newcommand{\varqed}{\customqed{\hbox{$\diamondsuit$}}}
 
 \newcommand{\intheoremstyle}{
@@ -244,6 +266,7 @@
  \newtheorem{corollary}[lemma]{Corollary}
  \newtheorem{axiom}[lemma]{Axiom}
  \newtheorem{conjecture}[lemma]{Conjecture}
+ \newtheorem{goal}[lemma]{Goal}
  \newtheorem{question}{Question}
 }
 
@@ -328,9 +351,10 @@
 % float around some figure: list environments like the theorem environment are not tolerated 
 % for example in the package floatflt.
 \newcounter{probl}
+\newcommand{\problemfont}{\bfseries}
 \newenvironment{problem}{\refstepcounter{probl}\par\medskip\noindent
-  \textbf{Problem \arabic{probl}~}}{}
-\newenvironment{solution}{\par\medskip\noindent\textit{Solution.}}{}
+  {\problemfont Problem \arabic{probl}~}}{}
+\newenvironment{solution}{\par\medskip\noindent{\itshape Solution.}}{}
 
 
  \newenvironment{program}{
@@ -546,6 +570,7 @@
  \newcommand{\Flo}[1]{{\left\lfloor #1\right\rfloor}}
  \newcommand{\nm}[1]{{\lVert #1\rVert}} % stands for ``norm''
  \newcommand{\norm}[1]{{\lVert #1\rVert}} % stands for ``norm''
+ \newcommand{\Norm}[1]{{\left\lVert #1\right\rVert}} % stands for ``norm''
 
 % \newcommand\frto[2]{#1\mathinner{\ldotp\ldotp\/}#2}
 
@@ -738,26 +763,56 @@
 \newcommand{\defaultOption}{\newTheorems{standard}{\bfseries}\restofTheorems}
 
  \DeclareOption{sf}{\@fontoptiontrue
-\ifxetex\renewcommand{\sffamily}{\optimaFont}\else\@classicotrue\fi
+\ifxetex\renewcommand{\sffamily}{\optimaFont}\else
+\@classicotrue\fi
 \newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems
 }
 \DeclareOption{sc}{\@fontoptiontrue\newHeadings{\scshape}{\sffamily\mdseries}\newTheorems{sc}{\scshape}\restofTheorems}
+
 % \DeclareOption{biolinum}{\@fontoptiontrue
 % \newHeadings{\biolinumFont}{\biolinumFont}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems}
+
 \DeclareOption{charter}{\@fontoptiontrue\newHeadings
 {\charterFont}{\charterFont\mdseries}\newTheorems{charter}{\charterFont\bfseries}\restofTheorems}
+
+\DeclareOption{newcentury}{\@fontoptiontrue\newHeadings
+{\newCenturyFont}{\charterFont\mdseries}\newTheorems{fncm}{\newCenturyFont\bfseries}\restofTheorems}
+
 \DeclareOption{palatino}{\@fontoptiontrue\newHeadings
-{\palatinoFont}{\palatinoFont\mdseries}\newTheorems{palatino}{\palatinoFont\bfseries}\restofTheorems} 
+{\palatinoFont}{\palatinoFont\mdseries}\newTheorems{palatino}{\palatinoFont\bfseries}\restofTheorems
+\DeclareMathAlphabet      {\mathbf}{T1}{ppl}{b}{n}
+} 
+
+\DeclareOption{libertine}{% Works better with xetex, since it scales the font, but then mathbf is not changed.
+\@fontoptiontrue\newHeadings
+{\libertineFont}{\libertineFont\mdseries}\newTheorems{libertine}{\libertineFont\bfseries}\restofTheorems
+\DeclareMathAlphabet      {\mathbf}{T1}{LinuxLibertineT-LF}{b}{n}
+}
 
 % only with xetex
 \DeclareOption{iowan}{\ifxetex
 \@fontoptiontrue\newHeadings
 {\iowanFont}{\iowanFont\mdseries}\newTheorems{iowan}{\iowanFont\bfseries}\restofTheorems
+%\setmathrm{Iowan Old Style} % does not work well
 \else\@warning{The iowan option needs XeTeX.}\fi
+}
+
+\DeclareOption{goudy}{\ifxetex
+\@fontoptiontrue\newHeadings
+{\goudyFont}{\goudyFont\mdseries}\newTheorems{goudy}{\goudyFont\bfseries}\restofTheorems
+\else\@warning{The goudy option needs XeTeX.}\fi
 }
 \ProcessOptions\relax
 
 \if@fontoption\else\defaultOption\fi
-\if@classico\RequirePackage{classico}\fi % Cannot be done within the option declaration
+\if@classico
+\IfFileExists{classico.sty}{%
+    \RequirePackage{classico}%
+  }{%
+    \PackageWarning{classico}{%
+      Package classico not available, using computer roman sf
+    }%
+  }%
+\fi % Cannot be done within the option declaration
 
 \endinput

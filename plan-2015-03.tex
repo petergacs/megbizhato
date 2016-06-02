@@ -36,7 +36,7 @@
 % \usepackage{float}
  % After hyperref:
 \usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
-\usepackage[sf]{gacs} % Process with XeTeX
+\usepackage[palatino]{gacs}
 \usepackage{gacs-algo} % After hyperref.
 % After gacs.sty
 
@@ -238,7 +238,7 @@ Here, still many details must be worked out, but I feel that this has more chanc
 
 Let us have a parameter \( \pi \) (for ``pass number'').
 It may not be necessary, as the cell size \( \B \) is also a function of the pass number
-(both are functions of level), it seems simpler to use a separate parameter.
+(both are functions of level), but it seems simpler to use a separate parameter.
 
 Consider a noise-free time interval \( J \), and a space interval \( I \).
 
@@ -287,7 +287,7 @@ In the hierarchy this makes \( \Q \) an exponential function of the level, which
 OK for the sparsity lemma.
 
 \begin{lemma}\label{lem:dirty-passes}
-Consider an interval \( I \) of size \( |I|\ge 2\pi \) 
+Consider an interval \( I \) of size \( |I|\ge 2\pi B \) 
 that will be passed by \( n\ge 2\pi \) times
 by the head in a burst-free way during some time interval \( J \).
 There could be some other times in \( J \) when the head is subject to a burst inside \( I \).
@@ -303,9 +303,10 @@ Let
 \end{align}
 In this sketch I am ignoring the corrections having to do with the
 limited spilling effects.
-It is sufficient to conside the case \( n=2\pi \), since otherwise
-we can subdivide the \( n \) passes into segments of size \( 2\pi \),
-and one of them must contain fewer than \(  c_{1}(2\pi) \) bursts.
+It is sufficient to consider the case \( 2\pi \le n\le 2\pi+1 \), since otherwise
+we can subdivide the \( n \) passes into segments of this size,
+and one of them must contain fewer bursts than \(  c_{1} \) times its length.
+Let us ignore the \( +1 \) term.
 
 Let us introduce a new \df{virtual} time counting.
 We only count the times in \( J \) when the head either passes \( I \)
@@ -313,7 +314,7 @@ or is subject to a burst in \( J \).
 Let this virtual time interval be denoted by \( K \): we can assume it starts at 0.
 
 There is a subset \( C \) of the interval \( I \),
-of size \( \ge |I|-c_{1}(2\beta\pi)=|I|-\pi/2>0 \), in which no burst occurs at all.
+of size \( \ge |I|-c_{1}(2\beta\pi B)=|I|-\pi B/2>0 \), in which no burst occurs at all.
 Then at virtual time \( \pi \) the set \( C \) becomes clean.
 We will actually take for \( C \) the larger set of points in which no burst occurred until
 this time.
@@ -384,7 +385,7 @@ In this lemma the constants will probably change.
 \begin{lemma}\label{lem:burst-density}
 Consider an interval \( K \) of size \( 3 \Q\B \) and a time interval \( J \) in which
 no burst of \( M^{*} \) occurs.
-If \( 4\beta\pi) \) bursts occur in \( K \) during \( J \) then at some time in \( J \)
+If at least \( 4\beta\pi \) bursts occur in \( K \) during \( J \) then at some time in \( J \)
 the interval \( K \) becomes clean in \( M^{*} \).
 \end{lemma}
 \begin{proof}[Proof sketch]
@@ -397,7 +398,7 @@ For
 both positive and negative \( i \), and \( j=0,\dots,d-1 \), let
 \begin{align*}
    K_{ij}=x+3\Q\B\lint{d i+j}{d i+j+1},\ 
-K_{i}=\bigcup_{j=0}^{d-1}K_{ij}=x+3\Q\B\lint{di}{d(i+1)},
+K_{i}=\bigcup_{j=0}^{d-1}K_{ij}=x+3\Q\B\lint{d i}{d(i+1)},
  \end{align*}
 so \( K=K_{00} \).
 Consider the sweeps corresponding to the \( \pi/c_{1} \) bursts in \( K \).
@@ -455,12 +456,12 @@ This can be excluded using Lemma~\ref{lem:burst-density}.
 
 \subsection{Dwell Cleaning, Attack Cleaning}
 
-The proof these properties should go similarly to before.
+The proof of these properties should go similarly to before.
 
 \subsection{Pass Cleaning}
 
 The proof relies on the definition of \( \pi^{*} \).
-Consider making \( \pi^{*}=16\beta^{*} \) passes.
+Consider making \( \pi^{*}=16\beta^{2}\pi \) passes.
 Lemma~\ref{lem:burst-density} implies that in any interval of size \( 3\Q\B \)
 if more than \( 4\beta\pi \) bursts occur then it becomes clean.
 On the other hand, if fewer than \( 4\beta\pi=\pi^{*}/4\beta \) bursts occur then

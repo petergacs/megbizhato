@@ -6,7 +6,7 @@
 \checkandfixthelayout
 
 \setcounter{tocdepth}{2}
-\setcounter{secnumdepth}{2}
+\setcounter{secnumdepth}{3}
 \counterwithout{section}{chapter}
 \counterwithin{equation}{section}
 %\numberwithin{equation}{section} % in amsmath
@@ -36,11 +36,12 @@
 % \usepackage{float}
  % After hyperref:
 \usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
-\usepackage[sf]{gacs} % Process with XeTeX
+\usepackage[palatino]{gacs} % Process with XeTeX 
+%\usepackage[sf]{gacs} % Process with XeTeX 
 \usepackage{gacs-algo} % After hyperref.
 % After gacs.sty
 
-\usepackage[pagecolor={Honeydew1}]{pagecolor}
+%\usepackage[pagecolor={Honeydew1}]{pagecolor}
 
 \hyphenation{com-plex-ity des-tin-at-ion co-lon-ies}
 
@@ -77,16 +78,18 @@
 \newcommand{\Configs}{\mathrm{Configs}}
 \newcommand{\D}{D}
 \newcommand{\E}{E}
+\newcommand{\f}{f}
 \def\G{G}
 \newcommand{\h}{h}
 \renewcommand{\H}{H}
-\newcommand{\hc}{\tilde h}
+\newcommand{\hc}{\hat h}
 \newcommand{\Noise}{\mathit{Noise}}
 \newcommand{\Output}{\mathit{output}}
 \newcommand{\PenetrationLen}{\mathrm{PenetLen}}
 \newcommand{\Plus}{\oplus}
 \newcommand{\Minus}{\ominus}
 \newcommand{\pos}{\mathrm{pos}}
+\newcommand{\curcell}{\textrm{cur-cell}}
 \newcommand{\R}{R}
 \newcommand{\Tu}{T}
 \newcommand{\Tus}{T^{*}}
@@ -94,7 +97,6 @@
 \newcommand{\F}{F}
 \newcommand{\Z}{Z}
 \newcommand{\z}{z}
-
 
 \newcommand{\Addr}{\fld{Addr}}
 \newcommand{\cAddr}{\fld{cAddr}}
@@ -107,6 +109,7 @@
 \newcommand{\Doomed}{\fld{Doomed}}
 \newcommand{\cDrift}{\fld{cDrift}}
 %\renewcommand{\G}{\fld{NonAdj}}
+\newcommand{\cDwell}{\cns{dwell}}
 \newcommand{\NonAdj}{\fld{NonAdj}}
 \newcommand{\cHold}{\fld{cHold}}
 \newcommand{\Index}{\fld{Index}}
@@ -119,10 +122,8 @@
 \newcommand{\cProg}{\fld{cProg}}
 \newcommand{\Heal}{\fld{Heal}}
 \newcommand{\rHeal}{\rul{Heal}}
-\newcommand{\cHeal}{\fld{cHeal}}
 \newcommand{\Plan}{\fld{Plan}}
-\newcommand{\Rebd}{\fld{Rebd}}
-\newcommand{\cRebd}{\fld{cRebd}}
+\newcommand{\Rebuild}{\fld{Rebuild}}
 \newcommand{\Stage}{\fld{Stage}}
 \newcommand{\State}{\fld{State}}
 \newcommand{\cState}{\fld{cState}}
@@ -177,7 +178,7 @@
 \newcommand{\ruSwing}{\rul{Swing}}
 \newcommand{\Transfer}{\rul{Transfer}}
 \newcommand{\UsefulComp}{\rul{UsefulComp}}
-\newcommand{\WriteRulesBit}{\rul{WriteRulesBit}}
+\newcommand{\WriteProgramBit}{\rul{WriteProgramBit}}
 \newcommand{\Zigzag}{\rul{Zigzag}}
 
 \newcommand{\mrk}{\mathrm{mrk}}
@@ -187,13 +188,14 @@
 \newcommand{\Zg}{\mathcal{Z}_g}
 
 \newcommand{\cns}[1]{c_{\textrm{\upshape #1}}}
-\newcommand{\cDecr}{\cns{decr}}
-\newcommand{\cEsc}{\cns{escape}}
-\newcommand{\cCleanS}{\cns{clean-s}}
-\newcommand{\cCleanT}{\cns{clean-t}}
-\newcommand{\cCDepth}[1]{\cns{c-depth-#1}}
+\newcommand{\CAtt}{\cns{attack}}
+\newcommand{\CCleanEsc}{\cns{clean-esc}}
+\newcommand{\CEsc}{\cns{escape}}
+\newcommand{\CCleanS}{\cns{clean-s}}
+\newcommand{\CCleanT}{\cns{clean-t}}
+%\newcommand{\CDepth}[1]{\cns{depth-#1}}
 \newcommand{\cIncr}{\cns{incr}}
-\newcommand{\cSpill}{\cns{spill}}
+\newcommand{\CSpill}{\cns{spill}}
 
 \begin{document}
 
@@ -247,10 +249,10 @@ there is a set \( F \) of \df{final states}.
 \( \h\in\bbZ \) is the current \df{head position}, or \df{observed cell},
 and \( A\in\Sigma^{\bbZ} \) is the \df{tape content}: 
 at position \( p \), the tape contains the symbol \( A(p) \).
-If \( C=(q,A,\h) \) is a configuration then we will write
-        \begin{align*}
-             C.\state=q,\quad C.\pos=\h, \quad C.\tape=A.
-        \end{align*}
+If \( \xi=(q,A,\h) \) is a configuration then we will write
+        \begin{align}\label{eq:config-1}
+             \xi.\state=q, \quad \xi.\tape=A,\quad \xi.\pos=\h.
+        \end{align}
     Here, \( A \) is also called the \df{tape configuration}.
     The cell at position \( \h \) is the  \df{current cell}.
 Though the tape alphabet may contain
@@ -305,10 +307,10 @@ there are \( 0\le\varepsilon <1 \) and \( \alpha_{1},\alpha_{2}>0 \)
 with the following property.
 
 For each input length \( n=\abs{x} \) a block code
-\( (\varphi_*, \varphi^*) \) of block size \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
+\( (\varphi_{*}, \varphi^{*}) \) of block size \( Q=O((\log n)^{\alpha_{1}}) \) can be constructed 
 such that the following holds.
 
-Let \( M_1 \) start its work from its initial state,
+Let \( M_{1} \) start its work from its initial state,
 and the initial tape configuration \( \xi=(q_{\start},\varphi_{*}(x),0) \).
 Assume further that
 during its operation, faults occur independently at random
@@ -343,7 +345,7 @@ of the simulating machine despite occasional damages.
 
 \subsection{Isolated bursts of faults}\label{sec:bursts}
 
-Let us give a brief overview of a machine \( M_1 \) that
+Let us give a brief overview of a machine \( M_{1} \) that
 can withstand isolated bursts of faults, as most of its construction will be reused
 in the probabilistic setting.
 
@@ -414,50 +416,50 @@ and implemented in~\cite{Gacs1dim86} and~\cite{GacsSorg01}
 for the case of one-dimensional cellular automata, with some ideas
 from the tiling application of~\cite{DurandRomashShenTiling12}.
 We will build a \df{hierarchy of simulations}:
-machine \( M_1 \) simulates machine \( M_2 \) which 
+machine \( M_{1} \) simulates machine \( M_{2} \) which 
 simulates machine \( M_3 \), and so on.
 For simplicity we assume all these machines have the same program,
 and all simulations have the same block size.
 
-One cell of machine \( M_3 \) is simulated by one colony of machine \( M_2 \).
-Correspondingly, one cell of \( M_2 \) is simulated by
-one colony of machine \( M_1 \).
-So one cell of \( M_3 \) is simulated by \( Q^2 \) cells of \( M_1 \).
+One cell of machine \( M_3 \) is simulated by one colony of machine \( M_{2} \).
+Correspondingly, one cell of \( M_{2} \) is simulated by
+one colony of machine \( M_{1} \).
+So one cell of \( M_3 \) is simulated by \( Q^{2} \) cells of \( M_{1} \).
 Further, one step of machine \( M_3 \) is simulated by one
-work period of \( M_2 \) of, say, \( O(Q^{2}) \) steps.
-One step of \( M_2 \) is simulated by one work period of \( M_1 \),
-so one step of \( M_3 \) is simulated by \( O(Q^{4}) \) steps of \( M_1 \).
+work period of \( M_{2} \) of, say, \( O(Q^{2}) \) steps.
+One step of \( M_{2} \) is simulated by one work period of \( M_{1} \),
+so one step of \( M_3 \) is simulated by \( O(Q^{4}) \) steps of \( M_{1} \).
 
 Per construction, machine \( M_{1} \) can withstand
 bursts of faults whose size is \( \le \beta \) for some constant parameter \( \beta \), that
 are separated by some \( O(Q^{2}) \) fault-free steps.
-Machines \( M_2 \), \( M_3 \), \( \dots \) have the same program, so it
+Machines \( M_{2} \), \( M_3 \), \( \dots \) have the same program, so it
 would be natural to expect that machine
-\( M_1 \) can withstand also some \emph{additional}, larger bursts
+\( M_{1} \) can withstand also some \emph{additional}, larger bursts
 of size \( \le \beta Q \) if those are separated by at least \( O(Q^{4}) \) steps.
 
 But a new obstacle arises.
 On the first level, damage caused by a big burst spans several colonies.
-The repair mechanism of machine \( M_1 \) outlined in Section~\ref{sec:bursts} above 
+The repair mechanism of machine \( M_{1} \) outlined in Section~\ref{sec:bursts} above 
 is too local to recover from such extensive damage.
 This cannot be allowed, since then the whole hierarchy would stop working.
 So we add a new mechanism to \( M_{1} \) that, more modestly,
 will just try to restore a large enough portion of the
-tape, so it can go on with the simulation of \( M_2 \), even if all 
+tape, so it can go on with the simulation of \( M_{2} \), even if all 
 original information was lost.
 For this, \( M_{1} \) may need to rewrite an area as large as a few colonies.
 
 This will enable the low-level healing procedure of 
 machine \( M_{2} \) to restore eventually a higher-level order.
 
-All machines above \( M_1 \) in the hierarchy are
-``virtual'': the only hardware in the construction is machine \( M_1 \).
+All machines above \( M_{1} \) in the hierarchy are
+``virtual'': the only hardware in the construction is machine \( M_{1} \).
 Moreover, they will not be ordinary Turing machines, but \df{generalized} ones,
 with some new features that are not needed on the lowest level but seem necessary
 in a simulated Turing machine: for example they
 allow a positive distance between neighboring tape cells.
 
-A tricky issue is ``forced self-simulation'': while we are constructing machine \( M_1 \)
+A tricky issue is ``forced self-simulation'': while we are constructing machine \( M_{1} \)
 we want to give it the feature that it will simulate a machine \( M_{2} \) that
 works just like \( M_{1} \).
 The ``forced'' feature means that this simulation should
@@ -483,12 +485,12 @@ in the simulation of \( M_{2} \).
 In this way, an infinite sequence of simulations arises, in order
 to withstand larger and larger but sparser and sparser bursts of faults.
 
-Since the \( M_1 \) uses the universal interpreter, which in turns
+Since the \( M_{1} \) uses the universal interpreter, which in turns
 simulates the same program, it is natural to ask
-how  machine \( M_1 \) simulates a given Turing machine \( G \) that does the 
+how  machine \( M_{1} \) simulates a given Turing machine \( G \) that does the 
 actual useful computation?
 For this task, we set aside a separate track 
-on each machine \( M_i \), on which some arbitrary other Turing machine can be
+on each machine \( M_{i} \), on which some arbitrary other Turing machine can be
 simulated.
 The higher the level of the machine \( M_{k} \) that performs this
 ``side-simulation'', the higher the reliability.
@@ -530,7 +532,7 @@ Some more specific problems will be pointed out later, along with their solution
 
 \begin{description}
 
-\item[Non-aligned colonies] A large burst of \( M_1 \) can modify the order of
+\item[Non-aligned colonies] A large burst of \( M_{1} \) can modify the order of
 entire colonies or create new ones with gaps between them.
 
 To overcome this problem conceptually, we 
@@ -1013,19 +1015,18 @@ This will happen by turning the kind of each of its cell to \( \Stem \).
 %     (We will explain  this notion later.)
 
   % The fields used in healing mode are all collected as subfields of the field
-  %   \( \Heal \) of the state, and the field \( \cHeal \) of the cell state.
+  %   \( \Heal \) of the state.
   %   They will be introduced in the definition of the healing rule.
 
 During healing, some special fields of the state and cell are used, they will be subfields of 
-the fields
+the field
  \begin{align}\label{eq:Heal}
-   \Heal
+   \Heal.
  \end{align} 
-and \( \cHeal \) respectively.
-In particular, there will be \( \Heal.\Sweep \) and \( \cHeal.\Sweep \) fields.
-We will say that a cell is \df{marked for healing} if \( \cHeal.\Sweep\ne 0 \).
-Similarly, during rebuilding we will work with subfields of the field \( \Rebd \) and
-\( \cRebd \), and a cell will be called \df{marked for rebuilding} if \( \cRebd.\Sweep\ne 0 \).
+In particular, there will be \( \Heal.\Sweep \) and \( \Heal.\cSweep \) fields.
+We will say that a cell is \df{marked for healing} if \( \Heal.\cSweep\ne 0 \).
+Similarly, during rebuilding we will work with subfields of the field \( \Rebuild \), 
+and a cell will be called \df{marked for rebuilding} if \( \Rebuild.\cSweep\ne 0 \).
 
 %     \item\label{i:fields.zigging}
 %     The sweep-through is interrupted by switchbacks
@@ -1058,24 +1059,24 @@ Let us introduce a technique connecting the combinatorial and probabilistic
 noise models.
 
 \begin{definition}[Centered rectangles, isolation]
-Let \( \vek{r}=\pair{r_1}{r_2} \), \( r_1, r_2\ge 0 \),
+Let \( \vek{r}=\pair{r_{1}}{r_{2}} \), \( r_{1}, r_{2}\ge 0 \),
 be a two-dimensional nonnegative vector.
 An \df{rectangle} of radius \( \vek{r} \) \df{centered} at \( \vek{x} \) is
 \begin{align}\label{eq:ball1}
-  B(\vek{x},\vek{r}) = \setOf{\vek{y}}{\abs{y_i - x_i} \le r_i, i=1,2}.
+  B(\vek{x},\vek{r}) = \setOf{\vek{y}}{\abs{y_{i} - x_{i}} \le r_{i}, i=1,2}.
 \end{align}  
 Let \( E\subseteq \bbZ^{2} \) be a two-dimensional set.
-A point \( \vek{x} \) of \( E \) is \df{\( \pair{\vek{r}}{\vek{r}^*} \)-isolated} if
+A point \( \vek{x} \) of \( E \) is \df{\( \pair{\vek{r}}{\vek{r}^{*}} \)-isolated} if
 \begin{align*}
-  E \cap B(\vek{x},\vek{r}^*)\subseteq B(\vek{x}, \vek{r}).
+  E \cap B(\vek{x},\vek{r}^{*})\subseteq B(\vek{x}, \vek{r}).
  \end{align*}
-Set \( E \) is \df{\( (\vek{r}, \vek{r}^*) \)-sparse} 
-if \( D(E, \vek{r}, \vek{r}^*)=\emptyset \), that is 
-it consists of \( (\vek{r}, \vek{r^*}) \)-isolated points.
+Set \( E \) is \df{\( (\vek{r}, \vek{r}^{*}) \)-sparse} 
+if \( D(E, \vek{r}, \vek{r}^{*})=\emptyset \), that is 
+it consists of \( (\vek{r}, \vek{r^{*}}) \)-isolated points.
 Let
 \begin{align}
-  D(E,\vek{r}, \vek{r}^*) =
-     \setOf{\vek{x}\in E}{\vek{x} \txt{ is not } (\vek{r}, \vek{r}^*)\txt{-isolated
+  D(E,\vek{r}, \vek{r}^{*}) =
+     \setOf{\vek{x}\in E}{\vek{x} \txt{ is not } (\vek{r}, \vek{r}^{*})\txt{-isolated
   from } E}.
 \end{align}
 \end{definition}
@@ -1085,7 +1086,7 @@ Let
 \begin{align}\label{eq:beta}
  \beta\ge 9, \gamma\gg\beta
  \end{align}
-constants (we will choose \( \gamma \) sufficiently large as the proof requires), and let 
+be constants (we will choose \( \gamma \) sufficiently large as the proof requires), and let 
 \( 0<\B_{1}<\B_{2}<\dotsm \), \( \Tu_{1}<\Tu_{2}<\dotsm \), 
 % \( 1\le\gamma_{1}\le\gamma_{2}\le\dotsm \) 
 be sequences of positive integers to be fixed later.
@@ -1093,7 +1094,7 @@ be sequences of positive integers to be fixed later.
 For a two-dimensional set \( E \), let \( E^{(1)} = E \).
 For \( k>1 \) we define recursively:
 \begin{align}\label{eq:noise^k}
-    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_k}{\Tu_{k}}, \gamma\pair{\B_{k+1}}{\Tu_{k+1}}).
+    E^{(k+1)} = D(E^{(k)}, \beta\pair{\B_{k}}{\Tu_{k}}, \gamma\pair{\B_{k+1}}{\Tu_{k+1}}).
 \end{align}
 Set \( E^{(k)} \) is called the \df{\( k \)-th residue} of \( E \).
 It is \( k \)-\df{sparse} if \( E^{(k+1)}=\emptyset \).
@@ -1113,10 +1114,10 @@ of small fault probability.
 It is formulated somewhat redundantly, for easier application.
 
 \begin{lemma}[Sparsity]\label{lem:sparsiness}
-Let \( Q_k = \B_{k+1}/\B_{k} \), \( \U_k = \Tu_{k+1}/\Tu_{k} \), and
+Let \( Q_{k} = \B_{k+1}/\B_{k} \), \( \U_{k} = \Tu_{k+1}/\Tu_{k} \), and
 \begin{align}\label{eq:assumption}
-  \lim_{k\rightarrow\infty}\frac{\log(\U_{k} Q_k)}{1.5^k}=0.
-%  \lim_{k\rightarrow\infty}\frac{\log(\gamma_{k}\U_{k} Q_k)}{1.5^k}=0.
+  \lim_{k\rightarrow\infty}\frac{\log(\U_{k} Q_{k})}{1.5^k}=0.
+%  \lim_{k\rightarrow\infty}\frac{\log(\gamma_{k}\U_{k} Q_{k})}{1.5^k}=0.
 \end{align}
 For sufficiently small \( \varepsilon \), for every \( k\ge 1 \) the following holds.
 Let \( E\subseteq \bbZ\times \bbZ_{\ge 0} \)
@@ -1125,14 +1126,14 @@ independently from the other ones with probability \( \le \varepsilon \).
 
 Then for each point \( \vek{x} \)  and each \( k \),
  \begin{align*}
-   \Pbof{B(\vek{x},(\B_k, \Tu_{k}))\cap E^{(k)}\neq\emptyset} <2\varepsilon \cdot 2^{-1.5^{k}}.
+   \Pbof{B(\vek{x},(\B_{k}, \Tu_{k}))\cap E^{(k)}\neq\emptyset} <2\varepsilon \cdot 2^{-1.5^{k}}.
  \end{align*}
 As a consequence, the set \( E \) is sparse with probability 1.
 \end{lemma}
 
 \begin{proof}
 Let \( k=1 \).
-Rectangle \( B(\vek{x},(\B_1, \Tu_{1})) \) is a single point, hence
+Rectangle \( B(\vek{x},(\B_{1}, \Tu_{1})) \) is a single point, hence
 the probability of our event is \( <\varepsilon \).
 Let us prove the inequality by induction, for \( k+1 \).
 
@@ -1149,14 +1150,14 @@ Then, according to the definition of \( E^{(k)} \),  there is a point
  B(\vek{y},\gamma(\B_{k+1},\Tu_{k+1}))\cap E^{(k)}\setminus B(\vek{y},\beta(\B_{k}, \Tu_{k})).
  \end{align}
 Consider a standard partition of the (two-dimensional) space-time into
-rectangles \( K_{p}=\vek{c}_{p}+\lint{-\B_{k}}{\B_k}\times \lint{-\Tu_{k}}{\Tu_{k}} \)
+rectangles \( K_{p}=\vek{c}_{p}+\lint{-\B_{k}}{\B_{k}}\times \lint{-\Tu_{k}}{\Tu_{k}} \)
 with centers \( \vek{c}_{1},\vek{c}_{2},\dots \).
 The rectangles \( K_{i},K_{j} \) containing \( \vek{y} \) and \( \vek{z} \)
 respectively intersect \( B(\vek{x}, 2\gamma(\B_{k+1}, \Tu_{k+1})) \).
 The triple-size rectangles 
-\( K'_{i}=c_{i} + \lint{-3\B_{k}}{3\B_k}\times \lint{-3\Tu_{k}}{3\Tu_{k}} \) and
+\( K'_{i}=c_{i} + \lint{-3\B_{k}}{3\B_{k}}\times \lint{-3\Tu_{k}}{3\Tu_{k}} \) and
 \( K'_{j} \) are disjoint, since \eqref{eq:beta} and~\eqref{eq:sparse-as} imply
- \( \abs{y_1 - z_1}>\beta\B_{k} \) and \( \abs{y_2 - z_2}>\beta\Tu_{k} \).
+ \( \abs{y_{1} - z_{1}}>\beta\B_{k} \) and \( \abs{y_{2} - z_{2}}>\beta\Tu_{k} \).
 
 The set \( E^{(k)} \) must intersect two rectangles \( K_{i} \),
 \( K_{j} \) of size \( 2(\B_{k}, \Tu_{k}) \) separated by at least \( 4(\B_{k}, \Tu_{k}) \),
@@ -1180,8 +1181,8 @@ is at most \( C_{k}^{2}/2 \), bounding the probability of our event by
    \\ &=2\varepsilon 2^{-1.5^{k+1}} \cdot \varepsilon
         C_{k}^{2}2^{-0.5\cdot 1.5{k}}.
  \end{align*}
-%Since \( \lim_{k}\frac{\log{(\gamma_{k}\U_{k} Q_k)}}{1.5^k}=0 \),
-Since \( \lim_{k}\frac{\log{(\U_{k} Q_k)}}{1.5^k}=0 \),
+%Since \( \lim_{k}\frac{\log{(\gamma_{k}\U_{k} Q_{k})}}{1.5^k}=0 \),
+Since \( \lim_{k}\frac{\log{(\U_{k} Q_{k})}}{1.5^k}=0 \),
 the last factor is \( \le 1 \) for sufficiently small  \( \varepsilon \).
 \end{proof}
 
@@ -1223,10 +1224,10 @@ Consider a Turing machine
 %    M = (\Gamma, \Sigma, \tau, \NonAdj, \cDir, q_{\start},F, \B, \Tu)
 simulating some Turing machine \( (\Gamma^{*}, \Sigma^{*},\tau^{*}, q^{*}_{\start},F^{*}) \).
 % \begin{align*}
-% M^* = (\Gamma^{*}, \Sigma^{*}, \tau^{*}, \NonAdj^{*}, \cDir^{*}, q^{*}_{\start},F^{*}, \B^{*}, \Tus).
+% M^{*} = (\Gamma^{*}, \Sigma^{*}, \tau^{*}, \NonAdj^{*}, \cDir^{*}, q^{*}_{\start},F^{*}, \B^{*}, \Tus).
 % \end{align*}
-We will assume that \( \Gamma^*\cup\set{\emptyset} \),
-and the alphabet \( \Sigma^* \) are subsets of the set of  binary strings
+We will assume that \( \Gamma^{*}\cup\set{\emptyset} \),
+and the alphabet \( \Sigma^{*} \) are subsets of the set of  binary strings
 \( \{0,1\}^{\ell} \) for some \( \ell<Q \) (we can always ignore some states or tape
 symbols, if we want).
 
@@ -1255,12 +1256,12 @@ on the universal machine \( \Un \), in the following sense:
 Also, these programs must work in quadratic time and linear space on a one-tape
 Turing machine (as the repetition code certainly does).
 
-Let us now define the block code \( (\psi_*, \psi^*) \) used in the
-definition of the configuration code \( (\varphi_*, \varphi^*) \) as 
+Let us now define the block code \( (\psi_{*}, \psi^{*}) \) used in the
+definition of the configuration code \( (\varphi_{*}, \varphi^{*}) \) as 
 outlined in Section~\ref{sec:hier-codes}.
 We define
 \begin{equation}\label{eq:psi}
-   \psi_*(a)  = 0^{\PadLen}\upsilon_{*}(a)0^{\PadLen}.
+   \psi_{*}(a)  = 0^{\PadLen}\upsilon_{*}(a)0^{\PadLen}.
 \end{equation}
 It will be easy to compute the configuration code from \( \psi_{*} \),
 once we know what fields there are which ones need initialization.
@@ -1289,7 +1290,7 @@ operations like ``creation'' or ``killing'' of cells, nor
 do they allow for cells to be non-adjacent.
 We introduce here a \df{generalized Turing machine}.
 It depends on an integer \( \B \ge 1 \) that denotes the cell body size,
-and an upper bound \( \Tu \) on the transition time, as well as a \df{level number} \( \lambda \),
+and an upper bound \( \Tu \) on the transition time, as well as a \df{ pass number} \( \pi \),
 whose meaning will be explained in the definition of configurations.
 These parameters are convenient since they provide the illusion that the different Turing
 machines in the hierarchy of simulations all operate on the same linear space.
@@ -1301,7 +1302,7 @@ at least the notion of a \emph{location on the tape} is the same.
 \begin{definition}[Generalized Turing machine]\label{def:gen-TM}
     A \df{generalized Turing machine} \( M \) is defined by a tuple
         \begin{align}\label{eq:gen-TM}
-             (\Gamma, \Sigma, \tau, \NonAdj, \cDir, q_{\start},F, \B, \Tu, \lambda),
+             (\Gamma, \Sigma, \tau, \NonAdj, \cDir, q_{\start},F, \B, \Tu, \pi),
        \end{align}
     where \( \Gamma \) and \( \Sigma \) are finite sets
     called the \df{set of states} and the \df{alphabet} respectively,
@@ -1310,9 +1311,11 @@ at least the notion of a \emph{location on the tape} is the same.
              \to \Sigma\times \Gamma\times\{-1,1\},
         \end{align*}
     is the \df{transition function}.
-The function (``field'') \( \NonAdj\colon\Gamma\to\{\true,\false\} \) of the 
-state will show whether the last move was from a non-adjacent cell.
-The function (``field'') \( \cDir\colon\Sigma\to\{-1,1\} \) of the cell content
+\( \NonAdj \) is a function of the state (can be called a ``field'' if a state is viewed 
+as a piece of data, a record with several fields).
+\( \NonAdj\colon\Gamma\to\{\true,\false\} \) will show 
+whether the last move was from a non-adjacent cell.
+The function \( \cDir\colon\Sigma\to\{-1,1\} \) of the cell content
 needs to always point towards the head, so 
 the transition function \( \tau \) is required to have the property that
 if \( (a',q',j)=\tau(a,q) \) then \( a'.\cDir=j \).
@@ -1320,7 +1323,7 @@ if \( (a',q',j)=\tau(a,q) \) then \( a'.\cDir=j \).
 The role of starting state \( q_{\start} \) and final states in \( F \) is as before.
 The integer \( \B\ge 1 \) is called the \df{cell body size},
 and the real number \( \Tu \) is a bound on the transition time.
-The level \( \lambda \) will play a role in the definition of trajectories.
+The \df{pass number} \( \pi \) will play a role in the definition of trajectories.
 
 Among the elements of the tape alphabet \( \Sigma \), 
 we distinguish the elements \( 0,1,\Bad,\Vacant \).
@@ -1332,19 +1335,17 @@ The role of the symbols \( \Bad \) and \( \Vacant \) will be clarified below.
      Consider a generalized Turing machine~\eqref{eq:gen-TM}.
     A \df{configuration} is a tuple
         \begin{align*}
-             (q,L,A,\h,\hc,),
+             (q,A,\h,\hc,),
         \end{align*}
     where \( q\in\Gamma \), 
-\( L:\bbZ\to \clint{0}{\lambda}\cap\bbN\),
 \( A:\bbZ\to\Sigma \), \( \h,\hc\in\bbZ \).
-The arrays \( L,A \) make up the tape configuration.
-The value \( 0\le L(p) \le\lambda \) shows the \df{level} of a position \( p \) on the tape.
-A point is \df{clean} if  \( L(p)=\lambda \), the maximum possible level.
-Informally, 
-even in unclean points \( p \), the value \( L(p) \) measures the level of ``organization'' of a certain
-neighborhood of \( p \).
-% It is convenient to allow fractional values of \( L(p) \).
-The cell state \( A(p) \) will have importance only in case \( L(p)=\lambda \).
+The array \( A \) is the tape configuration.
+As in~\eqref{eq:config-1} before, \( \h \) is the head position, but it may differ from the \df{current cell}
+\( \hc \), so now if \(  \xi= (q,A,\h,\hc,) \) then we write
+        \begin{align}\label{eq:config-2}
+             \xi.\state=q, \quad \xi.\tape=A, \quad \xi.\pos=\h,\quad \xi.\curcell=\hc. 
+        \end{align}
+A point \( p \) is \df{clean} if  \( A(p)\ne\Bad \).
 A set of points is \df{clean} if it consists of clean points.
 
 We say that there is a \df{cell} at a position \( p\in\bbZ \) if the interval
@@ -1359,21 +1360,17 @@ the head position \( \h \), that is
  \begin{align*}
    A(p).\cDir=\sign(\h-p).
  \end{align*}
-If the head is within a clean interval, at a distance
-
 Whenever the interval \( \h+\lint{3\B}{3\B} \) is clean there must be a
 cell at some position \( \hc \) within this interval called the \df{current cell},
 with a body within \( 2\B \) from \( \h \).
 
 The array \( A \) is \( \Vacant \) everywhere but in finitely many positions.
-
 Let
     \begin{align*}
          \Configs_{M}
     \end{align*}
     denote the set of all possible configurations
     of a Turing machine \( M \).
-
 \end{definition}
 
 All the above definitions can clearly be localized to define a configuration
@@ -1426,11 +1423,11 @@ a fault occurs at time \( t \) when the head is at position \( p \).
   \begin{sloppypar}
     Let us be given a generalized Turing machine~\eqref{eq:gen-TM}.
     Consider a sequence \( \eta = (\eta(0), \eta(1), \dots) \) of configurations with
-    \( \eta(t) = \) \( (q(t), L(t), A(t), \h(t), \hc(t)) \), along with a noise set \( \Noise \).
+    \( \eta(t) = \) \( (q(t), A(\cdot, t), \h(t), \hc(t)) \), along with a noise set \( \Noise \).
     The \df{switching times} of this sequence 
-are the times when one of the following can change:
-the state, the position \( \hc(t) \) of the current cell, the level and the state of the current cell.
-(The level can also change at non-switching times.)
+are the times \( t \) when one of the following changes:
+the state, the content or position of the current cell.
+In other words, if the triple \( (q(t),A(\hc(t),t), \hc(t)) \) changes.
 The interval between two consecutive switching times is the \df{dwell period}.
 The pair
       \end{sloppypar}
@@ -1441,11 +1438,9 @@ The pair
         \begin{itemize}
             \item We have \( \abs{\h(t) - \h(t')} \le \abs{t' - t} \).
 
-            \item In two consecutive configurations, the level \( L(p,t) \) and content \( A(p,t) \) 
-              of the positions \( p \)
+            \item In two consecutive configurations, content \( A(p,t) \) of the positions \( p \)
               not in \( \h(t) + \lint{-\B}{\B} \), remains the same: for example
                   \( A(n,t+1) = A(n,t) \) for all \( n \notin \h(t) + \lint{-\B}{\B} \).
-\Pnote{Maybe for the level we will use \( \lint{-2\B}{2\B} \).}
             \item At each noise-free switching time the head is on the new current cell, that is
 \( \hc(t)=\h(t) \).
 In particular, when at a switching time a current cell becomes
@@ -1475,107 +1470,74 @@ imposes constraints on histories: those
 histories obeying the constraints will be called trajectories.
 
 \begin{definition}
-Suppose that the machine is in a state \( q \), with current cell \( x \), 
-with cell content \( a \), let \( (a',q',j) = \tau(a,q) \).
-We say that the new content of cell \( x \) (including when it dies),
-the direction of the new position \( y \) from \( x \),
-and the new state are \df{directed by the transition function} if
-the following holds.
-The new content of \( x \) is \( a' \), and
-the direction of \( y \) from \( x \) is \( j \).
-In the new state \( q \) we have \( q.\NonAdj=\false \)
-if \( j=0 \) or the new current cell is adjacent, and \( \true \) otherwise.  
+Suppose that at times \( t' \) before a switching time \( t \) but after 
+any previous switch,
+the machine is in a state \( q=q(t') \), with current cell \( x=\hc(t') \), 
+with cell content \( a=A(\hc(t'),\hc(t')) \).
+We say that the new state, the new content of cell \( x \) (including when it dies),
+and the direction of the new position \( y \) from \( x \)
+are \df{dictated by the transition function} if 
+\begin{align*}
+ (q(t),A(\hc(t),\hc(t)),\sign(\hc(t)-\hc(t'))) =  \tau(a,q),   
+ \end{align*}
+further \( q(t).\NonAdj=\true \) if and only if \( \hc(t)-\hc(t')\notin\{-B,0,B\} \).
+In other words, if \( (q',a',j)=\tau(q,a) \) then the new state is \( q' \),
+the new content of \( x \) is \( a' \), the direction of \( y \) from \( x \) is \( j \),
+and \( q'.\NonAdj=\true \) only if \( y \) is not equal or adjacent to \( x \).
 \end{definition}
 
 \begin{definition}[Trajectory]\label{def:traj}
 \begin{sloppypar}
    A history  \( (\eta, \Noise) \) of a generalized Turing 
 machine~\eqref{eq:gen-TM} with \(\eta(t) =\)
-\( (q(t), L(T), A(t), \h(t), \hc(t)) \)
+\( (q(t), A(t), \h(t), \hc(t)) \)
 is called a \df{trajectory} of \( M \) if the following conditions hold, during any 
 noise-free time interval.
-Denote 
-\begin{align*}
-     (a, q, p) &= (A(\hc(t),t), q(t),\hc(t)),
-\\ (a',q',j)   &= \tau(a,q).
- \end{align*}
   \end{sloppypar}
 \begin{description}
 
 \item[Transition Function]\label{i:def.traj.transition}
 Suppose that there is a switch, and the shortest interval
 containing the body of the current cell \( x \) and the
-new cell \( y \) is to at least a distance \( \cCDepth1 \B \) inside
-a clean interval, where
- \begin{align}\label{eq:cns.clean-depth-1}
-  \cCDepth1 =0.5.
- \end{align}
+new cell \( y \) is to at least a distance
+\( \B/2 \) 
+inside a clean interval.
 Then the new state, the cell content of \( x \) (including when it dies), and
-the direction of \( y \) from \( x \) are directed by the transition function.
+the direction of \( y \) from \( x \) are dictated by the transition function.
 If \( y \) did not exist before then it is adjacent to \( x \).
 Nothing else changes on the tape.
 
 Further the length of the dwell period is bounded by \( \Tu \).
 
-% \item[Escape]\label{i:escape}
-% For constant
-% \begin{align}\label{eq:cns.cleaning-unit}
-%    \cns{cleaning-unit}=6,
-%  \end{align}
-% during any noise-free time interval, the head does not remain longer than 
-% \( 2.1\cns{cleaning-unit}\Tu \) in any interval of size \( \cns{cleaning-unit}\B \).
-
+\item[Escape] \label{i:def.traj.escape}
+The head will leave any interval of size \( 3\CAtt B \) within time \( \CEsc\Tu \).
+ 
 \item[Spill Bound]\label{i:spill-bound}
-Recall the constant \( \gamma \) introduced in Definition~\ref{def:sparsity}.
-Consider a noise-free space-time rectangle 
-\( \lint{a}{b}\times \lint{u}{v} \) in which \( \lint{a}{b} \) is clean at time \( u \).
-Let 
-\begin{align*}
- s= (b-a)(\beta/\gamma).
- \end{align*}
-Then \( \lint{a+s}{b-s} \) is clean at time \( v \).
+For constant
+\begin{align}\label{eq:cns.spill}
+   \CSpill =4,
+ \end{align}
+during any noise-free time interval, 
+a clean space interval may shrink by at most \( \CSpill \B \).
 
-\item[Attack Cleaning] \label{i:def.traj.attack-from-outside}
+\item[Attack cleaning] \label{i:def.traj.attack-cleaning}
 For constant
 \begin{align}\label{eq:cns.clean-depth-2}
-   \cCDepth2 =3,
+   \CAtt =3,
  \end{align}
 and current cell \( x \), suppose that the interval
-\( \lint{x-\cCDepth2\B}{x+\B} \) is clean.
+\( \lint{x-\CAtt\B}{x+\B} \) is clean.
 Suppose further that the transition function directs the head right.
-Then by the time the head comes back to \( x-\cCDepth2 \B \), there is a cell
+Then by the time the head comes back to \( x-\CAtt \B \), there is a cell
 \( y\in \lint{x+\B}{x+2\B} \) such that the larger interval 
-\( \lint{x-\cCDepth2\B}{y+\B} \) is also clean.
+\( \lint{x-\CAtt\B}{y+\B} \) is also clean.
 
 A similar property is required when ``left'' and ``right'' are interchanged.
 
-\item[Dwell Cleaning] \label{i:def.traj.dwell-cleaning}
-For constants
-\begin{align}\label{eq:cns.clean}
-        \cCleanT =9,
-\quad   \cCleanS =\cCDepth2 +1,
- \end{align}
-suppose that during a noise-free time interval \( \clint{u}{v} \), 
-the head spends time \( \cCleanT \Tu \)  in a certain interval of size \( \B \)
-without leaving it.
-Then at time \( v \), the interval 
-\( h+\lint{\cCleanS \B}{\cCleanS\B}  \) around its position \( h \) is clean.
-
 \item[Pass Cleaning]\label{i:def.traj.pass-cleaning}
-Consider a noise-free time interval \( J \), and the space interval \( I \)
-of all positions of the head during \( J \).
-Let \( p(t) \) be the head position at time \( t \).
-Suppose \( L(p(t))<\lambda \) for all \( t \) in \( J \)/
-For appropriate constants 
-\begin{align*}
-   0<\cDecr<\cIncr,
- \end{align*}
-the score\( \score(I) \) increases by at least 
-\begin{align*}
- \cIncr(1+2^{-\lambda})|I|-\cDecr\B .
- \end{align*}
-The subtracted term needs to be present only if the head starts but does not end
-on a clean position.
+If the head passes  \( \pi \) times  an interval \( \lint{a}{b} \) then
+the subinterval \( \lint{a+\CSpill B}{b-\CSpill B} \) becomes clean.
+
 \end{description}
 
 \end{definition}
@@ -1583,19 +1545,11 @@ on a clean position.
 The above definition can also clearly be localized to some space-time
 rectangle just as the definition of history was.
 
-The Attack property says essentially that if the head moves out on the right end
+The Attack Cleaning property says essentially that if the head moves out on the right end
 of a clean interval then next time it comes in, it must extend the right end of the interval 
-by at least \( \B \) (while temporarily possibly withdrawing it by \( \cSpill\B \)).
-The Dwell Cleaning property says essentially 
-that if the head spends a certain amount of time in a small area \( J \)
-then it either must clean out an interval of certain size around itself or move into
-such an interval that is already clean.
-The Pass Cleaning property is similar, but it does not require spending a certain amount of
-time in \( J \), rather it requires the head to pass across \( J \) a certain number of times.
-It will be used in the proof of the Spill Bound property of simulated trajectories.
-
-The transition function we are going to define will keep the head in a zigzag motion;
-these properties will enable it then to clean out large areas.
+by at least \( \B \) (while temporarily possibly withdrawing it by \( \CSpill\B \)).
+The Escape property imposes a certain restlessness condition on the head movement --
+even in clean conditions, thereby imposing a (mild) condition on the transition function.
 
 
 \subsection{Simulation}
@@ -1605,38 +1559,36 @@ a correspondence between configurations of
 two machines which remains preserved during the computation.
 In the formal definition, this correspondence will essentially be a code
 \( \varphi=(\varphi_{*},\varphi^{*}) \).
-As a matter of fact, the \emph{decoding} part of the code is the more important.
-Indeed, we want to say that machine \( M_{1} \) simulates machine \( M_{2} \) via
-simulation \( \phi \) if whenever \( (\eta, \Noise) \) is a trajectory of \( M_{1} \) 
+The \emph{decoding} part of the code is the more important.
+We want to say that machine \( M_{1} \) simulates machine \( M_{2} \) via
+simulation \( \varphi \) if whenever \( (\eta, \Noise) \) is a trajectory of \( M_{1} \) 
 then \( (\eta^{*},\Noise^{*}) \),
-defined by \( \eta^{*}(\cdot,t)=\phi^{*}(\eta(\cdot,t)) \), is a
+defined by \( \eta^{*}(\cdot,t)=\varphi^{*}(\eta(\cdot,t)) \), is a
 trajectory of \( M_{1} \).
 Here, \( \Noise^{*} \) is computed by an appropriate mapping.
 
 We will make, however, two refinements.
-First, it is not important to require this for arbitrary trajectories \( \eta \) of \( M_{1} \):
-it is sufficient to consider those \( \eta \) for which the initial configuration
+First, we may weaken the condition by requiring this only for
+those \( \eta \) for which the initial configuration
  \( \eta(\cdot,0) \) has been obtained by encoding, that is it has the form 
 \( \eta(\cdot,0)=\varphi_{*}(\xi) \).
-So the encoding function comes in, after all.
+The encoding function gets a role this way in the definition, after all.
 
 But there is a more complex refinement.
 When a colony is in transition between encoding one simulated value to encoding another one,
 there may be times when the value represented by it before the transition
 is already not decodable from it, and the value after the transition is not yet decodable from it.
-For this reason, it is useful to define a notion of simulation decoding \( \Phi^{*} \)
-as a mapping between \emph{histories}, not just configurations.
-We will not abuse this notion, but it will allow us a certain amount of looking back:
-the map \( \Phi^{*} \) can use the configuration at the beginning of the work period for decoding.
+So we will define simulation decoding as a mapping \( \Phi^{*} \)
+between \emph{histories}, not just configurations.
+This allows a certain amount of ``looking back'':
+the map \( \Phi^{*} \) can depend on the configurations at the beginning of the ``work period''.
 
-We will also give another function to the mapping \( \Phi^{*} \).
+It is the mapping \( \Phi^{*} \) that will also define \( \Noise^{*} \).
 A history was defined above in Definition~\ref{def:history} 
-as a pair \( (\eta,\Noise) \),
-so \( \Phi^{*} \) also computes a new noise set:
+as a pair \( (\eta,\Noise) \), so we will have
 \( \Phi^{*}(\eta,\Noise)=(\eta^{*},\Noise^{*}) \).
-The meaning of this new noise set will be, just as in Definition~\ref{def:sparsity} of sparsity,
-that 
-\( \Noise^{*} \) will be obtained by deleting some small isolated parts of \( \Noise \) that the 
+The meaning of \( \Noise^{*} \) will be, just as in Definition~\ref{def:sparsity} of sparsity:
+it will be obtained from \( \Noise \) by deleting those small isolated parts that the 
 error-correcting simulation can deal with.
 
 \begin{definition}[Simulation] \label{def:simulation-central}
@@ -1669,57 +1621,56 @@ We say that \( M_{1} \) \df{simulates} \( M_{2} \) if there is a simulation
 Recall the notion of a code in Definition~\ref{def:codes}.
 
 \begin{definition}[Code on configurations]\label{def:configuration-code}
-Consider two generalized Turing machines \( M_{1},M_{2} \) with the corresponding
+\begin{sloppypar}
+ Consider two generalized Turing machines \( M_{1},M_{2} \) with the corresponding
 state spaces, alphabets and transition functions, and an integer \( Q\ge 1 \).
 We require
-\begin{align}\label{eq:B_2-B_1-Q}
+\begin{align}\label{eq:B_{2}-B_{1}-Q}
   \B_{2} = Q \B_{1}.
 \end{align}
 Assume that a block code
-\begin{align*}
+\(
    \psi_{*}:\Sigma_{2}\times(\Gamma_{2}\cup\{\emptyset\})\to\Sigma_{1}^{Q}
- \end{align*}
+\)
 is given, with an appropriate decoding function, \( \psi^{*} \).
 With \( \pair{a}{q}\in\Sigma_{2}\times(\Gamma_{2}\cup\{\emptyset\}) \),
 symbol \( a \) is interpreted the content of some tape square.
 The value \( q \) is the state of \( M_{2} \) provided the head is observing this square,
 and \( \emptyset \) if it is not.
+For all \( a,q \), if \( \psi_{*}(a,q) = (b_{1},\dots,b_{Q}) \) then we require
+\( b_{i}.\cDir=a.\cDir \) for each \( i \).
+\end{sloppypar}
 
-Block code \( (\psi_{*},\psi^{*}) \) gives rise to a 
-\df{code on configurations}, that is a pair of functions
+This block code gives rise to a \df{code on configurations}, that is a pair of functions
     \begin{align*}
-        \varphi_{*} :\Configs_{M_2} \to \Configs_{M_1},
+        \varphi_{*} :\Configs_{M_{2}} \to \Configs_{M_{1}},
         \quad
-        \varphi^{*}:\Configs_{M_1} \to \Configs_{M_2}
+        \varphi^{*}:\Configs_{M_{1}} \to \Configs_{M_{2}}
     \end{align*}
-    that encodes configurations of \( M_2 \) into configurations of \( M_{1} \).
-
-Let \( \xi \) be a configuration of \( M_2 \).
-We set \( \varphi_*(\xi).\pos = \xi.\pos \), \(\varphi_{*}.\state=  \) 
-the starting state of \( M_{1} \),
+    that encodes some (initial) configurations \( \xi \) of \( M_{2} \) into configurations of \( M_{1} \).
+Let \( \xi \) be a configuration of \( M_{2} \) with \( \xi.\curcell=\xi.\pos \), \( \xi.\state = q_{\start} \).
+We set \( \varphi_{*}(\xi).\pos = \varphi_{*}.\curcell= \xi.\pos \), \(\varphi_{*}.\state=q^{*}_{\start}  \),
+the starting state of \( M_{1} \), and
 \begin{align*}
- \varphi_*(\xi).\tape[i\B_2, \dots, (i+1)\B_2 - \B_1] = \psi_*(\xi.\tape[i], s)
+ \varphi_{*}(\xi).\tape(i\B_{2}, \dots, (i+1)\B_{2} - \B_{1}) = \psi_{*}(\xi.\tape(i), s)
  \end{align*}
-where \( s=\xi.\state \) if \( i = \xi.\pos \), and \( \emptyset \) otherwise, with
-a slight \emph{modification}: 
-\( \varphi_{*}(\xi).\tape[i].\cDir \), is set to point towards the head \( \xi.\pos \).
-
+where \( s=\xi.\state \) if \( i = \xi.\pos \), and \( \emptyset \) otherwise.
 A configuration \( \xi \) is called a \df{code configuration} if 
 it has the form \( \xi=\varphi_{*}(\zeta) \).
  \end{definition}
 
 
 \begin{definition}[Hierarchical code]\label{def:hierarchical-code}
-For \( k\ge 1 \), let \( \Sigma_k \) be an alphabet, \( \Gamma_k \) be
-a set of states of a generalized Turing machine \( M_k \).
-Let \( Q_k>0 \) be an integer colony size, let \( \varphi_k \)
+For \( k\ge 1 \), let \( \Sigma_{k} \) be an alphabet, \( \Gamma_{k} \) be
+a set of states of a generalized Turing machine \( M_{k} \).
+Let \( Q_{k}>0 \) be an integer colony size, let \( \varphi_{k} \)
 be a code on configurations defined by a block code
   \begin{align*}
-       \psi_k: \Sigma_{k+1}\times(\Gamma_{k+1}\cup\{\emptyset\})
-       \rightarrow \Sigma_k^{Q_k}
+       \psi_{k}: \Sigma_{k+1}\times(\Gamma_{k+1}\cup\{\emptyset\})
+       \rightarrow \Sigma_{k}^{Q_{k}}
   \end{align*}
 as in Definition~\ref{def:configuration-code}.
-The sequence of triples \( (\Sigma_k,\Gamma_k,  \varphi_k) \), (\( k\ge 1) \),  is
+The sequence of triples \( (\Sigma_{k},\Gamma_{k},  \varphi_{k}) \), (\( k\ge 1) \),  is
 called a \df{hierarchical code}.
 For the given hierarchical code, the configuration \( \xi^{1} \) of \( M_{1} \)
 is called a \df{hierarchical code configuration} if a sequence
@@ -1730,11 +1681,11 @@ of configurations \( \xi^{2},\xi^{3},\dots \) of \( M_{2},M_{3},\dots \) exists 
 for all \( k \).
 (Of course, then whole sequence is determined by \( \xi^{1} \).)
 
-Let \( M_1 \), \( M_2 \), \dots, be a sequence of generalized Turing machines,
+Let \( M_{1} \), \( M_{2} \), \( \dots\) be a sequence of generalized Turing machines,
 let \( \varphi_{1} \), \( \varphi_{2} \) , \(\dots \) be a hierarchical code for this sequence,
 let \( \xi^{1} \) be a hierarchical code configuration for it, where \( \xi^{k} \) is an
 initial configuration of \( M_{k} \) for each \( k \).
-Let further be a sequence of mappings \( \Phi_{1} \), \( \Phi_{2} \), \( \dots \) be
+Let further be a sequence of mappings \( \Phi^{*}_{1} \), \( \Phi^{*}_{2} \), \( \dots \) be
 given such that for each \( k \), the pair \( (\varphi_{k*},\Phi_{k}^{*}) \),
 is a simulation of \( M_{k+1} \) by \( M_{k} \).
 Such an object is called a \df{tower}.
@@ -1761,40 +1712,39 @@ The parameter \( \U=\Tu^{*}/\Tu \) is defined to be
 twice the maximum number of steps that any simulation work period can take.
 \end{definition}
 
-Machine \( M \) will be able to perform the simulation even if the noise
-in which it operates is \( (\beta\pair{\B}{\Tu}, \pair{\B^{*}}{\Tu^{*}}) \)-sparse.
+Machine \( M \) will perform the simulation even if the noise
+in which it operates is \( (\beta\pair{\B}{\Tu}, \gamma\pair{\B^{*}}{\Tu^{*}}) \)-sparse.
 By the above definitions, 
 sparsity means that noise comes in \df{bursts} that are confined to
 rectangles of size \( \beta\pair{\B}{\Tu} \) (affecting at most \( \beta \) consecutive tape cells), 
 and are separated from each other in time in such a way that there is at most one burst
-in any two neighboring work period.
+in any \( \gamma \) neighboring work periods.
+A design goal for the program the following:
 
-Along the way, we will try to give as much motivation as possible, including
-some definitions (like health) that will help in the proof later.
+\begin{goal}[Local correction]\label{goal:locality}
+Correct a burst within space and time comparable to its size, and much smaller than the 
+size of a colony work period.
+\end{goal}
+
 There are some difficulties faced by our desire for a structured presentation:
-We cannot analyze unconditionally
-the error-correcting performance of a part of the  program without seeing first 
-the whole.
-Indeed, the noise can bring the machine into 
-some state corresponding to an arbitrary part of the program.
+In order to analyze the error-correcting performance even of one a part of the  program,
+we may need to see the whole, since the noise can bring the machine into 
+some state corresponding to an arbitrary other part.
 
-We mentioned modes in Section~\ref{sec:language}.
+We mentioned \df{modes} in Section~\ref{sec:language}.
 Ordinary simulation proceeds in the normal mode. 
 To see whether the basic structure
 supporting this process is broken somewhere, each step will check 
 whether the present state is \df{coordinated}
 with the currently observed cell symbol (see Definition~\ref{def:coordinated}).
-If not then the rule 
-\begin{align*}
- \rHeal
- \end{align*}
-takes the state into the healing mode.
+If not then the state jumps into the \df{healing} mode.
 We will also say that \df{alarm} will be called.
-On the other hand, the state enters into rebuilding mode on some indications that
+On the other hand, the state enters into \df{rebuilding} mode on some indications that
 healing fails.
 The crudest outline of the main rule of machine \( M \) is given in
 Rule~\ref{alg:main1}; the \( \Comp \) and \( \Transfer \) rules will be
 outlined below.
+(Rebuilding may be triggered inside the \( \rHeal \) rule.)
 
 \begin{algorule}\caption{\textbf{Main rule}\label{alg:main1}}
 
@@ -1815,7 +1765,7 @@ The global structure of a work period is this:
 \item[Computation phase] 
 The new simulated state and direction (called the drift) is computed.
 Then the ``meaningfulness'' of the result is checked.
-During this phase, the head sweeps, roughly, back-and-forth between
+During this phase the head sweeps, roughly, back-and-forth between
 the ends of the base colony.
 
 \item[Transfer phase]
@@ -1826,8 +1776,8 @@ left end of the source colony and the right end of the target colony.
 There may be an area between the  two colonies to bridge over.
 \end{description}
 
-The timing is controlled by a field \( \Sweep \) of the state and a field \( \cSweep \)  of the
-cell state.
+The timing is controlled by a field \( \Sweep \) of the state counting the sweeps,
+and a corresponding field \( \cSweep \)  of the cell state.
 We can read off the direction of the sweep \( s \) using the formula
      \begin{align}\label{eq:sweep-dir}
        \dir(s)=(-1)^{s + 1}.
@@ -1837,7 +1787,7 @@ Some issues complicate the head movement, even in the absence of faults.
 \subsubsection{Zigging}\label{sec:zigging}
 
 A burst could turn the head back in the middle of its sweep.
-To detect such an event promtply, 
+To detect such an event promptly (in accordance with Goal~\ref{goal:locality}),
 the sweeping will be complicated by a \df{zigzag} movement.
 On its backward zig, the head can check whether the structure of 
 last few cells is correct.
@@ -1857,7 +1807,7 @@ it is allowed to turn back (see Section~\ref{sec:feathering}).
 As we will see this will be within \( \F \) steps.
 It will move backwards \( >\Z \) steps to the first position with \( \Addr\equiv \tZig\pmod{\F} \).
 We call \df{front} the farthest position of a cell that already was reached before the backward zig.
-The fields,
+The fields
 \begin{align*}
 \ZigDir\in\{-1,1\}, \ZigDepth\in\lint{0}{2\Z}
  \end{align*}
@@ -1866,17 +1816,17 @@ At the front, we have \( \ZigDepth=0 \) and \( \ZigDir=1 \).
 When the front reaches an appropriate turning point for zigging (see below),
 then we set \( \ZigDir\gets -1 \), and the head will be moving backwards
 from the front, \df{descending} into the zig, and increasing \( \ZigDepth \).
-When \( \ZigDepth \) reaches \( \Z \) (or an allowed turning point with \( \ZigDepth>\Z \), see below), 
+When \( \ZigDepth \) reaches an allowed turning point with \( \ZigDepth>\Z \), 
 we set \( \ZigDir\gets 1 \),
-the head turns towards the front and starts \df{ascending} from the zig, while decreasing \( \ZigDepth \).
+the head turns towards the front and starts \df{ascending}, while decreasing \( \ZigDepth \).
 % There is no corresponding field \( \cZigDepth \) on the tape: though it would seem provide
 % some check against some faults, it would create more of its own problems.
 
 Normally the head should reach the front exactly when \( \ZigDepth \) reaches 0.
-However, if it reaches the front earlier, then we just set \( \ZigDepth\gets 0 \).
-If it does not reach the front by this time, then the head will just keep marching forward, 
+However, if it reaches the front earlier (for whatever cause), then we just set \( \ZigDepth\gets 0 \).
+If it does not reach the front by this time (for whatever cause), then the head will just keep marching forward, 
 keeping \( \ZigDepth=0 \) until the front is reached.
-\Pnote{Do we still have an example now that zigging begins only well inside?}
+\\\Pnote{Do we still have an example now that zigging begins only well inside?}
 
 % The example below shows that it is better not to call alarm, at least in this latter case.
 
@@ -1960,7 +1910,7 @@ Consider the following scenario.
 
 \begin{enumerate}
 \item\label{i:leave-dirt}
-At some time, at a last turn at the end of a right sweep on the right end of
+After the last turn at the end of a right sweep on the right end of
 colony \( C(x) \), at the bottom of the zig, say in
 position \( y = x+(Q+Z)\B \) if the zig goes outside the colony, a burst creates some dirt.
 Then the simulation dictates the head to leave \( C(x) \) on the left.
@@ -1980,11 +1930,11 @@ After \( \Z \) repetitions of this, the zig does not return already.
 \end{enumerate}
 This way, a number of cleverly placed distant bursts can trigger an effect on the
 next level.
-
+(A probability model more sophisticated than sparsity might deal with this problem, but we did not find it.)
 \end{example}
 
 The sequence of Example~\ref{xmp:feather-need} would not occur if
-our cellular automata had the following property:
+our machines had the following property:
 
 \begin{definition}[Feathering]\label{def:feathering}
 A Turing machine execution is said to have the \df{feathering} property if the following holds.
@@ -1999,13 +1949,12 @@ device: let the cell state have a field called
    \cCanTurn\in\{ \false,\true \}.
  \end{align*}
 We will allow the head to turn \emph{only} in a cell with \( \cCanTurn=\true \).
-Whenever a head turns at a cell, it sets this value to 0; if  it passes the cell, the value 
-is reset to 1.
+Whenever a head turns at a cell, it sets this value to \( \false \); if  it passes the cell, the value 
+is reset to \( \true \).
 For example, if the head is moving right and decides to turn left then
 it can do that at the first cell with \( \cCanTurn=\true \).
-Of course, a computation must then be reorganized in a way that this device
-does not prevent achieving its objectives.
-The following example suggests that such reorganization need not be too costly.
+The following example suggests that any computation can be reorganized to accomodate feathering,
+without too much extra cost.
 
 \begin{example}[Feathering]\label{xmp:feathering}
 Suppose that, arriving from the left at position 1, the head decides to turn left again.
@@ -2015,23 +1964,23 @@ In repeated instances, it can then turn back at the following sequence of positi
  \end{align*}
 \end{example}
 
-This example shows that the feathering constraint does not divert the head
-too much.
+So the feathering constraint does not divert the head too much.
 If in the original execution the head turned back \( t \) consecutive
 times to the left from position 0, then now it will 
 turn back from somewhere in a zone of size \( O(\log t) \) to the right of 0 in 
 each of these times.
-It also shows that the exact turning point at the end of each sweep
-can be computed from the sweep number itself.
+We also see here that the exact turning point at the end of each sweep
+could be computed from the sweep number.
 
 The simulated Turing machine will also have the feathering property,
-therefore it will not happen that the simulation turns back repeatedly from a colony.
-Note that it may still happen that at a point where it decided to turn, 
+therefore it will not happen that the simulation turns back repeatedly 
+from the same colony without passing it in the meantime.
+It may still happen that at a point where it decided to turn, 
 the head encounters a long run of cells with \( \cCanTurn=\false \).
 But this indicates the absence of a clean interval comparable with the size of this 
-run -- and the slide over such a run can be attributed to this.
+run -- and such cases will have to be dealt with in the context of error correction.
 
-Let us argue, informally, that one does 
+Let us argue, informally (without replacing any later, formal argument), that one does 
 not have to consider more than 3 islands in any area of size \( Q\B \).
 We assume that the simulated program obeys the
 feathering condition: so if, say, the head comes from the left neighbor colony
@@ -2043,8 +1992,8 @@ the previous time it visited the colony, it has passed it over from right to lef
 performs a work period and then passes to the right.
 In this case, if no new noise burst occurs then we expect that
 all islands found in \( C \) will be eliminated.
-On the other hand, a new island \( I_{1} \) can be deposited.
-We can also assume that there is no island on the left of  \( I_{1} \) 
+On the other hand, a new island \( I_{1} \) can be deposited (in the last pass).
+We can assume that there is no island on the left of  \( I_{1} \) 
 within distance \( Q\B \), since the noise burst
 causing it would have been too close to the noise burst causing \( I_{1} \).
 
@@ -2053,7 +2002,7 @@ If it later continues to the left, then the situation is similar to the above.
 Island \( I_{1} \) will be eliminated, but a new one may be deposited.
 But what if the head turns back left at the end of the work period?
 If \( I_{1} \) is close to the left end of \( C \), then due to the feathering
-property, the head may never reach it sufficiently to eliminate it; moreover,
+construction, the head may never reach it to eliminate it; moreover,
 it may add a new island \( I_{2} \) on the right of \( I_{1} \).
 We can also assume, similarly to the above, 
 that there is no island on the right of  \( I_{2} \) within distance \( Q\B \).
@@ -2068,37 +2017,39 @@ that there is no island on the right of  \( I_{3} \) within distance \( Q\B \).
 \end{example}
 
 Though the \( \cCanTurn \) field assures feathering, we must make sure by organization
-that it is not preventing the turns that are needed.
-For this reason, some further regulations will be introduced.
-We will make use of a parameter \( \E \) introduced in~\eqref{eq:expansion} 
+that it is not preventing any needed turns.
+For this sake, some further regulations will be introduced.
+We will make use of a parameter \( \E \) introduced in Definition~\ref{def:substantial}
 in connection with the healing procedure.
 It is a multiple of \( \F \).
 \begin{description}
   \item[Zigging in normal mode]
 Above, we made sure that the points for turning from left to right during simulation
 introduced at the bottom of a zig when sweeping right have \( \Addr\equiv \tZig\pmod{\F} \).
-This makes sure that during left sweep, the head will always find a place within \( \F \) cells
-with \( \cCanTurn=\true \).
+This way, during left sweep, the head will always find a place within any interval of
+\( \F \) cells with \( \cCanTurn=\true \); indeed, the zigging turns during the right sweep
+happened only in one cell in any interval of size \( \F \).
 
   \item[Sweeping in normal mode]
-Recall from~\eqref{eq:V} that the colony work period consists of at most \( \V \) sweeps;
-we leave an area of
+Recall from~\eqref{eq:V} that the colony work period consists of at most \( \V \) sweeps,
+and according to Definition~\ref{def:interior}, an area of
 \begin{align}\label{eq:PadLenDef}
  \PadLen = \E\cei{\log\V}+\Z % Change eq:PadLen?
- \end{align} cells on both ends of the colony free of simulation information,
-just assigned to feathering.
+ \end{align} 
+cells on both ends of the colony are left free of simulation information -- they can be used for
+feathering.
 Suppose that the head is to be turned back at ``the right end''.
 Then at a distance \( \PadLen \) from the right end, 
 it starts looking for a place to turn;
 it will actually turn back at the first position coming after this
 with \( \Addr\equiv \tEnd \pmod{\E} \) and \( \cCanTurn=\true \).
-This will still leave enough time to find a turning point with \( \Addr<Q \), 
+This will still allow to find a turning point with \( \Addr<Q \), 
 as remarked after Example~\ref{xmp:feathering}.
 
 Note that when the head changes direction at the end of a sweep,
 it has \( \Addr\equiv \tEnd\pmod{\E} \); in other words, the
 possible turning points at the colony ends are separated from each other by the
-larger distance \( \E \) which is a multiple of \( \F \). 
+larger distance \( \E \), a multiple of \( \F \). 
 The rationale for this will become clear only when analyzing the boundary of a large
 clean and a large dirty area.
 
@@ -2109,7 +2060,7 @@ In case the cell in question has an address (is not a stem cell) then
 it will need to have \( \Addr\equiv \pm\tHeal\pmod{\F} \) 
 for healing turns and \( \equiv \pm\tRebuild \) for rebuilding turns.
 
-\item[Zigging while healing]
+\item[Zigging while rebuilding]
 Rebuilding mode will have its own internal addresses: as with healing (see later),
 to the left of the rebuilding front, the addresses are counted from the left end, and to the right
 of the head from the right end.
@@ -2162,7 +2113,7 @@ and \( O(\log Q) \) for simulation and rebuilding.
 \subsection{Computation phase}\label{sec:computation-phase}
 
 As shown in Rule~\ref{alg:main1} describing a top-down view of the simulation,
-the first phase of the simulation computes new values for the state of the 
+the first phase computes new values for the state of the 
 simulated machine \( M^{*} \)
 represented on track \( \cState \), the direction of the move of the head of  \( M^{*} \)
 (represented in the \( \cDrift \) field of each cell of the colony of \( M \)), and
@@ -2173,7 +2124,7 @@ Recall Definition~\ref{def:err-code}.
 The rule \( \Comp \) will rely on a certain fixed \( (\beta,3) \) burst-error-correcting
 code, moreover
 it expects that each of the words found on the \( \cState \) and \( \cInfo \) tracks
-is 2-\df{compliant}.  % Probably \( (\beta,2) \) would be sufficient.
+is 2-compliant.  % Probably \( (\beta,2) \) would be sufficient.
 
 The rule \( \rul{ComplianceCheck} \) checks whether a word is \( 2 \)-compliant.
 
@@ -2197,24 +2148,24 @@ In more detail:
             decode it into string \( \tilde g=\upsilon^{*}(g) \)
             (this should be the current state of the simulated machine), and
             store it on some auxiliary track in the base colony.
-            Do this by simulating the universal machine on the \( \cProg \) track,
+            Do this by simulating the universal machine on the \( \cProg \) track:
             \( \tilde g = \Un(p_{\decode}, g) \).
 
             Proceed similarly with the string \( a \) found on the \( \cInfo \)
-            track of the base colony, in the address interval \( J \), 
-            to get \( \tilde a = \upsilon^{*}(a) \)
+            track of the base colony to get \( \tilde a = \upsilon^{*}(a) \)
             (this should be the observed tape symbol of the simulated machine).
-
-            Perform all this computation in a way using information from outside
-            the address interval \( J \), nor on any 
-            part of the state brought back into this interval other than the address,
-            sweep and zigging fields.
+            % What is this out-commented part saying?
+           % in the address interval \( J \), 
+          
+            % Perform all this computation in a way using no information from outside
+            % the address interval \( J \), nor on any 
+            % part of the state brought back into this interval other than the address,
+            % sweep and zigging fields.
 
           \item \label{i:comp.trans}
            Compute the value \( (a',g',d)=\tau^{*}(\tilde a, \tilde g) \).
-Since the neither the table nor any program of the transition 
-function \( \tau^{*} \) is written explicitly anywhere, this ``self-simulation'' step needs
-some elaboration, see Section~\ref{sec:self-simulation}.
+           Since the program of the transition function \( \tau^{*} \) is not written explicitly anywhere, 
+           this ``self-simulation'' step needs some elaboration, see Section~\ref{sec:self-simulation}.
 
             \item\label{i:comp.write}
               Write the encoded new state \( \upsilon_{*}(g') \) onto the
@@ -2236,16 +2187,16 @@ some elaboration, see Section~\ref{sec:self-simulation}.
       %   one repetition will be burst-free):  % Why twice?
             Sweeping through the base colony,
             at each cell compute the majority of \( \cHold[j].\Info \), \( j=1,\dots,3 \),
-            and write into the field \( \cInfo \).
+            and write it into the field \( \cInfo \).
             Proceed similarly, and simultaneously, with \( \cState \) and \( \Drift \).
 
        \item       For \( j=1,\dots,3 \), call \( \rul{ComplianceCheck} \) on the \( \cState \)
 and \( \cInfo \) tracks, and
 write the resulting bit into the \( \fld{Compliant}_{j} \) track.
 
-Then pass through the colony and for turn each cell in which the majority 
+Then pass through the colony and turn each cell in which the majority 
 of \( \fld{Compliant}_{j} \), \( j=1,\dots,3 \) is false, into a stem cell
--- thus destroying the colony.
+(thus destroying the colony if the result was false everywhere).
 
   \end{enumerate}
 
@@ -2253,13 +2204,9 @@ It can be arranged -- and we assume so -- that the total number of sweeps of thi
 phase, and thus the starting sweep number of the next phase,
 depends only on \( Q \).
 
-\subsection{Self-simulation}\label{sec:self-simulation}
+\subsection{Forced self-simulation}\label{sec:self-simulation}
 
-In describing the rule of the computation phase,
-in the step~\ref{i:comp.trans} of Section~\ref{sec:computation-phase},
-we said that machine \( M \) writes the code \( p^{*} \)
-of \( M^{*} \) onto the \( \cProg \) track, without saying how this is done.
-Here we give the details.
+Step~\ref{i:comp.trans} of Section~\ref{sec:computation-phase} needs elaboration.
 
 \subsubsection{New primitives}
 
@@ -2286,7 +2233,7 @@ If one writes out all details of the construction of the present paper, this str
 becomes completely explicit, an absolute constant.
 But in the reasoning below, we treat it as a parameter.
 
-There is a couple of \df{extra primitives} in the rules.
+Let us provide a couple of \df{extra primitives} to the rules.
 First, they have access to the parameter \( k \) of machine \( M=M_{k} \), 
 to define the transition function
  \begin{align*}
@@ -2294,7 +2241,7 @@ to define the transition function
  \end{align*}
 The other, more important, new primitive is a special instruction
  \begin{align*}
-   \WriteRulesBit
+   \WriteProgramBit
  \end{align*}
 in the rules.
 When called, this instruction makes the assignment \( \cWork\gets R(\Index) \).
@@ -2323,7 +2270,7 @@ The computation on \( \Un \) takes time \( O(\abs{R}\cdot (\abs{a}+\abs{q})) \).
 The proof parses and implements the rules in the string \( R \); each of these rules
 checks and writes a constant number of fields.
 
-Implementing the \( \WriteRulesBit \) instruction is straightforward:
+Implementing the \( \WriteProgramBit \) instruction is straightforward:
 Machine \( \Un \) determines the number \( i \)
 represented by the simulated \( \Index \) field, 
 looks up \( R(i) \) in \( R \), and writes it into the simulated \( \cWork \) field.
@@ -2331,8 +2278,8 @@ looks up \( R(i) \) in \( R \), and writes it into the simulated \( \cWork \) fi
 Note that there is no circularity in these definitions:
   \begin{itemize}
   \item 
-The instruction \( \WriteRulesBit \) is written \emph{literally}
-in \( R \) in the appropriate place, as ``\(\WriteRulesBit \)''.
+The instruction \( \WriteProgramBit \) is written \emph{literally}
+in \( R \) in the appropriate place, as ``\(\WriteProgramBit \)''.
 The string \( R \) is \emph{not part} of the rules (that is of itself).  
   \item On the other hand, the computation in
 \( \Un(\Interpr,R,0^{k},a, q) \) 
@@ -2351,7 +2298,7 @@ We give more detail now of how to implement this step:
 \begin{enumerate}
 \item Onto the \( \cWork \) track, write the string \( R \).
 To do this, for \( \Index \) running from 1 to \( \abs{R} \), 
-execute the instruction \( \WriteRulesBit \) and move right.
+execute the instruction \( \WriteProgramBit \) and move right.
 Now, on the \( \cWork  \) track, replace it with \( \ang{\Interpr,0^{k+1},R,a,q} \).
 Here, string \( \Interpr \) is a constant, so it is just hardwired.
 String \( R \) already has been made available.
@@ -2364,7 +2311,7 @@ as needed.
 \end{sloppypar}
 \end{enumerate}
 
-This achieves the forced simulation.
+This achieves the forced self-simulation.
 Note what we achieved:
 
 \begin{itemize}
@@ -2379,7 +2326,7 @@ If \( (a',q',d)=\tau_{R,1}(a,q) \), then
 \end{align*}
 whenever \( q.\Index \) represents a number between 1 and \( \abs{R} \),
 and the values \( q.\Sweep \), \( q.\Addr \) satisfy the conditions
-under which the instruction \( \WriteRulesBit \) is 
+under which the instruction \( \WriteProgramBit \) is 
 called in the rules (written in \( R \)).
       \end{sloppypar}
 
@@ -2610,10 +2557,18 @@ of fields.
 Below we outline the necessary relations among them 
 allowing the identification and correction of local damage.
 
-A configuration with local structural integrity will be called healthy.
-No cell in such a configuration should have marks of a healing or
+A configuration with local structural integrity will be called \df{healthy}.
+\begin{sloppypar}
+\begin{remark}
+In all discussions of the health of a configuration \( \xi=(q,A,\h,\hc,) \), we can ignore
+the current cell position \( \hc=\xi.\curcell \), since at all switching times 
+it agrees with \( \h=\xi.\pos \).
+\end{remark}
+  \end{sloppypar}
+
+No cell in a healthy configuration should have marks of a healing or
 rebuild procedure.
-Larger bursts introduce new, non-local anomalies: these can only be recognized
+Larger bursts may also introduce new, non-local anomalies: these can only be recognized
 once the local anomalies have been corrected.
 Cells of a healthy configuration are grouped into gapless colonies, and 
 a few transitional segments described below.
@@ -2645,13 +2600,13 @@ stem cells.
 cells, with addresses growing continuously to the right, with 
 the same value of  \( \cDrift \) and \( \Sweep \).
 
-\item[End segment] A sequence of adjacent neighbor cells, with addresses growing
-continuously to the right, outside the interior any colony, 
+\item[End segment] 
+A sequence of adjacent neighbor cells, with addresses growing
+continuously to the right, outside the interior of any colony (as in Definition~\ref{def:interior}), 
 in direction \( \delta \).
 The \( \Sweep \) value is decreasing (by steps of size \( \ge 0 \))  
-towards this colony end (since the feathering property of the program,
-see Section~\ref{sec:feathering}, may turn back a sweep
-before it reaches the colony end).
+towards this colony end (since the feathering property of the program
+(Section~\ref{sec:feathering}) may turn back a sweep before it reaches the colony end).
 The last sweep value can even be \( \Last(-\delta) \), which was the sweep value
 at the time the head first entered the colony from direction \( \delta \).
 There are no requirements concerning \( \cDrift \).
@@ -2673,7 +2628,7 @@ A boundary is called \df{rigid} if its address is the end
 address of a colony in the same direction.
 
 A \df{boundary pair} 
-is a right boundary followed by a left boundary that is at distance \( <\B \) from it.
+is a right boundary followed by a left boundary at distance \( <\B \).
 It is a \df{hole} if the distance is positive.
 It is \df{rigid} if at least one of its elements is.
 \end{definition}
@@ -2714,8 +2669,8 @@ We require that mode be normal, and the following conditions hold, with \( \delt
 \item[Normality]
   No cell in \( A \) is marked for healing or rebuilding (recall the notion of marking from
 Section~\ref{sec:language}):
-  that is, for every \( x \in A \), \( \cHeal.\Sweep(x) = 0 \) and
-  \( \cRebd.\Sweep(x) = 0 \)  (see the definition of marking after~\eqref{eq:Heal}).
+  that is, for every \( x \in A \), \( \Heal.\cSweep(x) = 0 \) and
+  \( \Rebuild.\cSweep(x) = 0 \)  (see the definition of marking after~\eqref{eq:Heal}).
 
 \item[Segments]
   The \df{base} is defined by counting back from \( \Addr \).
@@ -2866,12 +2821,12 @@ continuing the count-back.
 % %            Suppose that the
 % %            head is inside the extended base colony.
 % %            Then,
-% %            the \( \E \cdot \trail((s-1)_2)  \) cells
+% %            the \( \E \cdot \trail((s-1)_{2})  \) cells
 % %            next to it %the extended base colony
 % %            in direction \( -\dir(s) \)
 % %            have \( \cVisSw = s \);
-% %            cells in a range from \( \E\cdot\trail((s-1)_2)-\dir(s) \) to
-% %            \( \E\cdot\trail((s-3)_2)  -\dir(s) \) from
+% %            cells in a range from \( \E\cdot\trail((s-1)_{2})-\dir(s) \) to
+% %            \( \E\cdot\trail((s-3)_{2})  -\dir(s) \) from
 % %            the extended base colony
 % %            in direction \( -\dir(s) \)
 % %            have \( s-2 \), and so on.
@@ -2883,13 +2838,13 @@ continuing the count-back.
 % %
 % %            Let \( \dir(s) = 1 \).
 % %            Then, all the cells within a distance of
-% %            \( \E\cdot\trail((s-1)_2) \) from \( X \)
+% %            \( \E\cdot\trail((s-1)_{2}) \) from \( X \)
 % %            that are behind the front have \( \cVisSw = s \), and
 % %            those that are to the right (resp., left) of the front
 % %            have \( \cVisSw = s-1 \).
 % %
 % %            When \( \dir(s)=-1 \), cells
-% %            within a distance of \( \E\cdot\trail((s-1)_2) \)
+% %            within a distance of \( \E\cdot\trail((s-1)_{2}) \)
 % %            from the extended base colony that are behind the front
 % %            have \( \cVisSw = s \),  and
 % %            cells in front of it have \( \cVisSw = s-1 \).
@@ -2915,9 +2870,17 @@ when there is a head position (possibly outside \( A \) ) and a
 state that turns it into a healthy configuration.
  \end{definition}
 
+ \begin{definition}
+Let the tuple of fields
+\begin{align*}
+   \Core =(\Addr, \Sweep, \Drift, \Kind)
+ \end{align*}
+is called the \df{core}.   
+ \end{definition}
+
 Note that health only depends on the fields in \( \Core \) and
-the zigging field \( \Z \) in the state, further the  \( \cCore \) field
-and the lack of marks in the cell content.
+the zigging field \( \Z \) in the state, further the  \( \cCore \) track
+and the lack of marks on the tape.
 Note also that in a healthy configuration every cell's \( \cCore \) field
 determines the direction in which the front is found, from the point of
 view of the cell.
@@ -2935,7 +2898,7 @@ The following lemmas show
 how local consistency checking will help achieve longer-range consistency.
 
 \begin{lemma}\label{lem:coordination1}
-  In a healthy configuration, each \( \Core =(\Addr, \Sweep, \Drift, \Kind) \) 
+  In a healthy configuration, each \( \Core \) 
   value along with \( \Z \) determines uniquely the 
   \( \cCore \) value of the cell it is coordinated with, with the following exceptions.
   \begin{itemize}
@@ -2970,6 +2933,7 @@ Then \( \xi \) is also healthy on \( A_{1}\cup A_{2} \).
 \end{lemma}
 \begin{proof}
   The statement follows easily from the definitions.
+\Pnote{Elaborate!}    
 \end{proof}
 
 In a healthy configuration, the possibilities of finding non-adjacent neighbor
@@ -3000,7 +2964,7 @@ Non-rigid pairs are at the front:
 \begin{enumerate}[label=(nr\arabic*), ref=nr\arabic*]
 
   \item\label{i:nr.bridge-bridge} End of a new bridge in direction \( \delta \)
-not within distance \( \B \) of a rigid boundary of a colony or target, with drift \( -\delta \).
+not within distance \( <\B \) of a rigid boundary of a colony of drift \( -\delta \) or its own target.
 On the other side is either desert or the end of an old bridge.
 
   \item\label{i:nr.aligned} Between aligned segments:
@@ -3115,33 +3079,33 @@ Any nonrigid boundary coincides with the front.
 % %it may alter the structure on the tape further.
 % %
 % %Consider a tower of simulations \( (\sS, \sM) \), and
-% %suppose that the configuration \( \xi \) of machine \( M_k \)
+% %suppose that the configuration \( \xi \) of machine \( M_{k} \)
 % %is  healthy on a large enough interval \( I \), for some \( k>1 \).
 % %Suppose that a \( \Noise^{(k)} \) burst occurs.
-% %Then, the state of \( M_i \), \( i\leq k \) is arbitrary.
-% %This means that the head of \( M_k \) can move away from the
-% %island for at most \( (\Z - \Z_b)\B_k \) from the island.
+% %Then, the state of \( M_{i} \), \( i\leq k \) is arbitrary.
+% %This means that the head of \( M_{k} \) can move away from the
+% %island for at most \( (\Z - \Z_b)\B_{k} \) from the island.
 % %How far from the island can the dirt spread in this case?
-% %The dirt on \( M_k \) can be caused by a ruined cell
+% %The dirt on \( M_{k} \) can be caused by a ruined cell
 % %structure on the levels
 % %By adding the distances that the heads of all machines
-% %below \( M_k \) can move, and using~\eqref{eq:B_2-B_1-Q} and
-% %the fact that \( \B_1 = 1 \),
+% %below \( M_{k} \) can move, and using~\eqref{eq:B_{2}-B_{1}-Q} and
+% %the fact that \( \B_{1} = 1 \),
 % % we obtain
 % %\begin{align*}
-% %  & (\Z - \Z_b)(\B_1 + \cdots + \B_{k-1}) = \\
-% %  & (\Z - \Z_b)(1 + Q_1 + Q_1Q_2 + \cdots + Q_1\cdots Q_{k-2}).
+% %  & (\Z - \Z_b)(\B_{1} + \cdots + \B_{k-1}) = \\
+% %  & (\Z - \Z_b)(1 + Q_{1} + Q_{1}Q_{2} + \cdots + Q_{1}\cdots Q_{k-2}).
 % %\end{align*}
 % %
-% %Later, we will define the lengths of \( Q_i \), \( i>0 \),
+% %Later, we will define the lengths of \( Q_{i} \), \( i>0 \),
 % %such that for every \( k>1 \),
-% %\begin{align}\label{eq:requirement-on-Q_k-B_k}
-% %    1 + Q_1 + Q_1Q_2 + \cdots + Q_1\cdot \cdots \cdot Q_{k-2} < \B_k.
+% %\begin{align}\label{eq:requirement-on-Q_{k}-B_{k}}
+% %    1 + Q_{1} + Q_{1}Q_{2} + \cdots + Q_{1}\cdot \cdots \cdot Q_{k-2} < \B_{k}.
 % %\end{align}
 % %This means that after a \( \Noise^{(k)} \)-burst,
 % %the dirt cannot spread for more than
 % %\begin{align}\label{eq:dirt-spillover}
-% %    (\Z - \Z_b)\B_k
+% %    (\Z - \Z_b)\B_{k}
 % %\end{align}
 % %from the island it created.
 % %
@@ -3178,31 +3142,35 @@ We can also talk about a configuration being admissible on an interval.
 We will show that an admissible configuration can be locally corrected;
 moreover, in case the configuration is clean then this correction
 can be carried out by the machine \( M \) itself.
-We will deal with cleaning later, let us just note the following, all of which
-will be hold in the absence of new noise.
-Islands will not grow much.
-In the absence of noise, 
-by the time the head passes over an island starting at distance \( \ge 2\E\B \)
-on the left, to distance \( \ge 2\E\B \) on the right, the island
+We will deal with the cleaning process later, but it will imply
+the following, in the absence of new noise:
+\begin{itemize}
+\item Islands will not grow much.
+\item By the time the head passes over an island from a place at distance \( \ge 2\E\B \)
+on its left to distance \( \ge 2\E\B \) on its right, the island
 will be cleaned.
+\end{itemize}
 
 \begin{definition}[Substantial segments]\label{def:substantial}
 Let \( \xi(A) \) be a tape configuration over an interval \( A \).
-We will call a homogenous segment of \( \xi(A) \) \df{substantial} if it has size 
-at least \( 6\cns{island}\beta\B \).
+A homogenous segment of size at least \( 6\cns{island}\beta\B \)
+will be called \df{substantial}.
 The area between two neighboring maximal
-substantial segments or between an end of \( A \) and the closest substantial segment
+substantial segments or between an end of \( A \) and the closest substantial segment in \( A \)
 will be called \df{ambiguous}.
 It is \df{terminal} if it contains an end of \( A \).
   Let
  \begin{align*}
- \Delta = 34\cns{island}\beta. % ,\quad \Delta'=\Delta+3\cns{island}\beta. %?
+     \Delta &= 34\cns{island}\beta, % ,\quad \Delta'=\Delta+3\cns{island}\beta. %?
+\\  \E  &\ge 6\Delta. %?
  \end{align*}
+We assume that \( \E \) is an integer multiple of
+the parameter \( \F \) introduced for feathering in Section~\ref{sec:zigging}.
 \end{definition}
 
 \begin{lemma}\label{lem:ambiguous}
 If a tape configuration \( \xi \) differs from a  healthy tape 
-configuration \( \chi \) in at most three islands, then the
+configuration \( \chi \) in at most three islands, then 
 the size of each ambiguous area is at most \( \Delta\B \).
 \end{lemma}
 \begin{proof}
@@ -3211,7 +3179,7 @@ There are at most 3 boundary pairs in \( \chi \) at a total size of \( 3\B \), a
 There are at most 5 non-substantial segments of sizes \( < 6\cns{island}\beta\B \)
 between these: this adds up to
 \begin{align*}
- < (3+3\cns{island}\beta+ 5\cdot 6\cns{island}\beta)\B<34\cns{island}\beta\B=\Delta\B.
+ < (3+3\cdot\cns{island}\beta+ 5\cdot 6\cdot\cns{island}\beta)\B<34\cdot\cns{island}\beta\B=\Delta\B.
  \end{align*}
 \end{proof}
 
@@ -3225,20 +3193,20 @@ We call two segments \( \lint{a_{1}}{b_{1}} \) and \( \lint{a_{2}}{b_{2}} \)  \d
 if \( a_{2}-a_{1} \) is an integer multiple of \( \B \).
 
 Two substantial  segments \( \lint{a_{1}}{b_{1}} \) and \( \lint{a_{2}}{b_{2}} \) will be
-called \df{mergeable} if they are aligned ande connected to each other via at most
-\( \Delta\beta \) other neighbor cells, and if \( 0<\cAddr(a_{2})-\cAddr(b_{1}-1)\le \Delta\beta \).  
+called \df{mergeable} if they are aligned and connected to each other via at most
+\( \Delta\beta \) other neighbor cells, and if \( 0<\cAddr(a_{2})-\cAddr(b_{1}-B)\le \Delta\beta \).  
 \end{definition}
 
 It is easy to see that in an admissible configuration, two mergeable substantial segments can indeed
-be merged: one can erase the cells in the ambiguous area
-that cannot be added adjacently to the other ones, and replace them all with adjacent cells,
-having addresses growing from \( \cAddr(b_{1}) \) to \( \cAddr(a_{2})-1 \).
-Note that doing this, no cells outside the islands need be changed.
+be merged: erase those cells in the ambiguous area
+that cannot be added adjacently to the other ones, and replace them all with adjacent cells.
+Then make sure that addresses grow from \( \cAddr(b_{1}) \) to \( \cAddr(a_{2})-1 \).
+For doing this, no cells outside the islands need be changed.
 
-Machine \( M \) can recognize a pair of mergeable substantial segments.
+Machine \( M \) can recognize a pair of mergeable substantial segments
+(under noise-free and clean conditions).
 If the configuration was admissible it can also merge them: if the merging
-fails then it can be concluded that the configuration is not admissible.
-
+fails then it can conclude that the configuration is not admissible.
 
 \begin{definition}[Stitching]\label{def:stitching}
 In an admissible configuration \( \xi \) with a satisfying healthy configuration \( \chi \),
@@ -3247,7 +3215,8 @@ between them: so \( I_{1}\cup J\cup I_{2} \) is an interval.
 We define an operation called \df{stitching}
 on \( \xi(J) \), performable by machine \( M \), that turns the
 \( \xi \) over  \( I_{1}\cup J\cup I_{2} \) into a healthy configuration.
-
+\begin{itemize}
+\item 
 If \( I_{1} \) and \( I_{2} \) are mergeable then we perform the above described merging operation.
 
 If they are not mergeable then \( \chi(J) \) contains one of the possible boundaries
@@ -3255,7 +3224,7 @@ listed after Lemma~\ref{lem:two-domains}.
 We will recreate such a boundary with the help of \( \xi(I_{1}) \) and \( \xi(I_{2}) \).
 In case that the boundary is rigid, its position will be what it was in \( \chi \),
 otherwise this is not necessary.
-
+ \item
 Consider a boundary of type~(\ref{i:rigid.outer-workspace}): for example
 an extended outer colony on the left, followed by the workspace on the right: base colony 
 or left target.
@@ -3272,6 +3241,7 @@ In case of a boundary of type~(\ref{i:rigid.bridge-target}),
 again we extend the target or colony side first towards the separation,
 and then the bridge toward the new colony end.
 
+\item
 Consider a boundary of type~(\ref{i:nr.bridge-bridge}), where a new bridge
 meets either an old bridge, a target, an old colony or desert.
 If it is meeting an old bridge or desert, then
@@ -3289,7 +3259,7 @@ be between substantial segments that would be mergeable, except that they
 differ in some ways in their cell content.
 Join the two segments, moving back the front to the edge of the ambiguous area,
 and filling it in a way required by health.
-
+\end{itemize}
 \end{definition}
 
 % The lemma below shows that local correction can be carried out.
@@ -3330,7 +3300,7 @@ and filling it in a way required by health.
 % %      \( (\xi,\chi, \cI, \cS, \H) \)
 % %      is \df{pre-annotated} on interval \( A \),
 % %      if by just erasing the rebuild marks (\ie setting
-% %      \( \cRebd.\Core \) to \( 0 \), see~\eqref{eq:cRebdCore}) on each cell of \( A \),
+% %      \( \Rebuild.\cCore \) to \( 0 \), see~\eqref{eq:cRebdCore}) on each cell of \( A \),
 % %      \( \cA \) satisfies
 % %      all requirements of the Definition~\ref{def:annotated-config} on
 % %      \( A \).
@@ -3458,8 +3428,8 @@ and filling it in a way required by health.
 % %   \begin{itemize}
 % %     \item
 % %       \( s\in\{-4, -2, -1,0,1, 2, 4\} \) says which of the seven
-% %       alternative values of \( \R_0^4 \),\( \R_2^4 \), \( \R_2^0 \), \( \R \), \( \R_0^2 \), ,
-% %        \( \R_4^0 \), \( \R_4^2 \) does \( \hat \R \) have.
+% %       alternative values of \( \R_{0}^{4} \),\( \R_{2}^{4} \), \( \R_{2}^0 \), \( \R \), \( \R_{0}^{2} \), ,
+% %        \( \R_4^0 \), \( \R_4^{2} \) does \( \hat \R \) have.
 % %     \item
 % %       \( \alpha,\alpha',\sigma,\sigma' \) help computing
 % %       the address and sweep values as seen in the proof
@@ -3469,7 +3439,7 @@ and filling it in a way required by health.
 % %       elements of the workspace inside \( \hat \R \)
 % %       in case \( \sigma\ge\TransferSw(1) \) or \( \sigma = 1 \).
 % %     \item
-% %       \( \f = \front(\zeta) - a \) in case \( \hat\R \in \set{\R, \R_0^2, \R_2^0} \).
+% %       \( \f = \front(\zeta) - a \) in case \( \hat\R \in \set{\R, \R_{0}^{2}, \R_{2}^0} \).
 % %     \item \( \ga \) is a pair of two address values of some fixed
 % %     addressing established in \( \R \), that
 % %     correspond to
@@ -3489,8 +3459,7 @@ If it fails -- having encountered a configuration that is not admissible, or
 a new burst -- then the \df{rebuilding} procedure is called, which is designed
 to repair a larger interval.
 On a higher level of simulation, 
-this corresponds to the implementation of the trajectory properties
-in which clean area ``magically'' expands.
+this corresponds to the implementation of the ``cleaning'' trajectory properties.
 The healing procedure runs in \( O(\beta^{2}) \) 
 steps, whereas rebuilding needs \( O(Q^{2}) \) steps. \Pnote{maybe even \( Q^{3} \)?}
 
@@ -3498,39 +3467,39 @@ Whenever we say that a rule ``checks'' something,
 it is understood that if the check fails, the rule \( \rHeal \) is called, restarting the 
 healing from scratch.
 This will be judged insufficient in some cases: for example if 
-the healing interval contains many cells marked for the rebuilding procedure (see later),
+the healing interval contains many cells marked for rebuilding,
 or the healing procedure fails in a way
 indicating that the underlying configuration is not admissible.
 This indicates a ``bigger mess'', and is followed by a call for
-the rebuilding procedure, that we will specify later.
+the rebuilding procedure.
 We will also say that the healing program \df{gives up}.
 
 The description of the procedures looks as if we assumed that there is no noise or dirt.
-The rules described here, however, will clean an area locally under the 
+The rules described here, however (as will be proved later), will clean an area locally under the 
 appropriate conditions, and will also work under appropriately moderate noise.
 
 \subsubsection{The healing area}
 
-Recall the parameter \( \Delta \) defined in Definition~\ref{def:substantial},
-and the parameter \( \E\ge 6\Delta \) defined in~\eqref{eq:expansion}. %?
+Recall the parameters \( \Delta,\E \) introduced in Definition~\ref{def:substantial}.
 
 The healing procedure 
 % starts with gathering some information over an
 % interval of size \( O(\Delta\B) \), then lays out and 
 % marks (recall Section~\ref{sec:language})
-marks an interval \( \R \) of \( 2\E^{+} \) cells around its starting point, to which it applies the
-stitching operations defined above in Definition~\ref{def:stitching}.
+marks an interval \( \R \) of \( 2\E^{+} \) cells around its starting point,
+in order to apply to it the stitching operations defined above in Definition~\ref{def:stitching}.
+
 % and may also extend it somewhat.
-If the (approximate) front is at a distance of at least \( 3\Delta\B \) within the boundaries
+If the front (as computed from approximately from the tape) 
+is at a distance of at least \( 3\Delta\B \) within the boundaries
 of \( \R \), then it decides to have sufficient information to create a 
 new front (close to the old one), where the head will be left after erasing the marks.
-Otherwise it leaves the head outside \( \R \), at the end closer to the front.
+Otherwise it leaves the head outside \( \R \), at the end closer to the front .
 
 A new burst may cause the head to abandon the marked area, leaving
 the job unfinished or restarting healing from another point.
 To avoid leaving a large marked area behind, the unmarking process zigs
-into the neighboring area, calling alarm (that is restarting the procedure \( \rHeal \))
-if it finds unexpected marks.
+into the surrounding are, and restarts the healing if it finds unexpected marks.
 
 % Let us see informally, how this can be achieved.
 % After its initial layout, the interval \( \R \) will possibly be extended as follows.
@@ -3567,44 +3536,44 @@ if it finds unexpected marks.
 Since the number and position of some cells may change during healing, 
 the healing procedure uses its address field
  \begin{align*}
- \cHeal.\Addr 
+ \Heal.\cAddr 
  \end{align*}
 in a more complicated way than the main simulation used its own address field \( \cAddr \).
 Addresses on the left of the head will be positive and count
 the number of cells from the left end of the healing interval.
 Addresses on the right are negative, and count from the right end.
-So, starting from the head, \( \cHeal.\Addr \) decreases to 0 towards the left, 
+So, starting from the head, \( \Heal.\cAddr \) decreases to 0 towards the left, 
 and increases to 0 towards the right (the value under the head belongs to
 the left or the right segment depending on the direction of movement).
-Using two counts instead of one helps keeping track of the position of important points,
+Using two counts instead of one helps keeping track of the address of important points,
 even though occasionally a new cell will be inserted at the head.
 
 The updating will also use the fields
 \( \Heal.\Addr_{-1} \) and \( \Heal.\Addr_{1} \) of the state.
 When moving in direction \( j \), field \( \Heal.\Addr_{-j} \) remembers the last
-value of \( \cHeal.\Addr \) written, and field \( \Heal.\Addr_{j} \) the last one seen 
+value of \( \Heal.\cAddr \) written, and field \( \Heal.\Addr_{j} \) the last one seen 
 before writing.
-The fundamental updating operation is \( \cHeal.\Addr\gets\Heal.\Addr_{-j}+j \),
-with some modifications for the case when one of the fields is 0. \Pnote{!}
+The fundamental updating operation is \( \Heal.\cAddr\gets\Heal.\Addr_{-j}+j \),
+with appropriate modifications for the case when one of the fields is 0. \Pnote{Elaborate!}
 
 The field \( \Heal.\Sweep \) 
-measures the progress, just as \( \Sweep \) in the main program.
-There is a corresponding \( \cHeal.\Sweep \) field in the cells.
-There is also a field \( \cHeal.\Dir \) used only to record the direction
+measures the progress by counting sweeps, just as \( \Sweep \) in the main program.
+There is a corresponding \( \Heal.\cSweep \) field in the cells.
+There is also a field \( \Heal.\cDir \) used only to record the direction
 of movement in the special case when the head steps onto a vacant or stem cell.
 The following condition will be checked continuously:
 \begin{align*}
-   \cHeal.\Addr   &= \Heal_{j}.\Addr + j, \text{ where } j = \pm 1  \text{ is the direction of the sweep},
+   \Heal.\cAddr   &= \Heal_{j}.\Addr + j, \text{ where } j \text{ is the sweep direction}.
  \end{align*}
-
 Just like the main simulation, the healing procedure maintains a feathering regime.
 Each sweep in direction \( \delta \) has an \df{intended turning point}, but it
 will be extended until a point with \( \cCanTurn=\true \) and 
 \( \cAddr\equiv \delta\tHeal \pmod{\F}\) (provided the cell is not a stem).
+(Note that we use \( \cAddr \), not \( \Heal.\cAddr \).)
 Interval \( \R \) is divided into an interior and two end segments just as in
 Definition~\ref{def:segments} for the main simulation.
 In the end segments
-the consistency requirement is relaxed: the \( \cHeal.\Sweep \) values are
+the consistency requirement is relaxed: the \( \Heal.\cSweep \) values are
 allowed to decrease.
 If an end segment becomes longer than \( \beta \) then healing will be restarted.
 
@@ -3631,29 +3600,34 @@ According to the values of \( \Heal.\Sweep \), we distinguish \df{stages}.
 % To compute the plurality, 
 % we can use a version of an algorithm from~\cite{MisraGries82}:
 % Running in a single pass over the sequence \( x_{1},\dots,x_{n} \), the algorithm maintains
-% pairs of \( (v_i,c_i) \), \( i=1,2 \) that store
+% pairs of \( (v_{i},c_{i}) \), \( i=1,2 \) that store
 % two candidate plurality values and their current weight.
 % In step \( j \), if \( x_{j}=v_{i} \) or \( c_{i}=0 \) for some \( i\in\{1,2\} \), 
 % then \( c_{i} \) is incremented and \( v_{i}\gets x_{j} \).
 % Else both \( c_{1} \) and \( c_{2} \) are decremented.
 Suppose that \( \rHeal \) is called at some position \( \z \).
-Then it sets  \( \Mode\gets\Healing \),  \( \Stage\gets\Marking \),
-\( \Heal.\Sweep \gets 1 \), and \( \Heal.\Addr = 0 \).
+Then it sets
+\begin{align*}
+\Mode\gets\Healing,\ \Stage\gets\Marking,\ \Heal.\Sweep \gets 1,\ \Heal.\Addr = 0.
+ \end{align*} 
 
 Recall Notation~\ref{not:plus} for the notation \( n^{+} \).
 \begin{description}
 
 \item[Mark]
 Healing starts by marking an initial interval \( \R \) of \( \E^{+} \) cells
-to the left and \( \E^{+} \) cells to the  right of \( \z \), in order
-to determine the direction \( \delta \) that will direct the healing.
+to the left and \( \E^{+} \) cells to the  right of \( \z \).
+% in order to determine the direction \( \delta \) that will direct the healing.  %?
 This is done gradually, extending by \( 1^{+} \) steps on the left and then
 \( 1^{+} \) steps on the right.
+If a turning point is not found within \( \F \) steps, the machine starts
+a new healing (rather than to violate the feathering requirement).
+
 Whenever the head steps on a stem cell or creates a new cell, 
 \( \cDrift \) is set to point to \( \z \) (to make sure that the head does not get
 lost in the desert).
 
-At the end fo the marking stage, a few extra passes are made by the head
+At the end of the marking stage, a few extra passes are made by the head
 over the interval \( \R \), to make sure that a burst can be said to
 affect either only the marking stage or only the repairing stage.
 
@@ -3681,10 +3655,10 @@ from the boundaries of \( R' \).
 \begin{enumerate}[label=R\arabic*, ref=R\arabic*]
 
 \item\label{i:survey} In a pair of sweeps, \( \R' \) is surveyed: 
-all stitching is determined that needs to be done.
-(In case that we started from an admissible configuration, the above operations
-create a sequence of substantial segments adjacent to each other, satisfying the 
-requirements of a healthy configuration.)
+all needed stitching is determined, written into a \df{plan} (the whole plan fits into the state of \( M \)).
+In case that we started from an admissible configuration, the stitchings
+will create a sequence of substantial segments adjacent to each other, satisfying the 
+requirements of a healthy configuration.
 
 % It is also determined whether the front is within the even smaller interior \( \R'' \).
 % If yes, then it is planned to eventually put the head to the front.
@@ -3696,9 +3670,8 @@ A possible outcome of the survey is that healing is impossible: in this case the
 is to mark all cells of \( \R' \) for rebuilding (see Section~\ref{sec:language}), and to
 eventually to put the head into the middle.
 
-\item\label{i:repair1} Choose one half of one stitching operation of the plan 
-determined above, and make a note of it in the \( \Heal.\Plan \) field of the first
-cell \( x \) affected (there is only a constant number of possible such notes).
+\item\label{i:repair1} Choose one half of one stitching operation of the plan, 
+and write it into the \( \Heal.\Plan \) field of the first cell \( x \) affected.
 
 Now \( 6\beta \) idling sweeps will help erase any carpet (see later) possibly arising from
 a new burst.
@@ -3740,19 +3713,19 @@ of a possible burst occurring during the repair process -- see the analysis late
 \item[Mop]
 The new \( \Addr \) and \( \Sweep \) values indicate the position of
 the new front \( p \) provided it is in \( R' \); if it is
-not then they still show the direction from \( R' \) where it must be located.
-(Any failure of this process must restart healing.)
+not then they still show its direction from \( R' \).
+(Any failure of this process restarts healing.)
 Remove the marks from \( \R \) in the following manner, shrinking
 the marked area onto the planned new head position \( p \).
 If \( p \) is inside \( R' \) then, say, starting
 first on the left end of \( \R \) and erasing until reaching \( p \), then from the right end.
 % If the front it is inside \( \R' \) then the marks are removed first from the end of \( \R \) 
 %behind the front, up to the front, then from the other end, ending at the front.
-Do this using zigging, at the beginning zigging into the area outside \( \R \).
+Do this using zigging; at the start this zigging reaches into the area outside \( \R \).
 If during zigging any cell is found marked that is not supposed to be 
 (for example cells outside \( \R \)) then restart healing.  
 If \( p \) is outside \( R' \), say, to the right, then erase starting from the left,
-and then calls for new healing at the right end.
+and then call for new healing at the right end.
 
 \end{description}
 
@@ -3769,29 +3742,31 @@ Since rebuilding makes changes on an interval of the length of several colonies,
 it is important not only that it is invoked when it is needed, but that it is not
 invoked otherwise!
 A failed healing ends on a ``germ'' of cells marked for rebuilding,
-and the state turning into rebuild mode.
+with the state in rebuild mode.
 Rebuilding starts by extending the germ to the left, in a zigging way,
 expecting rebuild-marked cells on the backward zig.
-So a rebuilding started from just a burst will trigger healing.
+Since the zig is larger than a burst, if rebuilding started from just a burst then this
+will trigger healing, thus leaving the rebuilding mode.
 
-The crude outline is this, for rebuilding that started from a cell \( z \) in the middle
+Here is a crude outline, for rebuilding that started from a cell \( z \) in the middle
 of the germ:
 \begin{description}
- \item[Mark] Extend a rebuilding area 
-   over \( 3Q \) cells to the left and \( 3Q \) cells to the right 
+ \item[Mark] Extend a rebuilding area  over \( 3Q \) cells to the left and \( 3Q \) cells to the right 
    from \( z \), similarly to marking a healing area
-   (but using zigging, instead of sweeping over the whole area with every extension).
+   (but using zigging, instead of sweeping over the whole area with every extension, 
+   as we did in the healing procedure).
+   Failure to start a turning point triggers new healing, just as in the marking stage of healing.
 
  \item[Survey] Survey the rebuilding area, 
-   keeping track of addresses just as in the healing procedure,
+   keeping track of addresses just as in the healing procedure via \( \Rebuild.\cAddr_{-j} \)
    looking for candidate whole colonies (a few substantial segments with disjoint 
    addresses fitting into a colony, with the allowed number of possible islands 
    between them).
 
  \item[Stitch] For each candidate colony, attempt a stitching operation over each island.
- If one of the stitches in a candidate colony does not succeed,
- the candidate does not become a colony.
- Mark this result on a track, distinguishing accepted colony cells from the
+ If one of the stitches in a candidate colony does not succeed (this could be since misalignment makes
+ it impossible), the candidate does not become a colony.
+ Mark this result on a track, distinguishing cells of an accepted colony from the
  rest, which will be marked as \df{stragglers}.
  Then repeat the whole operation and accept the end result only if the two tracks agree.
  Otherwise call for healing (which in due course may restart a new rebuilding).
@@ -3819,8 +3794,8 @@ thus also stragglers).
   shrinking the rebuilding area onto the left end of \( C_{1} \).
 \end{description}
 
-Rebuilding also obeys feathering: addresses with \( \cAddr\equiv\pm \tRebuild\pmod{\F} \)
-are reserved to be turning points for rebuilding.
+Rebuilding also obeys feathering: marked turning points allowed for 
+rebuilding must have \( \Rebuild.\cAddr\equiv\pm \tRebuild\pmod{\F} \).
 
 How to defend against the effects of a burst during the rebuild procedure?
 Just as with healing, there is only limited defense.
@@ -3833,252 +3808,8 @@ Traces (say, marked cells) from the first, interrupted rebuilding might remain,
 the analysis will deal with this possibility.
 
 Healing will probably be called also several times due to the dirt that is encountered.
-However, tha analysis will show that in the absence of bursts, cleaning happens
+However, the analysis will show that in the absence of bursts, cleaning happens
 in a reasonable time.
-
-
-\section{Escape}\label{sec:escape}
-
-Recall the notions of history and trajectory in Definitions~\ref{def:history} 
-and~\ref{def:traj}.
-Here we will draw some consequences of the trajectory properties
-showing that an area affected by a noise burst cannot
-capture the head too long: it will escape, to possibly attack the dirty area
-from outside.
-
-The following lemma shows only that a clean interval cannot hold the head 
-too long.
-Recall the constant \( \cCleanT \) from Definition~\ref{def:traj}.
-
-\begin{lemma}[Clean escape]\label{lem:clean-esc}
-Assume that the following occurs during a noise-free time interval.
- There is a constant
-\begin{align}\label{eq:cns.clean-esc}
-  \cEsc \ge\cCleanT 
- \end{align}
-with the following property.
-Suppose that \( \G \) is any clean interval of size \( \le n\B \) for an integer \( n \).
-Then within at most \( \cEsc  \beta^{2}n \) steps one of the following
-cases happens to the head:
-\begin{Alphenum}
-  \item\label{i:clean-esc.leave}  it leaves \( G \): we say it \df{escapes},
-  \item\label{i:clean-esc.rebuild} it is in a complete clean rebuilding area (continuing the work of rebuilding),
-  \item\label{i:clean-esc.healthy} it is in a healthy interval in \( G \)
-that is the interior of a healthy colony. 
-\end{Alphenum}
-\end{lemma}
-When the head leaves \( \G \) we will say that it \df{escapes}.
-\begin{Proof}
-\begin{step+}{step:clean-esc.rebuild}
-Suppose that at some time while the head is inside \( \G \), the rebuild procedure is started,
-from a base of rebuild-marked cells large enough not to result in alarm (renewed call for healing)
-after the first zigging.
-Then case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.rebuild} 
-happens within \( O(\beta^{2} n) \) steps.
-\end{step+}
-\begin{pproof}
-The rebuilding procedure is outlined in Section~\ref{sec:rebuilding}.
-From a sufficiently large base, it 
-marks a whole rebuilding area (if it stays inside \( G \)), resulting
-in alternative~\eqref{i:clean-esc.rebuild}.
-This happens in \( O(\beta n) \) steps, with zigs of size \( O(\beta) \).  
-\end{pproof} % step:clean-esc.rebuild
-
-\begin{step+}{step:clean-esc.normal}
-Assume that at the beginning, the mode is normal.
-Then within \( O(\beta n) \) steps either a healing call happens, or we have 
-case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.healthy}.
-\end{step+}
-\begin{pproof}
-The head begins or continues a sweeping motion that, in case it does not escape
-and considers no incoordination to call for healing,
-passes (with zigging) over an area containing a healthy colony.
-\end{pproof} % step:clean-esc.normal
-
-\begin{step+}{step:clean-esc.alarm}
-Suppose that at some time \( t \), at position \( x \),
-while the head is inside \( \G \), healing will be called.
-Then one of the three cases of the lemma occur in \( O(\beta^{2} n) \) steps.
-\end{step+}
-\begin{pproof}
-No more alarm will occur before the end of the healing procedure, which
-takes \( O(\beta^{2} n) \) steps,
-since it involves \( O(\beta) \) sweeps over an area of size \( O(\beta) \).
-If healing fails then it creates a base for rebuilding and calls the rebuilding
-procedure, leading to the case of part~\ref{step:clean-esc.rebuild} above.
-\emph{In the discussion below, we will not mention again the possibility that the head
-leaves \( G \) or that a healing ends unsuccessfully: the result in these cases is considered
-known.}
-
-Suppose that healing ends successfully.
-Then the head moves away from the supposed front, starting to erase the healing marks.
-Without loss of generality, suppose that this movement is to the left.
-It may encounter other marks, leading to a new alarm, at a distance of 
-about \( \E=O(\beta)  \) cells to the left from position \( x \).
-After possibly several repetitions of healing and left shift,
-the configuration becomes healthy over the healing area, and the head moves right.
-Possible new alarms may only shift the healing area right by about \( \E \) cells
-as long as the head is to the left of position \( x \).
-The area \( H \) that the head left behind becomes healthy:
-Lemmas~\ref{lem:coordination2} and~\ref{lem:health-extension} imply that 
-the overlapping successful healing areas can be combined.
-If the head has to pass over \( H \) again in normal mode, it will not call alarm.
-
-If a healing succeeds, ending in normal mode, then the zigging head movement
-of normal mode starts.
-This may result in new alarm on the right of \( H \), continuing the 
-repeated healings and right shifts and extending \( H \).
-Eventually, the head -- along with the front -- 
-may be allowed to turn back at the end of a colony.
-It may now encounter new incoordination on the left of \( H \), resulting in new
-alarms, and extending \( H \) to the left.
-This continues until \( H \) becomes large enough to cover the interior of a colony,
-leading to case~\eqref{i:clean-esc.healthy}.
-\end{pproof} % step:clean-esc.alarm
-
-To complete the proof, consider all the possibilities for the state at the beginning.
-We will again leave it unmentioned that the head can always escape (case~\eqref{i:clean-esc.leave}).
-The case when we start from normal mode is discussed in part~\ref{step:clean-esc.normal}.
-Suppose that head is in healing mode.
-Then it makes sweeping movements over a healing area possibly extending it.
-It may only end in alarm, taking us to part~\ref{step:clean-esc.alarm},
-an unsuccessful healing and thus part~\ref{step:clean-esc.rebuild}, or eventual normal mode,
-discussed in part~\ref{step:clean-esc.normal}.
-
-Suppose now that the head is in rebuilding mode.
-If alarm is not called within \( O(\beta n) \) steps then the head either builds up or sweeps
-a whole rebuilding area, taking us to case~\eqref{i:clean-esc.rebuild},
-or starts or continues erasing the rebuild marks, ending eventually in either
-alarm or normal mode.
-\end{Proof}
-
-Let us apply Lemma~\ref{lem:clean-esc} together with
-the basic trajectory properties to track the cleaning.
-
-\begin{lemma}[Escape]\label{lem:escape}
-The following definition assumes events in a noise-free time interval.
-Let \( \G\supset D \) be intervals such that all \( D \) is 
-at least \( \ge\cSpill \B \) away from the edges of \( G \) and
-\( G\setminus D \) is clean,
-further \( \abs{G}\le n\B \).
-Suppose that at some time the head is in \( D \).
-Then within time \( O(\beta^{2}n) \) one of the cases of Lemma~\ref{lem:clean-esc} occurs.
-  \end{lemma}
-
-In difference to Lemma~\ref{lem:clean-esc}, we do not assume 
-that the interval \( G \) is clean.
-Before proving the lemma, we introduce some definitions.
-Recall the trajectory properties in Definition~\ref{def:traj}, and the 
-definition of the constants \( \cCleanS  \) and \( \cCDepth2  \)
-there.
-\begin{sloppypar}
-\begin{definition}[Attacked boundary]\label{def:right-live}
-The following definition assumes events in a noise-free time interval.
-Assume that a right attacking event of the Attack property in Definition~\ref{def:traj}
-of a trajectory takes place at point \( x \) (thus the interval
-\( \lint{x-\cCDepth2\B}{x+\B} \) is clean).
-After this event, until the head returns to the left of \( x-\cCDepth2 \B \),
-we will call the point \( x-\cSpill \B \) an \df{attacked boundary}.
-\end{definition}
-\end{sloppypar}
-
-By the Spill property
-before the return of the head the right edge of the clean interval may shrink to
-\( {x-\cSpill \B} \), this is while the latter is called an attacked boundary.
-But this is temporary: after the return, it extends to \( {x+2\B} \).
-
-\begin{definition}[Cheese]\label{def:cheese}
-In a configuration, consider an interval \( \G \) 
-at a distance at least \( \cCDepth2 \B \) from any dirt outside it, 
-further an interval \( D\subset \G \) farther than
-\(  \cSpill \B \) from the edges, such that \( D\setminus\B \) is clean.
-Let us further have a sequence of disjoint clean
-subintervals \( J_{1},\dots,J_{k} \) of \( D \)
-with \( \abs{J_{i}}\ge (\cCDepth2 +1)\B \). % and \( \abs{J_{i}\cap J_{i+1}}\le\cSpill \B \).
-For each \( J_{i} \), if it does not contain the head
-then its edge closer to the head is an attacked boundary.
-
-Such a structure \( C=(\G,D,J_{1},\dots,J_{k}) \) 
-is called a \df{cheese of the configuration} with \( \G \) called its \df{box}, \( D \) its \df{bulk} and
-the intervals \( J_{i} \)  its \df{holes}.
-\Pnote{Picture?}
-
-% The inequality \( \cCleanS \ge 2\cSpill \) limits the proportional overlap of the holes
-% so that the sum of hole sizes in a cheese is at most twice the size of its bulk.
-
-In a trajectory, over a certain time interval \( K \),
-suppose that there is a cheese \( C(t) \) at each time \( t \), where the
-box and the bulk of all these cheeses does not change in time.
-The whole sequence is called a \df{cheese of the trajectory}
-if all its changes occur within distance \( \cCleanS \B \) of the head, resulting
-in the merging or enlarging of holes, creation of a new hole, or
-the shrinking of a hole within the bounds allowed by the Spill property of trajectories.
-
-We say that the head \df{escapes} the cheese if it is found at a distance at least
-\( \cCleanS \B  \) from \( D \).
-\end{definition}
-
-We will first prove a slightly more technical lemma from which
-Lemma~\ref{lem:escape} follows easily.
-
-\begin{lemma}[Partial escape]\label{lem:partial-escape}
-Assume the conditions of Lemma~\ref{lem:escape};
-they define a cheese at the beginning time \( t_{0} \) 
-with box \( \G \), bulk \( D \) and no holes.
-Then besides the conclusions of that lemma, the following holds:
-if one of the outcomes does not occur before 
-\( t_{0}+ 2i\cdot\cEsc \beta^{2}n\Tu \) 
-then by that time, the sum of the sizes of holes increases by at least \( i\B \).
-\end{lemma}
-  \begin{proof}
-Since any dirt inside the cheese is at least \( \cSpill \B \) removed from the edges 
-of the bulk,
-the Spill Bound property of a trajectory in Definition~\ref{def:traj} implies
-that during the time interval considered, dirt stays within the bulk.
-
-We will define a sequence of times \( t_{0}<t_{1}<t_{2}<\dotsm<t \),
-where between \( t_{i} \) and \( t_{i+1} \) always some progress will be made.
-
-Suppose that at time \( t_{i} \) the head is in a hole of size \( k\B \).
-By Lemma~\ref{lem:clean-esc}, the head does not stay longer than
-\begin{align*}
-\cEsc k\beta^{2}\Tu
- \end{align*}
-inside.
-At some time \( t_{i+1} \) it either escapes, or steps onto dirt, say on the right side. 
-In the latter case the hole may decrease by \( \cSpill\B \), and its right end becomes attacked.
-
-Suppose that at time \( t_{i} \) the head is not in one of the holes.
-Then it is either between two holes, say \( J_{p} \) and \( J_{p+1} \).
-or between a hole and the outside of the bulk.
-Let \( L \) denote this interval, and assume it has size \( l\B \).
-Let us show that within time
- \begin{align*}
-   \cCleanT l \Tu
- \end{align*}
-the head either escapes, or steps into a hole (enlarging it since this happens through
-an attacked edge), or creates a new hole.
-If the first two cases do not occur then
-let us partition \( L \) into \( l \) subintervals of size \( \B \).
-Until time \( t_{i}+l\cCleanT\Tu \) the head spends on average at least
-\( \cCleanT \Tu \) over these subintervals,  so 
-there will be one over which it spent at least this much time.
-By the trajectory property called Cleaning, 
-at some time \( t_{i+1} \) the head will be found in some clean
-interval \( K \) of size \( \cCleanS \B \).
-If we had \( K\not\subseteq D \) then the head would have escaped, 
-contrary to the assumption; so we have \( K\subseteq D \).
-Also, \( K \) is not merged with another hole, since this
-possibility already was excluded above.
-Therefore \( K \) is contained in a new hole.
-
-Now the definition of the constants guarantees that \( \cCleanT \le \cEsc\beta^{2} \),
-\( t_{i+1}\le t_{i}+\cEsc \beta^{2}n\Tu \) 
-for each \( i \).
-For at least every second \( i \) the sum of the hole sizes increases by at least \( \B \).
-Indeed, it may decrease by \( \cSpill\B \) when the head leaves a hole but then it must
-increase by at least \( (\cSpill+1)\B \) another hole where it enters.
- \end{proof}
 
 
 \section{Annotation and scale-up}
@@ -4090,19 +3821,18 @@ the effects of moderate noise and their repair.
 
 As indicated in Section~\ref{sec:model}, when dealing with the behavior
 of machine \( M \) over some space-time rectangle, we will assume that the noise
-over this rectangle is \( (\beta\pair{\B}{\Tu}, \pair{\B^{*}}{\Tu^{*}}) \)-sparse.
+over this rectangle is \( (\beta\pair{\B}{\Tu}, \gamma\pair{\B^{*}}{\Tu^{*}}) \)-sparse.
 With Definition~\ref{def:Tu} of \( \Tu^{*} \) this means 
 in simpler terms that at most one noise \df{burst} affecting an
-area of size at most \( \beta\B \) can occur in any two consecutive work periods.
+area of size at most \( \beta\B \) can occur in any \( \gamma \) consecutive work periods.
 In the present section, histories will always be assumed to have this property.
-
 
 Some histories lend themselves to be viewed as a healthy development
 that is disturbed only in some well-understood ways.
-The information pointing out these disturbances that can be added to such histories 
-will be called an annotation.
-The proof of the error-correcting behavior of machine \( M \) will take the form
-of showing that the assumed sparsity of noise indeed allows an annotation.
+Added to such histories the information pointing out these disturbances will be called an annotation.
+The proof of the error-correcting behavior of machine \( M \) (essentially the proof of the Transition Function
+property of trajectories of Definition~\ref{def:traj} for the simulated machine \( M^{*} \))
+will take the form of showing the possibility of annotation under sparse of noise.
 An annotation distinguishes several different ways in which the health 
 of a tape configuration has been be affected.
 Each of these ways is represented by a certain type of interval.
@@ -4114,7 +3844,7 @@ affected areas will increase in size.
 \item[Carpets,] or \df{malicious damage}: They cover all dirt.
 
 \item[Islands,] or \df{structural damage}: 
-Some of the structural fields in even their non-carpet cells
+Some structural fields even in non-carpet cells
 may have been affected (initially at the time when the head left the carpet).
 They may not fit into the simulation structure, so they
 may need to be changed to make the configuration healthy.
@@ -4126,8 +3856,9 @@ it will be admissible.
 \item[Stains,] or \df{information damage}.
 These intervals do not necessarily affect health, (may affect \emph{super} health, see below)
 but their information track may have changed.
-Their total size must be limited, to make sure that the cell state represented (redundantly) by the
-enclosing colony (or colonies) is not affected.
+They may not be corrected locally, but as long as
+their total size is limited, the cell state represented (redundantly) by the
+enclosing colony (or colonies) will not be affected.
 The following notation will be used to bound the size of stains:
 \begin{align}\label{eq:isl-bd}
    \cns{isl-bd} = (\F+2)\beta.
@@ -4143,12 +3874,8 @@ The union of healing intervals will be called the \df{healing area}:
 it marks parts of the configuration where the
 structure (represented by the location of the cells and the core track) 
 is currently being restored.
-A new parameter 
-\begin{align}\label{eq:expansion}
-                          \E  &\ge 6\Delta %?
- \end{align}
-will used in bounding its size, where we assume that \( \E \) is an integer multiple of
-the parameter \( \F \) introduced for feathering in Section~\ref{sec:zigging}.
+The parameter \( \E \) introduced in Definition~\ref{def:substantial}
+will used in bounding its size.
 Some auxiliary notions first.
 
 \begin{definition}[Annotation structure]\label{def:annotation-struct}
@@ -4197,13 +3924,13 @@ is called an \df{annotated configuration} if it has the following properties
 \item If the head is on or neighboring to the healing area then setting the state.
 \item Vacating the carpets and filling them appropriately with cells. 
 \item Setting the \( \cKind \), \( \cCore \) tracks in the islands, and the
-\( \cHeal.\Core \) tracks in the healing area.
+\( \Heal.\cCore \) tracks in the healing area.
 (This is the set of tracks used in the healing  procedure.)
 \end{itemize}
 
    \item \label{i:annotated-config.island-number}
     At most 3 stains intersect any interval \( I \) of size \( Q\B \),
-and the total size of carpets there is at most \( 3\beta+ 2\cCDepth2<4\beta \).
+and the total size of carpets there is at most \( 3\beta+ 2\CAtt<4\beta \).
 
 \item\label{i:annotated-config.island-bounds} 
 Suppose that a certain interval of size \( Q\B \) 
@@ -4312,7 +4039,7 @@ the time (and the configuration) will be called \df{distress-free}.
 % then we call that time \df{centrally consistent}.
 A time that is not distress-free and is preceded by
 a distress-free time will be called a \df{distress event}.
-The direction of the last \( \Z \) non-turning moves before the distress event
+The direction of the last \( \Z \) non-turning moves of the front before the distress event
 will be called the \df{pre-distress sweeping direction}.
 The direction of first \( \Z \) non-turning moves of the front after the distress event
 will be called the \df{post-distress sweeping direction}.
@@ -4366,7 +4093,7 @@ to \( I_{1}, I_{2} \) and then emerge on the right, with the healing unfinished.
 
 In what follows we will show that for any trajectory \( (\eta, \Noise) \) of a
 generalized Turing machine \( M \) on any space-time rectangle on which the
-noise is \( (\beta\pair{\B}{\Tu}, \pair{\B^{*}}{\Tu^{*}}) \)-sparse, if at the
+noise is \( (\beta\pair{\B}{\Tu}, \gamma\pair{\B^{*}}{\Tu^{*}}) \)-sparse, if at the
 beginning the configuration was super healthy then the history can be annotated.
 In the rest of the section we always rely on the assumption of  this 
 sparsity property of the noise.
@@ -4393,13 +4120,13 @@ To compute the configuration encoding \( \varphi_{*} \) we proceed first as
 done in Section~\ref{sec:hier-codes}, using the code \( \psi_{*} \) there,
 and then add some initializations:
 In cells of the base colony and its left neighbor  colony,
-the \( \cSweep \) and \( \cDrift \) fields are set 
+the sweep and drift fields \( \cSweep \) and \( \cDrift \) are set 
 to \( \Last(1)-1 \),  \( 1 \), and \( \Last(1) \),  \( 1 \) respectively.
 In the right neighbor colony, these values are \( \Last(-1) \) and \( -1 \) respectively.
 In all other cells, these values are empty.
 The \( \cAddr \) fields of each colony are filled properly:
 the \( \cAddr \) of the \( j \) cell of a colony
-is \( j \bmod \B^* \). \Pnote{Picture?}
+is \( j \bmod \B^{*} \). \Pnote{Picture?}
 
 The value \( \Noise^{(k+1)} \) is obtained by a residue operation
 just as in Definition~\ref{def:sparsity} of sparsity.
@@ -4428,11 +4155,357 @@ then let \( \eta^{*}(x,t)=\Vacant \); assume now that it is.
 Then let \( t'\in J \) be the starting time in \( \chi \) of the work period of \( C \)
 containing \( t \),
 and let \( \eta^{*}(x,t) \) be the value decoded from \( \eta(C,t') \).
-In more detail, as said at the end of Section~\ref{sec:coding}, we the decoding
+In more detail, as said at the end of Section~\ref{sec:coding}, we apply the decoding
 \( \psi^{*} \) to the interior of the colony it to obtain \( \eta(x,t) \).
 \end{definition}
 
 
+\section{Cleaning}\label{sec:cleaning}
+
+\subsection{Extended escape}\label{sec:extended-escape}
+
+In preparation for the proof of the properties for a simulated Turing machine,
+we will extend the Escape property, as defined Definitions~\ref{def:history} and~\ref{def:traj},
+to larger intervals and longer times -- in some sense.
+The property will be weakened the following ways:
+\begin{itemize}
+\item We still don't allow noise, even during the longer times considered.
+\item The result is not always that the head leaves \( G \); it will be always possible 
+that the head stays in \( G \) if it is found to be inside a large interval that is ``regular'' in some sense:
+see alternatives~(\ref{i:clean-esc.rebuild}-\ref{i:clean-esc.healthy}) in Lemma~\ref{lem:clean-esc}.
+\end{itemize}
+
+The following lemma shows that a clean interval cannot hold the head too long.
+
+\begin{lemma}[Clean escape]\label{lem:clean-esc}
+Suppose that \( \G \) is any clean interval of size \( \le n\B \) for an integer \( n \).
+Then within \( O(\beta^{2}n) \) steps, in the absence of noise, one of the following
+cases happens to the head:
+\begin{Alphenum}
+  \item\label{i:clean-esc.leave}  it leaves \( G \);
+  \item\label{i:clean-esc.rebuild} it is in a complete clean rebuilding area (continuing the work of rebuilding);
+  \item\label{i:clean-esc.healthy} it is in a healthy interval in \( G \)
+that is the interior of a healthy colony. 
+\end{Alphenum}
+\end{lemma}
+When the head leaves \( \G \) we will say that it \df{escapes}.
+\begin{Proof}
+\begin{step+}{step:clean-esc.rebuild}
+Suppose that at some time while the head is inside \( \G \), the rebuild procedure is started,
+from a base of rebuild-marked cells large enough not to result in alarm (renewed call for healing)
+after the first zigging.
+Then case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.rebuild} 
+happens within \( O(\beta^{2} n) \) steps.
+\end{step+}
+\begin{pproof}
+The rebuilding procedure is outlined in Section~\ref{sec:rebuilding}.
+From a sufficiently large base, it 
+marks a whole rebuilding area (if it stays inside \( G \)), resulting
+in alternative~\eqref{i:clean-esc.rebuild}.
+This happens in \( O(\beta n) \) steps, with zigs of size \( O(\beta) \).  
+\end{pproof} % step:clean-esc.rebuild
+
+\begin{step+}{step:clean-esc.normal}
+Assume that at the beginning, the mode is normal.
+Then within \( O(\beta n) \) steps either a healing call happens, or we have 
+case~\eqref{i:clean-esc.leave} or~\eqref{i:clean-esc.healthy}.
+\end{step+}
+\begin{pproof}
+The head begins or continues a sweeping motion that, in case it does not escape
+and sees no incoordination to call for healing,
+passes (with zigging) over an area containing a healthy colony.
+\end{pproof} % step:clean-esc.normal
+
+\begin{step+}{step:clean-esc.alarm}
+Suppose that at some time \( t \), at position \( x \),
+while the head is inside \( \G \), healing will be called.
+Then one of the three cases of the lemma occur in \( O(\beta^{2} n) \) steps.
+\end{step+}
+\begin{pproof}
+No more alarm will occur before the end of the healing procedure, which
+takes \( O(\beta^{2}) \) steps,
+since it involves \( O(\beta) \) sweeps over an area of size \( O(\beta) \).
+If healing fails then it creates a base for rebuilding and calls the rebuilding
+procedure, leading to the case of part~\ref{step:clean-esc.rebuild} above.
+\emph{In the discussion below, we will not mention again the possibility that the head
+leaves \( G \) or that a healing ends unsuccessfully: the result in these cases is considered
+known.}
+
+Suppose that healing ends successfully.
+Then the head moves away from the supposed front, starting to erase the healing marks.
+Without loss of generality, suppose that this movement is to the left.
+It may encounter other marks, leading to a new alarm, at a distance of 
+about \( \E=O(\beta)  \) cells to the left from position \( x \).
+After possibly several repetitions of healing and left shift,
+the configuration becomes healthy over the healing area, and the head moves right.
+Possible new alarms may only shift the healing area right by about \( \E \) cells
+as long as the head is to the left of position \( x \).
+The area \( H \) that the head left behind becomes healthy:
+Lemmas~\ref{lem:coordination2} and~\ref{lem:health-extension} imply that 
+the overlapping successful healing areas can be combined.
+If the head has to pass over \( H \) again in normal mode, it will not call alarm.
+
+If a healing succeeds, ending in normal mode, then the zigging head movement
+of normal mode starts.
+This may result in new alarm on the right of \( H \), continuing the 
+repeated healings and right shifts and extending \( H \).
+Eventually, the head -- along with the front -- 
+may be allowed to turn back at the end of a colony.
+It may now encounter new incoordination on the left of \( H \), resulting in new
+alarms, and extending \( H \) to the left.
+This continues until \( H \) becomes large enough to cover the interior of a colony,
+leading to case~\eqref{i:clean-esc.healthy}.
+\end{pproof} % step:clean-esc.alarm
+
+\begin{step+}{step:clean-esc.finish}
+Let us complete the proof.
+\end{step+}
+\begin{prooof}
+Consider all the possibilities for the state at the beginning.
+We will again leave it unmentioned that the head can always escape (case~\eqref{i:clean-esc.leave}).
+The case when we start from normal mode is discussed in part~\ref{step:clean-esc.normal}.
+Suppose that head is in healing mode.
+Then it makes sweeping movements over a healing area possibly extending it.
+It may only end in alarm, taking us to part~\ref{step:clean-esc.alarm},
+an unsuccessful healing and thus part~\ref{step:clean-esc.rebuild}, or eventual normal mode,
+discussed in part~\ref{step:clean-esc.normal}.
+
+Suppose now that the head is in rebuilding mode.
+If alarm is not called within \( O(\beta n) \) steps then the head either builds up or sweeps
+a whole rebuilding area, taking us to case~\eqref{i:clean-esc.rebuild},
+or starts or continues erasing the rebuild marks, ending eventually in either
+alarm or normal mode.
+\end{prooof} % step:clean-esc.finish
+\end{Proof}
+
+We will apply Lemma~\ref{lem:clean-esc} together with
+the basic trajectory properties to track the cleaning.
+
+\begin{lemma}[Escape]\label{lem:escape}
+Consider a noise-free time interval.
+In a configuration, at some time, let \( \G\supset D \) be intervals such that \( D \) is 
+at least \( \ge\CSpill \B \) away from the edges of \( G \) and \( G\setminus D \) is clean, 
+further \( \abs{G}\le n\B \).
+Suppose the head is in \( D \).
+Then within time \( O((\beta^{2}n+\tau)n\Tu) \) one of the cases of Lemma~\ref{lem:clean-esc} occurs.
+  \end{lemma}
+In difference to Lemma~\ref{lem:clean-esc}, we do not assume 
+that the interval \( G \) is clean.
+\begin{Proof}
+Lemma~\ref{lem:clean-esc} asserts only an upper bound \( O(\beta^{2}n) \) on the 
+number of steps needed: let \( \CCleanEsc \) be a constant such that this is
+\( \le \CCleanEsc\beta^{2}n \) steps.
+
+Let us introduce some definitions for the proof.
+All these assume events in a noise-free time interval.
+
+\begin{step+}{step:escape.attacked}
+Recall the trajectory properties in Definition~\ref{def:traj}, and the 
+definition of the constant \( \CAtt  \) there.
+Assume that a right attacking event of the Attack Cleaning property
+of a trajectory takes place at point \( x \) (thus the interval
+\( \lint{x-\CAtt\B}{x+\B} \) is clean).
+After this event, until the head returns to the left of \( x-\CAtt \B \),
+we will call the point \( x-\CSpill \B \) an \df{attacked boundary}.
+By the Spill property
+before the return of the head the right edge of the clean interval may shrink to
+\( x-\CSpill \B \), this is while the latter is called an attacked boundary.
+But this is temporary: after the return, it extends to at least \( x+2\B \).
+\end{step+}
+
+\begin{step+}{step:escape.cheese}
+In a configuration, consider an interval \( \G \) called the \df{box}
+at a distance at least \( \CAtt \B \) from any dirt outside it, 
+further an interval \( D\subset \G \) called the \df{bulk} farther than
+\(  \CSpill \B \) from the edges of \( G \), such that \( G\setminus D \) is clean.
+Assume that the bulk \( D \) is partitioned into \df{blocks}: subintervals of size \( 1.5\CAtt \).
+Each block \( I \) gets assigned an integer called its \df{score} \( \score(I) \),
+with \( 0\le\score{I}\le\tau|I| \).
+
+Let us further have a set \( \cJ \) of disjoint clean
+subintervals of \( G \) called \df{holes}, with each hole \( J \) having 
+size \( \abs{J}\ge (\CAtt +1)\B \).
+The maximal clean intervals at the end of \( G \) will also be considered holes.
+If a hole does not contain the head
+then its edge closer to the head is an attacked boundary.
+Blocks contained in holes have score 0.
+
+Such a structure \( C=(\G,D,\cJ,\score(\cdot)) \) is a \df{cheese}.
+\Pnote{Picture?}
+The \df{total score} of a cheese is is the sum of the scores of its blocks.
+Since the score of each block \( I \) is bounded by \( \tau|I| \), 
+the total score is bounded by \( \tau|D| \).
+
+In a trajectory, over a certain time interval \( K \),
+suppose that there is a cheese \( C(t) \) at each time \( t \), where the
+box and the bulk of all these cheeses does not change in time.
+The whole sequence is called a \df{cheese of the trajectory}
+if all its changes occur within distance \( 2\CAtt \B \) of the head, resulting
+in the increase of the score of a block,
+the merging or enlarging of holes, creation of a new hole,
+the shrinking of a hole within the bounds allowed by the Spill property of trajectories.
+
+We say that the head \df{escapes} the cheese if it is found at a distance at least
+\( \CAtt \B  \) from \( D \).
+
+The conditions of the lemma define a cheese at the beginning time \( t_{0} \) 
+with box \( \G \), bulk \( D \) and no holes.
+Since any dirt inside the cheese is at least \( \CSpill \B \) removed from the edges 
+of the bulk, the Spill Bound property of a trajectory in Definition~\ref{def:traj} implies
+that during the time interval considered, dirt stays within the bulk.
+
+Let \( \f\ge\CCleanEsc \) be a constant to be fixed later.
+\end{step+}
+
+\begin{step+}{step:escape.alternatives}
+During the time interval considered, in any time subinterval of size \( \f n\beta^{2}\Tu \)
+some progress will be made on the cheese, namely one of the following kinds:
+\begin{enumerate}[label=\upshape{(p\arabic*)}, ref=p\arabic*]
+\item\label{i:clean-esc} One of the cases of Lemma~\ref{lem:clean-esc} occurs.
+\item\label{i:enter-hole} The head enters a hole.
+\item\label{i:leave-hole} The head leaves a hole.
+\item\label{i:new-hole} A new hole of size \( \ge 1.5\CAtt \) appears.
+\item\label{i:score-incr} The total score increases by at least \( \abs{G} \beta^{2} \).
+\end{enumerate}
+\end{step+}
+\begin{pproof}
+Suppose that cases~(\ref{i:clean-esc},\ref{i:enter-hole}) do not occur.
+If the head is in a hole of size \( k B \) then
+By Lemma~\ref{lem:clean-esc}, the head does not stay longer inside than
+\begin{align*}
+\CCleanEsc k\beta^{2}\Tu<\CCleanEsc n\beta^{2}\Tu.
+ \end{align*}
+It either leaves \( G \) (then we are done), or leaves the hole while staying in \( G \).
+
+Suppose that the head is not in one of the holes, so it is in an interval \( L \) between holes, and also
+that in the time interval considered, it does not enter a hole.
+Let \( E_{1},\dots,E_{k} \) be the set of blocks intersecting with \( L \), and suppose that the
+head is in \( E_{i} \).
+The Escape property of trajectories in the definition~\ref{def:traj}
+implies that within time \( \CEsc\Tu \), the head will leave the interval \( E_{i-1}\cup E_{i} \), 
+and also the interval \( \E_{i}\cup E_{i+1} \).
+Thus, it will either pass \( E_{i-1} \) or pass \( E_{i+1} \).
+If the passed interval becomes clean then we have case~\eqref{i:new-hole}.
+Otherwise the score of either \( E_{i-1} \) or \( E_{i+1} \) increases by 1, so
+the total score increases by at least \( |E_{i}| \).
+If case~\eqref{i:new-hole} does not occur during the whole time \( \CCleanEsc n\beta^{2}\Tu \), 
+then the total score increases by 
+\begin{align*}
+ (\f n\beta^{2}\Tu/\CEsc \Tu)1.5\CAtt B = (\f\CAtt/\CEsc)\beta^{2}\abs{G} > \beta^{2}\abs{G},
+ \end{align*}
+if \( \f \) is chosen large enough.
+\end{pproof} % step:escape.alternatives
+\begin{step+}{step:escape.finish}
+Let us finish the proof.
+\end{step+}
+\begin{prooof}
+Assume that our total time has length at least
+\begin{align*}
+ (2 n+\tau/\beta^{2})\f\beta^{2}n= \f(2 \beta^{2}n+\tau)n.   
+ \end{align*}
+and alternative~\eqref{i:clean-esc} does not occur during it.
+This time has either at least \( 2 n \) subintervals in which one of the 
+alternatives~(\ref{i:enter-hole}-\ref{i:new-hole}) occurs or at least \( \tau/\beta^{2} \)
+subintervals in which the total score increases by \( \abs{G}\beta^{2} \).
+
+In the first case the holes grow to cover \( G \),
+since every pair of entering and leaving a hole increases sum hole sizes by \( \ge B \).
+\Pnote{Ignored the merging of holes closer than \( B \)}.
+In the second case the total score grows to \( \tau\abs{G} \), which by the Pass Cleaning property
+implies that \( G \) becomes clean.
+From here on, Lemma~\ref{lem:clean-esc} applies.
+\end{prooof} % step:finish
+\end{Proof}
+
+
+\subsection{Extended cleaning}\label{sec:extended-cleaning}
+
+Let us extend the Pass Cleaning property to longer intervals, allowing also  some bursts.
+For the following lemma, let us use the following notation for convenience:
+\begin{align*}
+   \beta'=\beta+2\CSpill.
+ \end{align*}
+
+
+\begin{lemma}\label{lem:dirty-passes}
+Consider an interval \( I \) of size \( |I|\ge 2\pi B \) 
+that will be passed by \( n> 2\pi \) times
+by the head in a burst-free way during some time interval \( J \).
+There could be some other times in \( J \) when the head is subject to a burst inside \( I \).
+Assume that the total number of these bursts is \( < n/4\beta' \).
+(We don't count the times when the head enters and leaves \( I \) without
+any burst.)
+Then there is some time during \( J \) when \( I \) becomes clean.
+\end{lemma}
+\begin{proof}
+Let 
+\begin{align}\label{eq:dirty-passes-const}
+ c_{1}=1/4\beta'.
+\end{align}
+Let us introduce a new \df{virtual} time counting.
+We only count the times in \( J \) when the head passes \( I \).
+Let this virtual time interval be denoted by \( K \): we can assume it starts at 0.
+Let \( K_{1}=\rint{0}{\pi} \) and \( K_{2}=\rint{\pi}{n} \), so \( K=K_{1}\cup K_{2} \).
+
+For each burst (of size \( \le\beta \)) in our interval, let us extend it left and right by \( \CSpill B \) 
+to a size \( \le  \beta' B \).
+Let \( D_{1} \) be the union of all those intervals coming from bursts occurring before virtual time \( \pi \).
+By the end of time interval \( K_{1} \) the set \( I\setminus D_{1} \) 
+becomes clean, due to the Pass Cleaning property.
+In what follows we are looking at how \( D_{1} \) shrinks during \( K_{2} \), while some new bursts may
+delay the shrinking.
+
+Consider an interval \( \lint{a}{b}\subset U \) where \( U\subset K_{2} \) 
+is an interval such that \( \lint{a}{b} \) is at
+least at a distance \( \CSpill B \) from its edges, and \( U\setminus \lint{a}{b} \) is
+clean at virtual time \( u \).
+If no burst occurs at the virtual times \( u,u+1 \) (that is during two burst-free passes) then 
+the Attack Cleaning property implies that 
+by the virtual time \( u+2 \), already the interval \( U\setminus \lint{a+\B}{v-\B} \) will also be clean.
+So let us mount a triangle \( T\subset I\times K \) over \( \lint{a}{b} \)
+which at time \( u+j \) covers the interval
+ \begin{align*}
+ \lint{a+(j/2)\B}{v-(j/2)\B},
+ \end{align*}
+thus \( T \) reaches to virtual time \( v=u+(b-a)/\B \).
+We will call \( v-u \) the \df{height} of \( T \), denoted by \( |T| \).
+If no burst occurs until virtual time \( v \), then the dirt
+is confined to \( T \) and thus disappears by virtual time \( v \).
+In the special case when \( \lint{a}{b} \) reaches, say, to the right end of the interval \( I \),
+we create a triangle (with the same slopes) 
+twice as large, whose tip is at the right end of \( I \) as well.
+
+Let us now mount a triangle over each interval of the set \( D_{1} \)
+at virtual time \( \pi \), creating a set \( \cT_{0} \) of disjoint triangles.
+
+If while no burst occurs the Attack Cleaning property confines the to these triangles.
+On the other hand, every burst may create a dirt interval 
+size \( \lint{x}{x+\beta\B} \), at some virtual time \( u \).
+Let us mount a triangle then over \( \lint{x-\CSpill B}{x+(\beta+\CSpill)\B}\times\{u\} \),
+and add all these triangles to the set \( \cT_{0} \) to get a set of triangles \( \cT \).
+These are not necessarily disjoint anymore.
+
+If two virtual triangles \( T_{1},T_{2} \) intersect,
+and \( T \) is the smallest virtual triangle containing both,
+then it is easy to see that \( |T|\le|T_{1}|+|T_{2}| \).
+We will denote \( T=T_{1}+T_{2} \).
+
+Let us now perform the following operation that will create a disjoint set
+of triangles.
+We start with \( \cT \) and if we find two intersecting triangles 
+in it, then we replace them with their sum.
+We repeat this until the remaining set \( \cT' \) consists of disjoint triangles.
+By the above remark \( \sum_{T\in \cT}|T| = \sum_{T\in \cT'}|T| \).
+The Attack Cleaning property will show that the complement of these triangles
+is clean.
+Let us ignore the triangles on the boundary for a moment.
+The sum of the heights of the triangles is at most \( \beta' \) times the number of bursts,
+and thus at most \( c_{1}n\beta'=n/4 \).
+Taking the boundary triangles into account can increase this by at most a factor of 2, to \( n/2 \).
+Therefore in the interval \( K \) of length \( n-\pi>n/2 \) there will be virtual
+times not intersecting with any element of \( \cT' \).
+At the corresponding real times, the interval \( I \) is clean.
+\end{proof}
 
 
 \section{Isolated bursts}\label{sec:1-level-noise}
@@ -4502,20 +4575,20 @@ Changing of carpets is done in the most conservative way.
 Recall Definition~\ref{def:traj} of trajectories.
 In extending the annotation to later parts of a history,
 we increase a carpet as \emph{allowed} by the Spill Bound property.
-We decrease it as \emph{required} by the Attack property
+We decrease it as \emph{required} by the Attack Cleaning property
 if the head entered it and (possibly much) later left it on the same side.
 From now on we will just say that the carpet \df{shrinks}, but it is always
-understood to be the effect of the Attack property.
+understood to be the effect of the Attack Cleaning property.
 
 If a burst introduces a new carpet \( K=\lint{a}{b} \) then we join it to all other
-carpets closer than \( \le\cCDepth2\B \), adding to the new carpet the 
+carpets closer than \( \le\CAtt\B \), adding to the new carpet the 
 possible non-carpet area between the new carpet and the old ones.
 If this new carpet connects two old healing intervals then we also
 join these intervals into a new one.
 \end{definition}
 
 This definition makes sure that carpets are always at a distance at least
-\( \cCDepth2\B \) from each other, and therefore they don't prevent 
+\( \CAtt\B \) from each other, and therefore they don't prevent 
 each other's shrinking.
 
 The following definitions will extend the island and healing-interval part of
@@ -4763,7 +4836,7 @@ Similarly on the left.
 %          annotated configuration then the annotated configuration must
 %          contain the current colony
 %          (base colony is OK, just make sure it is clear that it
-%          corresponds to the current cell of M^*).
+%          corresponds to the current cell of M^{*}).
 
 % The inequalities in~\ref{i:annotated-config.island-bounds} limit the amount 
 % by which stains % and the age of healing intervals
@@ -5064,7 +5137,7 @@ area: we add \( \Z\B \) to correct for ignoring the bound
 \end{prooof} % step:mainland.size
 
 \begin{step+}{step:off-mainland.age}
-The estimate of the age of the off-mainlandw healing area is similar.
+The estimate of the age of the off-mainland healing area is similar.
 \end{step+}
 \begin{prooof}
 Indeed, almost each age increase is associated with a sweep in the marking stage
@@ -5220,7 +5293,7 @@ trajectories for the simulated machine \( M^{*} \) has been taken care of.
 
 The new element is the possibility of large areas that cannot be super-annotated: they
 may not even be clean, even on the level of machine \( M \).
-The Spill Bound, Attack, Dwell Cleaning and Pass Cleaning properties still must be proven.
+The Spill Bound, Attack Cleaning, Dwell Cleaning and Pass Cleaning properties still must be proven.
 
 \subsection{Spill bound}
 

@@ -28,7 +28,8 @@
 
 \newcommand{\algosfOption}{0}
 \DeclareOption{sf}{\let\algosfOption1
-\renewcommand{\KwSty}[1]{\textnormal{\sffamily\textbf{#1}}\unskip}
+\renewcommand{\KwSty}[1]{\textnormal{\textsf{\bfseries #1}}\unskip}
+\renewcommand{\AlCapSty}[1]{\textsf{\bfseries #1}}
 }
 \ProcessOptions\relax
 \newcommand{\algoNameFont}{\if\algosfOption0\else\sffamily\fi}
@@ -91,6 +92,7 @@ Rule}\begin{algorithm2e}[#1]\advance\lineskip by 2pt}{\end{algorithm2e}}
 \newcommand{\algAnd}{\mykeyword{and}}
 \newcommand{\algNot}{\mykeyword{not}}
 \newcommand{\algLet}{\mykeyword{let}}
+\newcommand{\algBreak}{\mykeyword{break}}
 
 \newskip\captionskip
 \captionskip=0.5ex

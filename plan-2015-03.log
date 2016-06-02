@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  3 AUG 2015 17:48
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  25 MAY 2016 16:57
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -556,7 +556,7 @@ subscribe by emailing sympa@lirmm.fr with 'subscribe <list> <firstname name>'
 \algocf@algoframe=\box35
 \algocf@algobox=\box36
 ) (./gacs.sty
-Package: gacs 2008/11/25
+Package: gacs 
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/mathtools/mathtools.sty
 Package: mathtools 2015/05/11 v1.16 mathematical typesetting tools
@@ -649,7 +649,7 @@ LaTeX Info: Thecontrolsequence`\]'isalreadyrobust on input line 129.
 \l_MT_above_shortintertext_sep=\dimen173
 \l_MT_below_shortintertext_sep=\dimen174
 )
-LaTeX Info: Redefining \( on input line 11.
+LaTeX Info: Redefining \( on input line 12.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2015/03/04 v2.20.2
@@ -741,9 +741,10 @@ Package: enumitem 2011/09/28 v3.5.2 Customized lists
 \enit@inbox=\box40
 \enitdp@description=\count191
 )
-\symsymbolsC=\mathgroup6
+\symcmsymbols=\mathgroup6
+\symsymbolsC=\mathgroup7
 LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
-(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 60.
+(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 74.
 \c@program=\count192
 \c@progpart=\count193
 \c@probl=\count194
@@ -753,114 +754,12 @@ LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
 \c@exercise=\count198
 \c@HwExercise=\count199
 \c@aRule=\count200
-
-(/usr/local/texlive/texmf-local/tex/latex/classico/classico.sty
-Package: classico 2014/08/28 (Bob Tennent) Supports URW Classico fonts for all 
-LaTeX engines.
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/xkeyval/xkeyval.sty
-Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
-
-(/usr/local/texlive/2015/texmf-dist/tex/generic/xkeyval/xkeyval.tex
-(/usr/local/texlive/2015/texmf-dist/tex/generic/xkeyval/xkvutils.tex
-\XKV@toks=\toks36
-\XKV@tempa@toks=\toks37
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 805.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> T1/ppl/b/n on input line 805.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> T1/ppl/b/n on input line 805.
 )
-\XKV@depth=\count201
-File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
-))
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/textcomp.sty
-Package: textcomp 2005/09/27 v1.99g Standard LaTeX package
-Package textcomp Info: Sub-encoding information:
-(textcomp)               5 = only ISO-Adobe without \textcurrency
-(textcomp)               4 = 5 + \texteuro
-(textcomp)               3 = 4 + \textohm
-(textcomp)               2 = 3 + \textestimated + \textcurrency
-(textcomp)               1 = TS1 - \textcircled - \t
-(textcomp)               0 = TS1 (full)
-(textcomp)             Font families with sub-encoding setting implement
-(textcomp)             only a restricted character set as indicated.
-(textcomp)             Family '?' is the default used for unknown fonts.
-(textcomp)             See the documentation for details.
-Package textcomp Info: Setting ? sub-encoding to TS1/1 on input line 79.
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/ts1enc.def
-File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
-)
-LaTeX Info: Redefining \oldstylenums on input line 334.
-Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 349.
-Package textcomp Info: Setting cmss sub-encoding to TS1/0 on input line 350.
-Package textcomp Info: Setting cmtt sub-encoding to TS1/0 on input line 351.
-Package textcomp Info: Setting cmvtt sub-encoding to TS1/0 on input line 352.
-Package textcomp Info: Setting cmbr sub-encoding to TS1/0 on input line 353.
-Package textcomp Info: Setting cmtl sub-encoding to TS1/0 on input line 354.
-Package textcomp Info: Setting ccr sub-encoding to TS1/0 on input line 355.
-Package textcomp Info: Setting ptm sub-encoding to TS1/4 on input line 356.
-Package textcomp Info: Setting pcr sub-encoding to TS1/4 on input line 357.
-Package textcomp Info: Setting phv sub-encoding to TS1/4 on input line 358.
-Package textcomp Info: Setting ppl sub-encoding to TS1/3 on input line 359.
-Package textcomp Info: Setting pag sub-encoding to TS1/4 on input line 360.
-Package textcomp Info: Setting pbk sub-encoding to TS1/4 on input line 361.
-Package textcomp Info: Setting pnc sub-encoding to TS1/4 on input line 362.
-Package textcomp Info: Setting pzc sub-encoding to TS1/4 on input line 363.
-Package textcomp Info: Setting bch sub-encoding to TS1/4 on input line 364.
-Package textcomp Info: Setting put sub-encoding to TS1/5 on input line 365.
-Package textcomp Info: Setting uag sub-encoding to TS1/5 on input line 366.
-Package textcomp Info: Setting ugq sub-encoding to TS1/5 on input line 367.
-Package textcomp Info: Setting ul8 sub-encoding to TS1/4 on input line 368.
-Package textcomp Info: Setting ul9 sub-encoding to TS1/4 on input line 369.
-Package textcomp Info: Setting augie sub-encoding to TS1/5 on input line 370.
-Package textcomp Info: Setting dayrom sub-encoding to TS1/3 on input line 371.
-Package textcomp Info: Setting dayroms sub-encoding to TS1/3 on input line 372.
-
-Package textcomp Info: Setting pxr sub-encoding to TS1/0 on input line 373.
-Package textcomp Info: Setting pxss sub-encoding to TS1/0 on input line 374.
-Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 375.
-Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 376.
-Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 377.
-Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 378.
-Package textcomp Info: Setting lmr sub-encoding to TS1/0 on input line 379.
-Package textcomp Info: Setting lmdh sub-encoding to TS1/0 on input line 380.
-Package textcomp Info: Setting lmss sub-encoding to TS1/0 on input line 381.
-Package textcomp Info: Setting lmssq sub-encoding to TS1/0 on input line 382.
-Package textcomp Info: Setting lmvtt sub-encoding to TS1/0 on input line 383.
-Package textcomp Info: Setting lmtt sub-encoding to TS1/0 on input line 384.
-Package textcomp Info: Setting qhv sub-encoding to TS1/0 on input line 385.
-Package textcomp Info: Setting qag sub-encoding to TS1/0 on input line 386.
-Package textcomp Info: Setting qbk sub-encoding to TS1/0 on input line 387.
-Package textcomp Info: Setting qcr sub-encoding to TS1/0 on input line 388.
-Package textcomp Info: Setting qcs sub-encoding to TS1/0 on input line 389.
-Package textcomp Info: Setting qpl sub-encoding to TS1/0 on input line 390.
-Package textcomp Info: Setting qtm sub-encoding to TS1/0 on input line 391.
-Package textcomp Info: Setting qzc sub-encoding to TS1/0 on input line 392.
-Package textcomp Info: Setting qhvc sub-encoding to TS1/0 on input line 393.
-Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 394.
-Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 395.
-Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 396.
-Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 397.
-Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 398.
-Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 399.
-Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 400.
-Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 401.
-Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 402.
-Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 403.
-Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 404.
-Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 405.
-Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 406.
-Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 407.
-Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
-Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/fontenc.sty
-Package: fontenc 2005/09/27 v1.99g Standard LaTeX package
-)
-(/usr/local/texlive/2015/texmf-dist/tex/latex/fontaxes/fontaxes.sty
-Package: fontaxes 2014/03/23 v1.0d Font selection axes
-LaTeX Info: Redefining \upshape on input line 29.
-LaTeX Info: Redefining \itshape on input line 31.
-LaTeX Info: Redefining \slshape on input line 33.
-LaTeX Info: Redefining \scshape on input line 37.
-)))
 (./gacs-algo.sty
 \captionskip=\skip220
 ) (./plan-2015-03.aux)
@@ -886,14 +785,6 @@ File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
 LaTeX Font Info:    ... okay on input line 214.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 214.
 LaTeX Font Info:    ... okay on input line 214.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 214.
-LaTeX Font Info:    Try loading font information for TS1+cmr on input line 214.
-
-
-(/usr/local/texlive/2015/texmf-dist/tex/latex/base/ts1cmr.fd
-File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    ... okay on input line 214.
 \AtBeginShipoutBox=\box41
 Package hyperref Info: Link coloring ON on input line 214.
 
@@ -903,7 +794,7 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 (/usr/local/texlive/2015/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count202
+\c@section@level=\count201
 )
 Redoing nameref's sectioning
 Redoing nameref's label
@@ -913,17 +804,17 @@ LaTeX Info: Redefining \pageref on input line 214.
 LaTeX Info: Redefining \nameref on input line 214.
 (/usr/local/texlive/2015/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count203
+\scratchcounter=\count202
 \scratchdimen=\dimen178
 \scratchbox=\box42
-\nofMPsegments=\count204
-\nofMParguments=\count205
-\everyMPshowfont=\toks38
-\MPscratchCnt=\count206
+\nofMPsegments=\count203
+\nofMParguments=\count204
+\everyMPshowfont=\toks36
+\MPscratchCnt=\count205
 \MPscratchDim=\dimen179
-\MPnumerator=\count207
-\makeMPintoPDFobject=\count208
-\everyMPtoPDFconversion=\toks39
+\MPnumerator=\count206
+\makeMPintoPDFobject=\count207
+\everyMPtoPDFconversion=\toks37
 ) (/usr/local/texlive/2015/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
 
@@ -939,19 +830,12 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-\c@mv@tabular=\count209
-\c@mv@boldtabular=\count210
-LaTeX Font Info:    Try loading font information for OT1+URWClassico-LF on inpu
-t line 223.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 223.
 
-(/usr/local/texlive/texmf-local/tex/latex/classico/OT1URWClassico-LF.fd
-File: OT1URWClassico-LF.fd 2014/08/27 (autoinst) Font definitions for OT1/URWCl
-assico-LF.
+
+(/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1ppl.fd
+File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
 )
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 12.0pt on input line 223.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 20.74pt on input line 223.
 LaTeX Font Info:    Try loading font information for U+msa on input line 223.
 
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -962,34 +846,16 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 223.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 17.28pt on input line 224.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <17.28> not av
-ailable
-(Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 224.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 17.28pt on input line 224.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <12> not avail
-able
-(Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 246.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 12.0pt on input line 246.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <17.28> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 224.
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 246.
  [1
 
-{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 10.0pt on input line 269.
- [2] [3] [4]
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/m/n' will be
-(Font)              scaled to size 14.4pt on input line 442.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/bx/n' in size <14.4> not ava
-ilable
-(Font)              Font shape `OT1/URWClassico-LF/b/n' tried instead on input 
-line 442.
-LaTeX Font Info:    Font shape `OT1/URWClassico-LF/b/n' will be
-(Font)              scaled to size 14.4pt on input line 442.
+{/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
+ [4]
+LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 442.
  [5]
 [6]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 469.
@@ -1000,29 +866,30 @@ Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 469.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 469.
  ) 
 Here is how much of TeX's memory you used:
- 14839 strings out of 493089
- 208895 string characters out of 6134842
- 378576 words of memory out of 5000000
- 18136 multiletter control sequences out of 15000+600000
- 35520 words of font info for 72 fonts, out of 8000000 for 9000
+ 13836 strings out of 493089
+ 192816 string characters out of 6134842
+ 369004 words of memory out of 5000000
+ 17168 multiletter control sequences out of 15000+600000
+ 19873 words of font info for 66 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 45i,11n,37p,358b,470s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/usr/local/texlive/texmf-local/fonts/enc/dvips/classico/clsc_kxvyln.enc}</us
-r/local/texlive/texmf-local/fonts/type1/urw/classico/URWClassico-Bold.pfb></usr
-/local/texlive/texmf-local/fonts/type1/urw/classico/URWClassico-Regular.pfb></u
-sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></us
-r/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr
-/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
-ocal/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/loc
-al/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/
-texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
-exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/tex
-live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texli
-ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb>
-Output written on plan-2015-03.pdf (6 pages, 154714 bytes).
+ 45i,11n,37p,317b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
+exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
+xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/tex
+live/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texli
+ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive
+/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/20
+15/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/201
+5/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2015
+/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2015/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2015/texm
+f-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2015/texmf-dist/
+fonts/type1/urw/palatino/uplr8a.pfb>
+Output written on plan-2015-03.pdf (6 pages, 153036 bytes).
 PDF statistics:
- 124 PDF objects out of 1000 (max. 8388607)
- 103 compressed objects within 2 object streams
+ 128 PDF objects out of 1000 (max. 8388607)
+ 106 compressed objects within 2 object streams
  18 named destinations out of 1000 (max. 500000)
  57 words of extra memory for PDF output out of 10000 (max. 10000000)
 
