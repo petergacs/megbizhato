@@ -30,6 +30,7 @@
 \newfontface\palatinoFont[BoldFont= * Bold]{Palatino}
 \else
 \newcommand{\charterFont}{\fontfamily{bch}\selectfont}
+\newcommand{\timesFont}{\fontfamily{ptm}\selectfont}
 \newcommand{\palatinoFont}{\fontfamily{ppl}\selectfont}
 \newcommand{\newCenturyFont}{\fontfamily{fnc}\selectfont}
 \newcommand{\libertineFont}{\fontfamily{LinuxLibertineT-LF}\selectfont}
@@ -762,42 +763,47 @@
 % Cannot be an option like the others, as it must be executed after ProcessOptions.
 \newcommand{\defaultOption}{\newTheorems{standard}{\bfseries}\restofTheorems}
 
- \DeclareOption{sf}{\@fontoptiontrue
+ \DeclareOption{sf-headings}{\@fontoptiontrue
 \ifxetex\renewcommand{\sffamily}{\optimaFont}\else
 \@classicotrue\fi
 \newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems
 }
-\DeclareOption{sc}{\@fontoptiontrue\newHeadings{\scshape}{\sffamily\mdseries}\newTheorems{sc}{\scshape}\restofTheorems}
+\DeclareOption{sc-headings}{\@fontoptiontrue\newHeadings{\scshape}{\sffamily\mdseries}\newTheorems{sc}{\scshape}\restofTheorems}
 
 % \DeclareOption{biolinum}{\@fontoptiontrue
 % \newHeadings{\biolinumFont}{\biolinumFont}\newTheorems{sf}{\sffamily\bfseries}\restofTheorems}
 
-\DeclareOption{charter}{\@fontoptiontrue\newHeadings
+\DeclareOption{charter-headings}{\@fontoptiontrue\newHeadings
 {\charterFont}{\charterFont\mdseries}\newTheorems{charter}{\charterFont\bfseries}\restofTheorems}
 
-\DeclareOption{newcentury}{\@fontoptiontrue\newHeadings
+\DeclareOption{newcentury-headings}{\@fontoptiontrue\newHeadings
 {\newCenturyFont}{\charterFont\mdseries}\newTheorems{fncm}{\newCenturyFont\bfseries}\restofTheorems}
 
-\DeclareOption{palatino}{\@fontoptiontrue\newHeadings
+\DeclareOption{times-headings}{\@fontoptiontrue\newHeadings
+{\timesFont}{\timesFont\mdseries}\newTheorems{ptm}{\timesFont\bfseries}\restofTheorems
+\DeclareMathAlphabet      {\mathbf}{T1}{ptm}{b}{n}
+}
+
+\DeclareOption{palatino-headings}{\@fontoptiontrue\newHeadings
 {\palatinoFont}{\palatinoFont\mdseries}\newTheorems{palatino}{\palatinoFont\bfseries}\restofTheorems
 \DeclareMathAlphabet      {\mathbf}{T1}{ppl}{b}{n}
 } 
 
-\DeclareOption{libertine}{% Works better with xetex, since it scales the font, but then mathbf is not changed.
+\DeclareOption{libertine-headings}{% Works better with xetex, since it scales the font, but then mathbf is not changed.
 \@fontoptiontrue\newHeadings
 {\libertineFont}{\libertineFont\mdseries}\newTheorems{libertine}{\libertineFont\bfseries}\restofTheorems
 \DeclareMathAlphabet      {\mathbf}{T1}{LinuxLibertineT-LF}{b}{n}
 }
 
 % only with xetex
-\DeclareOption{iowan}{\ifxetex
+\DeclareOption{iowan-headings}{\ifxetex
 \@fontoptiontrue\newHeadings
 {\iowanFont}{\iowanFont\mdseries}\newTheorems{iowan}{\iowanFont\bfseries}\restofTheorems
 %\setmathrm{Iowan Old Style} % does not work well
 \else\@warning{The iowan option needs XeTeX.}\fi
 }
 
-\DeclareOption{goudy}{\ifxetex
+\DeclareOption{goudy-headings}{\ifxetex
 \@fontoptiontrue\newHeadings
 {\goudyFont}{\goudyFont\mdseries}\newTheorems{goudy}{\goudyFont\bfseries}\restofTheorems
 \else\@warning{The goudy option needs XeTeX.}\fi

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  25 MAY 2016 16:57
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2015.5.24)  27 JUL 2016 14:04
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -744,7 +744,7 @@ Package: enumitem 2011/09/28 v3.5.2 Customized lists
 \symcmsymbols=\mathgroup6
 \symsymbolsC=\mathgroup7
 LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
-(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 74.
+(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 75.
 \c@program=\count192
 \c@progpart=\count193
 \c@probl=\count194
@@ -754,11 +754,11 @@ LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
 \c@exercise=\count198
 \c@HwExercise=\count199
 \c@aRule=\count200
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 805.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 811.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> T1/ppl/b/n on input line 805.
+(Font)                  OT1/cmr/bx/n --> T1/ptm/b/n on input line 811.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmr/bx/n --> T1/ppl/b/n on input line 805.
+(Font)                  OT1/cmr/bx/n --> T1/ptm/b/n on input line 811.
 )
 (./gacs-algo.sty
 \captionskip=\skip220
@@ -830,11 +830,11 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for OT1+ppl on input line 223.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 223.
 
 
-(/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1ppl.fd
-File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
+(/usr/local/texlive/2015/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 LaTeX Font Info:    Try loading font information for U+msa on input line 223.
 
@@ -846,33 +846,33 @@ LaTeX Font Info:    Try loading font information for U+msb on input line 223.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <17.28> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 224.
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 246.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 224.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 246.
  [1
 
 {/usr/local/texlive/2015/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] [3]
  [4]
-LaTeX Font Info:    Font shape `OT1/ppl/bx/n' in size <14.4> not available
-(Font)              Font shape `OT1/ppl/b/n' tried instead on input line 442.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <14.4> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 443.
  [5]
 [6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 469.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 469.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 470.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 470.
  (./plan-2015-03.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 469.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 469.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 469.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 470.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 470.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 470.
  ) 
 Here is how much of TeX's memory you used:
- 13836 strings out of 493089
- 192816 string characters out of 6134842
- 369004 words of memory out of 5000000
- 17168 multiletter control sequences out of 15000+600000
- 19873 words of font info for 66 fonts, out of 8000000 for 9000
+ 13839 strings out of 493089
+ 192899 string characters out of 6134842
+ 367004 words of memory out of 5000000
+ 17171 multiletter control sequences out of 15000+600000
+ 22910 words of font info for 66 fonts, out of 8000000 for 9000
  1144 hyphenation exceptions out of 8191
- 45i,11n,37p,317b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 45i,12n,37p,317b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2015/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/t
 exlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/local/te
 xlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/local/tex
@@ -884,9 +884,9 @@ ve/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/texlive
 /texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2015/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2015/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2015/texm
-f-dist/fonts/type1/urw/palatino/uplb8a.pfb></usr/local/texlive/2015/texmf-dist/
-fonts/type1/urw/palatino/uplr8a.pfb>
-Output written on plan-2015-03.pdf (6 pages, 153036 bytes).
+f-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2015/texmf-dist/fon
+ts/type1/urw/times/utmr8a.pfb>
+Output written on plan-2015-03.pdf (6 pages, 146377 bytes).
 PDF statistics:
  128 PDF objects out of 1000 (max. 8388607)
  106 compressed objects within 2 object streams

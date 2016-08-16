@@ -9,7 +9,7 @@
 \contentsline {subsection}{\numberline {2.4}Difficulties}{8}{subsection.0.2.4}
 \contentsline {subsection}{\numberline {2.5}A shortcut solution}{10}{subsection.0.2.5}
 \contentsline {section}{\numberline {3}Notation}{10}{section.0.3}
-\contentsline {section}{\numberline {4}Specifying a Turing machine}{11}{section.0.4}
+\contentsline {section}{\numberline {4}Specifying a Turing machine}{12}{section.0.4}
 \contentsline {subsection}{\numberline {4.1}Universal Turing machine}{12}{subsection.0.4.1}
 \contentsline {subsection}{\numberline {4.2}Rule language}{14}{subsection.0.4.2}
 \contentsline {section}{\numberline {5}Exploiting structure in the noise}{17}{section.0.5}
@@ -20,34 +20,29 @@
 \contentsline {subsection}{\numberline {6.2}Simulation}{26}{subsection.0.6.2}
 \contentsline {subsection}{\numberline {6.3}Hierarchical codes}{27}{subsection.0.6.3}
 \contentsline {section}{\numberline {7}Simulation structure}{28}{section.0.7}
-\contentsline {subsection}{\numberline {7.1}Head movement}{29}{subsection.0.7.1}
+\contentsline {subsection}{\numberline {7.1}Head movement}{30}{subsection.0.7.1}
 \contentsline {subsubsection}{\numberline {7.1.1}Zigging}{30}{subsubsection.0.7.1.1}
 \contentsline {subsubsection}{\numberline {7.1.2}Feathering}{31}{subsubsection.0.7.1.2}
-\contentsline {subsection}{\numberline {7.2}Computation phase}{34}{subsection.0.7.2}
+\contentsline {subsection}{\numberline {7.2}Computation phase}{35}{subsection.0.7.2}
 \contentsline {subsection}{\numberline {7.3}Forced self-simulation}{36}{subsection.0.7.3}
 \contentsline {subsubsection}{\numberline {7.3.1}New primitives}{36}{subsubsection.0.7.3.1}
 \contentsline {subsubsection}{\numberline {7.3.2}Simulating the rules}{37}{subsubsection.0.7.3.2}
 \contentsline {subsection}{\numberline {7.4}Transfer phase}{38}{subsection.0.7.4}
-\contentsline {subsubsection}{\numberline {7.4.1}General structure of the phase}{38}{subsubsection.0.7.4.1}
+\contentsline {subsubsection}{\numberline {7.4.1}General structure of the phase}{39}{subsubsection.0.7.4.1}
 \contentsline {subsubsection}{\numberline {7.4.2}Transfer to a non-adjacent colony}{39}{subsubsection.0.7.4.2}
 \contentsline {section}{\numberline {8}Health}{40}{section.0.8}
-\contentsline {section}{\numberline {9}Healing and rebuilding}{46}{section.0.9}
-\contentsline {subsection}{\numberline {9.1}Admissibility, stitching}{46}{subsection.0.9.1}
+\contentsline {section}{\numberline {9}Healing and rebuilding}{45}{section.0.9}
+\contentsline {subsection}{\numberline {9.1}Annotation, admissibility, stitching}{45}{subsection.0.9.1}
 \contentsline {subsection}{\numberline {9.2}The healing procedure}{49}{subsection.0.9.2}
-\contentsline {subsubsection}{\numberline {9.2.1}The healing area}{49}{subsubsection.0.9.2.1}
-\contentsline {subsubsection}{\numberline {9.2.2}Healing addresses}{50}{subsubsection.0.9.2.2}
-\contentsline {subsubsection}{\numberline {9.2.3}Healing stages}{51}{subsubsection.0.9.2.3}
-\contentsline {subsection}{\numberline {9.3}Rebuilding}{52}{subsection.0.9.3}
-\contentsline {section}{\numberline {10}Annotation and scale-up}{54}{section.0.10}
-\contentsline {subsection}{\numberline {10.1}Annotation}{54}{subsection.0.10.1}
-\contentsline {subsection}{\numberline {10.2}The simulation codes}{58}{subsection.0.10.2}
-\contentsline {section}{\numberline {11}Cleaning}{59}{section.0.11}
-\contentsline {subsection}{\numberline {11.1}Extended escape}{59}{subsection.0.11.1}
-\contentsline {subsection}{\numberline {11.2}Extended cleaning}{64}{subsection.0.11.2}
-\contentsline {section}{\numberline {12}Isolated bursts}{66}{section.0.12}
-\contentsline {subsection}{\numberline {12.1}Cleaning}{66}{subsection.0.12.1}
-\contentsline {subsubsection}{\numberline {12.1.1}Extending the annotation}{66}{subsubsection.0.12.1.1}
-\contentsline {subsubsection}{\numberline {12.1.2}Regularity}{68}{subsubsection.0.12.1.2}
-\contentsline {subsection}{\numberline {12.2}Relief}{73}{subsection.0.12.2}
-\contentsline {section}{\numberline {13}After a large burst}{74}{section.0.13}
-\contentsline {subsection}{\numberline {13.1}Spill bound}{75}{subsection.0.13.1}
+\contentsline {subsection}{\numberline {9.3}Rebuilding}{50}{subsection.0.9.3}
+\contentsline {section}{\numberline {10}Super annotation and scale-up}{53}{section.0.10}
+\contentsline {subsection}{\numberline {10.1}Super annotation}{53}{subsection.0.10.1}
+\contentsline {subsection}{\numberline {10.2}The simulation codes}{56}{subsection.0.10.2}
+\contentsline {section}{\numberline {11}Isolated bursts}{57}{section.0.11}
+\contentsline {section}{\numberline {12}Cleaning}{60}{section.0.12}
+\contentsline {subsection}{\numberline {12.1}Escape}{60}{subsection.0.12.1}
+\contentsline {subsection}{\numberline {12.2}Attack cleaning}{65}{subsection.0.12.2}
+\contentsline {subsection}{\numberline {12.3}Extended cleaning}{66}{subsection.0.12.3}
+\contentsline {subsection}{\numberline {12.4}Dwell cleaning}{69}{subsection.0.12.4}
+\contentsline {section}{\numberline {13}After a large burst}{69}{section.0.13}
+\contentsline {subsection}{\numberline {13.1}Spill bound}{70}{subsection.0.13.1}
