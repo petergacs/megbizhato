@@ -22,9 +22,6 @@
 
 \firmlists
 
-% Not with mathdesign.  Before hyperref, otherwise AucTex is in trouble:
-\usepackage{amssymb}
-
 % If you do not want the bibliography on a separate page:
 \renewcommand{\bibsection}{% 
 \section*{\bibname} 
@@ -36,7 +33,7 @@
 % \usepackage{float}
  % After hyperref:
 \usepackage[algo2e,algosection,tworuled,noend,noline]{algorithm2e}
-\usepackage[sf-headings]{gacs}
+\usepackage{gacs}
 \usepackage{gacs-algo} % After hyperref.
 % After gacs.sty
 
@@ -45,7 +42,7 @@
 %\usepackage[pagecolor={Honeydew1}]{pagecolor}
 %\usepackage[pagecolor={Azure1}]{pagecolor}
 %\usepackage[pagecolor={Cornsilk1}]{pagecolor}
-\usepackage[pagecolor={Ivory1}]{pagecolor}
+%\usepackage[pagecolor={Ivory1}]{pagecolor}
 
 \hyphenation{com-plex-ity des-tin-at-ion co-lon-ies}
 
@@ -61,6 +58,8 @@
 
 \renewcommand{\le}{\leq}
 \renewcommand{\ge}{\geq}
+
+\renewcommand{\vek}[1]{\mathbf{#1}}
 
 \newcommand{\fld}[1]{\ensuremath{\textit{#1\/}}}
 \newcommand{\rul}[1]{\ensuremath{\texttt{\slshape #1\/}}}
@@ -188,7 +187,6 @@
 
 \newcommand{\mrk}{\mathrm{mrk}}
 \newcommand{\K}{K}
-\newcommand{\loc}{\ell_\mrk}
 \newcommand{\N}{\mathbf{N}}
 \newcommand{\Zg}{\mathcal{Z}_g}
 
@@ -624,7 +622,7 @@ But when it is at the right edge of \( C(x) \),
 a burst \( \mathbf{b}_{2} \) of level 1 (which can happen essentially in every work period of level 1)
 moves the head over to the left edge of \( C(x+\Q_{1}) \).
 Here it will be captured, simulating the cell \( x \) of \( M_{2} \) from a cell and machine state 
-represented by colony \( C(x+\lint{0}{\Q_{1}} \) as set up by 
+represented by colony \( C(x+\Q_{1}) \) as set up by 
 the big burst \( \mathbf{b}_{1} \) earlier.
 
 From the point of view of the simulated machine \( M_{2} \) (which does not see bursts
@@ -1221,7 +1219,7 @@ simulating some Turing machine \( (\Gamma^{*}, \Sigma^{*},\tau^{*}, q^{*}_{\star
 % \end{align*}
 We will assume that \( \Gamma^{*}\cup\set{\emptyset} \),
 and the alphabet \( \Sigma^{*} \) are subsets of the set of  binary strings
-\( \{0,1\}^{\ell} \) for some \( \ell<\Q \) (we can always ignore some states or tape
+\( \{0,1\}^{l} \) for some \( l<\Q \) (we can always ignore some states or tape
 symbols, if we want).
 
 \begin{definition}[Interior]\label{def:interior}
@@ -1235,7 +1233,7 @@ We will store the coded information in the interior of the colony, since it is m
 to errors near the boundaries.
 So let \( (\upsilon_{*}, \upsilon^{*}) \) be a \( (\beta,2) \)-burst-error-correcting block code
 \begin{align*}
-  \upsilon_{*}: \{0,1\}^{\ell} \cup \set{\emptyset}
+  \upsilon_{*}: \{0,1\}^{l} \cup \set{\emptyset}
    \to\{0,1\}^{(\Q-2\cdot\PadLen)\B}.
 \end{align*}
 We could use, for example, the repetition code of Example~\ref{xmp:tripling}.
@@ -3900,10 +3898,47 @@ applies), and thus each interval \( K_{(i+1)',j} \) gets at least \( d 2^{i-2}\p
 Now the inequality~\eqref{eq:cns.traj} implies \( d > 8\beta'=2\cdot 4\beta' \), finishing the proof.
 \end{proof}
 
-\subsection{Dwell cleaning}
+\section{Further analyses}
 
-Let us establish the Dwell Cleaning property for the simulated machine \( M^{*} \).
+\subsection{Trouble with the current plan}
 
+The current plan seems not to be working. 
+This plan required the trajectory properties
+Transition Function, Attack Cleaning, Spill Bound, Dwell Cleaning, Pass Cleaning.
+But there is a question about the conditions of these properties, for example
+of Pass Cleaning.
+If we require it only during a noise-free time interval, then Lemmas~\ref{lem:dirty-passes} 
+and~\ref{lem:burst-density} are not applicable.
+They may become applicable if we require it in a time interval in which noise is sparse.
+But then it is not clear how to scale it up.
+These same two lemmas are needed to scale it up, but it seems difficult to prove their
+noisy version.
+
+\subsection{Cleaning in a small number of passes}
+
+What is the real number of passes needed to clean an interval?
+
+\begin{example}
+  One pass is not sufficient.
+Consider the following local configuration on an interval \( I \).
+It is covered with colonies (of level 1, representing cells of level 2).
+The interval is broken up into subintervals \( I_{1},I_{2},\dots \), each consisting of \( \gamma \) colonies.
+(Recall that a sparse set of bursts allows a burst in every \( \gamma \) colonies.)
+These colonies \( C_{k,1},\dots,C_{k,\gamma} \) represent cells \( x_{k,1},\dots, x_{k,\gamma} \).
+The leftmost cell \( x_{k,1} \) in each interval \( I_{k} \) is 
+\( \Z \) steps behind the front which is on its right, also in \( I_{k} \).
+Colony \( C_{k,1} \) 
+pretends that the head is observing \( x_{k,1} \), and is in the last stage of moving right.
+So once the head is in \( C_{k,1} \), it does not make any move back, and
+the simulation of a head moving (in a zigging way) from \( x_{k,1} \) to \( x_{k,\gamma} \) proceeds.
+Once the head reaches the right end of \( C_{k,\gamma} \), a burst moves it
+into \( C_{k+1,1} \).
+
+This way, the head passes \( I \) while leaving the organization at level 2.
+\end{example}
+
+The example suggests that maybe two passes are sufficient: on the way back from the right end, the
+example configuration will trigger rebuilding at every level.
 
 
 
@@ -3932,7 +3967,7 @@ We are looking at the boundary \( z \) of a large area that is clean for the
 machine \( M^{*} \): without loss of generality suppose that this is the right boundary.
 We will be looking at it in a space-time rectangle \( \lint{a}{b}\times\lint{u}{v} \)
 that is noise-free in \( M^{*} \).
-The interesting case has \( a<z<b \) with \( z-a=b-z=O(\Q\B) \).
+The interesting case has \( a<z<b \) with \( z-a,b-z=O(\Q\B) \).
 The assumption allows occasional bursts of noise of the trajectory \( \eta \) of \( M \),
 but no two of these bursts must occur in a space-time rectangle of size comparable to
 the size of a colony work period of \( M \).
