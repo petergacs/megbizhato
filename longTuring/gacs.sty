@@ -1,0 +1,761 @@
+
+\ProvidesPackage{gacs}
+ % my header file for articles.  Peter Gacs
+
+\pdfpagewidth=8.5in     % paper size of the pdf output (letter in this case)
+\pdfpageheight=11in
+
+% I you use it, use the a4paper option, too:
+% \pdfpagewidth=210mm     % paper size of the pdf output (letter in this case)
+% \pdfpageheight=297mm
+
+% Declare all options before loading any packages
+
+\newif\if@fontoption{\@fontoptionfalse}
+
+\newif\if@lemmaNoSection{\@lemmaNoSectionfalse}
+\DeclareOption{lemma-no-section}{\@lemmaNoSectiontrue}
+
+\newif\if@theoremSection{\@theoremSectionfalse}
+\DeclareOption{theorem-section}{\@theoremSectiontrue}
+
+\newif\if@sfHeadings{\@sfHeadingsfalse}
+\DeclareOption{sf-headings}{\@fontoptiontrue\@sfHeadingstrue}
+
+\newif\if@baskerville{\@baskervillefalse}
+\DeclareOption{baskerville}{\@fontoptiontrue\@baskervilletrue}
+
+% No \RequirePackage before declaring and processing options.
+\ProcessOptions\relax
+
+\newcommand{\myBaskerville}{
+  \usepackage{classico} % for nicer sans-serif 
+  \usepackage{inconsolata} % for nicer typewriter font
+\usepackage[p]{baskervillef}
+\usepackage[baskerville]{newtxmath} 
+\usepackage[bb=ams]{mathalfa}
+ }
+
+\RequirePackage{mathtools} % Can be used in place of amsmath
+% In amsmath:
+% \numberwithin{equation}{section}
+% \numberwithin{figure}{section}
+\mathtoolsset{mathic} % Math italic correction (say in theorems).
+\RequirePackage{amsthm}
+ \let\paragraphname\@empty  % an amsart bug
+% amsthm bug: put \ after \begin{proof}, if you want to write
+% \paragraph{..}.
+
+\IfFileExists{cheatpf2.sty}{%
+  \RequirePackage{cheatpf2}
+  \let\kwfont\itshape
+  \setlength{\pfindent}{0.8em}
+  \@ifundefined{pfmixednumbers}{}{\pfmixednumbers{4}}
+  % Use short step numbers for all levels >= 3
+  }{%
+    \PackageWarning{cheatpf2}{%
+      Package cheatpf2 not available.
+    }%
+  }%
+
+
+\RequirePackage{graphicx}
+\RequirePackage[x11names]{xcolor}
+\@ifundefined{nopagecolor}{\newcommand{\nopagecolor}{\pagecolor{white}}}{}
+
+% Fonts
+
+\RequirePackage{ifxetex} % For fonts that are only (or better) in xetex.
+
+\RequirePackage{amssymb} % not with mathdesign.  Already called in the template, to come before hyperref.
+\RequirePackage{eucal} % For changing \mathcal to the Euler script style.
+\DeclareSymbolFont{bbold}{U}{bbold}{m}{n}
+%\DeclareMathAlphabet{\mathbfsf}{\encodingdefault}{\sfdefault}{bx}{n}
+
+% For a better CM boldface.
+\fontseries{b}\selectfont
+\renewcommand{\bfdefault}{b}
+\DeclareMathAlphabet{\mathbf}{\encodingdefault}{cmr}{b}{n}
+
+\ifxetex
+\RequirePackage[math]{mathspec}
+\newfontfamily\optimaFont{Optima}
+\newfontfamily\libertineFont[Scale=1.1]{LinLibertine}
+\newfontface\iowanFont[Ligatures=TeX,BoldFont = * Bold]{Iowan Old Style}
+% \charterFont in XeTeX fontspec allows scaling.
+\newfontface\charterFont[BoldFont = * Bold]{Charter}
+%\newfontface\charterFont[Scale=MatchLowercase,BoldFont = * Bold]{Charter}
+\newfontface\palatinoFont[BoldFont= * Bold]{Palatino}
+\else
+\newcommand{\charterFont}{\fontfamily{bch}\selectfont}
+\newcommand{\timesFont}{\fontfamily{ptm}\selectfont}
+\newcommand{\palatinoFont}{\fontfamily{ppl}\selectfont}
+\newcommand{\libertineFont}{\fontfamily{LinuxLibertineT-LF}\selectfont}
+\fi
+
+\newcommand{\textbsf}[1]{\textbf{\sffamily #1}}
+
+% Page style and similar
+
+\newcommand{\killtext}[1]{}
+
+% To have pagenumber 1 suppressed.  Do we need this stuff?
+\newcommand{\@hideone}[1]{\ifnum #1=1\else\@arabic#1\fi}
+\pagenumbering{hideone}
+
+ \newcommand{\Pageno}{\c@page}
+% \newcommand{\Oddhead}{\@oddhead}
+
+\raggedbottom  % Avoid strange spaces between paragraphs, at the price of having unequal page length.
+\setlength{\vfuzz}{4pt} % to ignore trivial vertical overfull boxes.
+
+\newenvironment{raggedpar}{\begin{raggedright}\begin{sloppypar}}{\end{sloppypar}\end{raggedright}}
+\newenvironment{sloppyenv}{\sloppy}{\fussy}
+
+% maybe we do not need these with raggedbottom:
+\clubpenalty=1000 
+\widowpenalty=1000
+
+\makepagestyle{homework}
+% Define \semester, \hwno, \type in the homework itself.
+% \makeoddhead{homework}{\small \semester}{\small 
+%   \course }{\small  \type~\hwno}
+% \makeevenhead{homework}{\small \semester}{\small 
+%   \course}{\small  \type~\hwno}
+\makeoddhead{homework}{\small \sffamily\semester}{\small 
+  \sffamily\course }{\small \sffamily \type~\hwno}
+\makeevenhead{homework}{\small \sffamily\semester}{\small 
+  \sffamily\course}{\small \sffamily \type~\hwno}
+\makeheadrule{homework}{\textwidth}{0.2pt}
+
+ \setcounter{tocdepth}{2}
+
+% Enumerations
+
+\RequirePackage{enumitem}
+\setlist[enumerate,1]{leftmargin=*}
+\setlist[enumerate,2]{leftmargin=*,label={\alph*.},ref=\theenumi\theenumii}
+\setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.9}{\textbullet}}}
+\setlist[itemize,1]{leftmargin=*}
+\setlist[itemize,2]{label=$\circ$}
+%\setlist[description]{font=\normalfont\bfseries, leftmargin=1em}
+\setlist[description]{font=\mdseries\itshape, leftmargin=1em}
+
+\newenvironment{alphenum}[1][]
+ {\begin{enumerate}[#1,label=\upshape{\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{romanenum}
+ {\begin{enumerate}[label=\upshape{\roman*)},ref=\upshape{\roman*}]}{\end{enumerate}}
+\newenvironment{Alphenum}[1][]
+ {\begin{enumerate}[#1,label=\upshape{\Alph*)},ref=\upshape{\Alph*}]}{\end{enumerate}}
+
+\newenvironment{bullets}{\begin{enumerate}[label=\textbullet]}{\end{enumerate}}
+\newenvironment{dashes}{\begin{enumerate}[label=\bfseries\textendash]}{\end{enumerate}}
+
+\newenvironment{flushdescription}{\leftmargini=1em\renewcommand
+{\descriptionlabel}[1]{\hspace\labelsep \textit{##1.}}\begin{description}}
+{\end{description}}
+
+% The lemma counter is used by almost all theorem and definition environments.
+% The reference of {alphenumIn} attaches the alphabetic reference to this counter.
+\newenvironment{enumIn}
+ {\begin{enumerate}[label=\upshape{\arabic*)},ref=\thelemma.\upshape{\arabic*}]}{\end{enumerate}}
+\newenvironment{alphenumIn}
+ {\begin{enumerate}[label=\upshape{\alph*)},ref=\thelemma.\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{AlphenumIn}
+ {\begin{enumerate}[label=\upshape{\Alph*)},ref=\thelemma.\upshape{\Alph*}]}{\end{enumerate}}
+\newenvironment{romenumIn}
+ {\begin{enumerate}[label=\upshape{\roman*)},ref=\thelemma.\upshape{\roman*}]}{\end{enumerate}}
+
+\newenvironment{cjenum}
+ {\begin{enumerate}[label=\upshape{\alph*)},ref=\upshape{\alph*}]}{\end{enumerate}}
+\newenvironment{djenum}
+ {\begin{enumerate}[label=\upshape{\arabic*)},ref=\upshape{\arabic*}]}{\end{enumerate}}
+
+\newenvironment{varenum}[2][]
+ {\begin{enumerate}[#1,label=\upshape{#2\arabic*)},ref=\upshape{#2\arabic*}]}{\end{enumerate}}
+
+% For enumerate.sty:
+% \newenvironment{bullets}{\begin{enumerate}[\textbullet]}{\end{enumerate}}
+% \newenvironment{dashes}{\begin{enumerate}[\bfseries\textendash]}{\end{enumerate}}
+% \newenvironment{alphenum}
+%  {\begin{enumerate}[{\upshape (a)}]}{\end{enumerate}}
+
+% % Use with enumerate.sty, to delete annoying warnings.
+% \def\@@enum@[#1]{%
+%   \@enLab{}\let\@enThe\@enQmark
+%   \@enloop#1\@enum@
+% %   \ifx\@enThe\@enQmark\@warning{The counter will not be printed.%
+% %    ^^J\space\@spaces\@spaces\@spaces The label is: \the\@enLab}\fi
+%   \expandafter\edef\csname label\@enumctr\endcsname{\the\@enLab}%
+%   \expandafter\let\csname the\@enumctr\endcsname\@enThe
+%   \csname c@\@enumctr\endcsname7
+%   \expandafter\settowidth
+%             \csname leftmargin\romannumeral\@enumdepth\endcsname
+%             {\the\@enLab\hspace{\labelsep}}%
+%   \@enum@}
+
+
+% BU letters
+
+\newcommand{\BUHeadEmailArg}[1]{
+  {\renewcommand{\sfdefault}{phv}%
+    \newlength{\widthdiff}
+    \newlength{\leftshift}
+    \setlength{\widthdiff}{6in}
+    \addtolength{\widthdiff}{-\textwidth}
+    \vspace*{-1in}
+    \noindent\hspace{-0.5\widthdiff}
+    \makebox[6in]{
+      \raise-4ex\hbox{\includegraphics[scale=0.3]{boston_univ_cmyk}}
+      \hfil
+      \begin{tabular}{r@{}}\hspace{1em}
+        \sffamily {\bfseries College of Arts} \& {\bfseries Sciences}
+        \hspace{0.5em} Department of Computer Science
+        \\\footnotesize\sffamily 111 Cummington Street, Boston, MA 02215-2411, (617) 353-8919
+        \\ \footnotesize\sffamily #1
+      \end{tabular}
+    }
+    \vspace{0.5in}
+  }
+}
+ 
+\newcommand{\BUhead}{\BUHeadEmailArg{gacs@bu.edu}}
+
+
+% \newcommand{\Line}[1]{\makebox[\textwidth]{#1}}
+
+%  Bibliography
+
+% The title of a bibliography is \refname.
+% I am not sure the commands below are needed: there are packages now for
+% this. 
+% If you want to use several bibliographies, with arbitrary names, but
+% their items consecutively numbered, write \manybibs first.
+% Then for each bibliography, with, e.g., 2-digit labels,
+% write \begin{biblike}{10}{Bibliography name}
+%  \bibitem{}...
+%  ...
+%  \end{biblike}
+% If you want to restart the numbering say \setcounter{bibno}{0}
+ \def\manybibs{
+   \newcounter{bibno}
+   \def\reusecounter##1{\@nmbrlisttrue\def\@listctr{##1}}
+   \def\@bibitem##1{\item\if@filesw \immediate\write\@auxout
+       {\string\bibcite{##1}{\the\c@bibno}}\fi\ignorespaces}
+   }
+ \newenvironment{biblike}[2]{\subsubsection*{#2\@mkboth {#2}{#2}}\begin{list}
+   {[\arabic{bibno}]}{\settowidth\labelwidth{[#1]}\leftmargin\labelwidth
+   \advance\leftmargin\labelsep
+   \reusecounter{bibno} }
+   \def\newblock{\hskip .11em plus .33em minus -.07em}
+   \sloppy
+   \sfcode`\.=1000\relax}{\end{list}}
+
+% Theorems
+
+\newcommand{\customqed}[1]{{\renewcommand{\qedsymbol}{#1}\qed}}
+\newcommand{\varqed}{\customqed{\hbox{$\lrcorner$}}} % amssymb?
+%\newcommand{\varqed}{\customqed{\hbox{$\diamondsuit$}}}
+
+
+% The complications of \newTheorem, etc. are only here to have to option of changing the theorem head fonts.
+
+% This version of the problem and solution environment is needed if you want to
+% float around some figure: list environments like the theorem environment are not tolerated 
+% for example in the package floatflt.
+\newcounter{probl}
+\newcommand{\problemfont}{\bfseries} % Put it before calling \newTheorems
+\newenvironment{problem}{\refstepcounter{probl}\par\medskip\noindent
+  {\problemfont Problem \arabic{probl}~}}{}
+\newenvironment{solution}{\par\medskip\noindent{\itshape Solution.}}{}
+
+\newcommand{\intheoremstyle}{
+\if@lemmaNoSection
+  \newtheorem{lemma}{Lemma}\else 
+  \newtheorem{lemma}{Lemma}[section]\fi
+\if@theoremSection
+  \newtheorem{theorem}{Theorem}[lemma]\else 
+  \newtheorem{theorem}{Theorem}\fi
+
+ \newtheorem{question}{Question}
+ \newtheorem*{claimnonumber}{Claim} % 
+ \newtheorem*{lemmanonumber}{Lemma} % 
+ \newenvironment{specialclaim}[1]{\par\medskip\noindent{\theoremheadfont##1\hspace{0.5em}}\begingroup\itshape}
+{\endgroup\par\medskip}
+
+ \newtheorem{proposition}[lemma]{Proposition}
+ \newtheorem{fact}[lemma]{Fact}
+ \newtheorem{claim}[lemma]{Claim} % same as theorems
+ \newtheorem{corollary}[lemma]{Corollary}
+ \newtheorem{axiom}[lemma]{Axiom}
+ \newtheorem{conjecture}[lemma]{Conjecture}
+ \newtheorem{goal}[lemma]{Goal}
+}
+
+\newcommand{\indefinitionstyle}{
+\newtheorem{Definition}[lemma]{Definition}
+\newenvironment{definition}{\begin{Definition}}{\varqed\end{Definition}}
+
+ \newtheorem{Notation}[lemma]{Notation}
+  \newenvironment{notation}{%
+   \begin{Notation}}{\varqed\end{Notation}}
+
+ \newtheorem{Condition}[lemma]{Condition}
+ \newenvironment{condition}{%
+   \begin{Condition}}{\varqed\end{Condition}}
+
+\if@lemmaNoSection
+ \newtheorem{exercise}{Exercise}
+ \newtheorem{aRule}{Rule}
+\else
+ \newtheorem{exercise}{Exercise}[section]
+ \newtheorem{aRule}{Rule}[section]
+\fi
+
+ \newtheorem{HwExercise}{Exercise}
+% \newtheorem{problem}{Problem}
+ 
+ \newenvironment{arule}{\begin{aRule}}{\varqed\end{aRule}}
+
+ \newtheorem{Remark}[lemma]{Remark}
+ \newtheorem*{Remarknonumber}{Remark} % 
+ \newtheorem{Remarks}[lemma]{Remarks}
+ 
+ \newenvironment{remark}{%
+   \begin{Remark}}{\varqed\end{Remark}}
+ \newenvironment{remarknonumber}{%
+\begin{Remarknonumber}}{\varqed\end{Remarknonumber}}
+
+ \newenvironment{remarks}{%
+   \begin{Remarks}}{\varqed\end{Remarks}}
+
+ \newtheorem{Example}[lemma]{Example}
+ \newtheorem{Examples}[lemma]{Examples}
+
+ \newenvironment{example}{%
+   \begin{Example}}{\varqed\end{Example}}
+ \newenvironment{examples}{%
+   \begin{Examples}}{\varqed\end{Examples}}
+
+ \theoremstyle{remark}
+}
+\newcommand{\restofTheorems}{} %othertheorems
+
+\newcommand{\newThmHeads}[3]{ % #3 is the note  font
+  \newtheoremstyle{#1definition}
+  {5pt}%      Space above
+  {5pt}%      Space below
+  {}%         Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {#2}% Thm head font
+% {\fontfamily{bch}\selectfont\upshape}%
+  {}%        Punctuation after thm head
+  {.5em}%     Space after thm head: " " = normal interword space;
+        %       \newline = linebrea
+        %       Thm head spec (can be left empty, meaning `normal'):
+  {\thmname{##1}\thmnumber{~##2}\thmnote{~#3\mdseries(\hspace{0.05em}##3\hspace{0.1em})}}
+
+  \newtheoremstyle{#1theorem}
+  {5pt}%      Space above
+  {5pt}%      Space below
+  {\itshape}% Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {#2}% Thm head font
+  {}%        Punctuation after thm head
+  {.5em}%     Space after thm head: " " = normal interword space;
+        %       \newline = linebreak
+        %       Thm head spec (can be left empty, meaning `normal'):
+  {\thmname{##1}\thmnumber{ ##2}\thmnote{~#3\mdseries(\hspace{0.07em}##3\hspace{0.07em})}}
+  % Problems are not theorems, see below.
+  \renewcommand{\problemfont}{#2}
+}
+
+\newcommand{\newTheorems}[2]{
+\newThmHeads{#1}{#2}{\normalfont}
+\newcommand{\theoremheadfont}{#2}
+\theoremstyle{#1theorem}
+\intheoremstyle
+\theoremstyle{#1definition}
+\indefinitionstyle
+\restofTheorems
+}
+% This should go into the default if you want some font options
+% \newTheorems{standard}{\bfseries}
+
+% Arguments are the font names for headings and for descriptions.
+\newcommand{\newHeadings}[2]{
+\pretitle{\begin{center}#1\LARGE}
+\posttitle{\end{center}}
+\renewcommand{\abstractnamefont}{#1\bfseries}
+\renewcommand{\chaptitlefont}{#1\Large\bfseries}
+\renewcommand*{\cftchapterfont}{#1\bfseries}
+
+\setsecheadstyle{#1\Large\bfseries\raggedright}
+\setsubsecheadstyle{#1\large\bfseries\raggedright}
+\setsubsubsecheadstyle{#1\normalsize\bfseries\raggedright}
+\setparaheadstyle{#1\normalsize\bfseries\raggedright}
+\setsubparaheadstyle{#1\normalsize\bfseries\raggedright}
+
+\setlist[description]{font=#2,leftmargin=1em}
+} % newHeadings
+
+% Real processing of font options
+
+% Cannot be an option like the others, as it must be executed after ProcessOptions.
+\newcommand{\defaultOption}{\newTheorems{standard}{\bfseries}}
+
+\if@fontoption\else\defaultOption\fi
+
+\if@sfHeadings
+\ifxetex\renewcommand{\sffamily}{\optimaFont}\else
+\IfFileExists{classico.sty}{%
+    \RequirePackage{classico}%
+  }{%
+    \PackageWarning{classico}{%
+      Package classico not available, using computer roman sf
+    }%
+  }%
+  \fi
+  \newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}
+  \fi
+
+  \if@baskerville\myBaskerville\newTheorems{standard}{\bfseries}\fi
+
+% Math macros
+
+% definitions, can be redefined to boldface or \textit\textbf, if desired.
+\newcommand{\df}[1]{\emph{#1}}
+% \newcommand{\df}[1]{\textit{{\bfseries #1}}}
+
+% \txt does not change font in changing environments.
+ \newcommand{\txt}[1]{\text{\rmfamily\mdseries\upshape{#1}}}
+
+ % Writing something both above and below a relation symbol.
+\def\Stackrel#1#2#3{\mathrel{\mathop{#2}\limits^{#1}_{#3}}}
+
+  % Redefinition of built-in operators so as they find their argument like
+ % the defined ones, without expanding it first.
+ \newcommand\ol[1]{\overline{#1}}
+ \newcommand\olol[1]{\overline{\overline{#1}}}
+ \newcommand\ul[1]{\underline{#1}}
+ 
+ % fonts
+ \newcommand\cl[1]{\mathcal{#1}}
+ \newcommand\Bf[1]{{\bf #1}}
+ 
+ % Greek characters
+ \newcommand \ag{\alpha}
+ \newcommand \bg{\beta}
+% \renewcommand\gg{\gamma} % temporary, since it conflicts with `>>'.
+ \newcommand \gm{\gamma}
+ \newcommand \Gg{\Gamma}
+ \newcommand \dg{\delta}
+ \newcommand \Dg{\Delta}
+ \newcommand \eps{\varepsilon}
+ \newcommand \fg{\varphi}
+ \newcommand \Fg{\Phi}
+ \newcommand \hg{\chi}
+ \newcommand \ig{\iota}
+ \newcommand \kg{\kappa}
+ \renewcommand \lg{\lambda} % it conflicts with lg (this is not serious).
+ \newcommand \Lg{\Lambda}
+ \newcommand \og{\omega}
+ \newcommand \Og{\Omega}
+ \newcommand \rg{\varrho}
+ \newcommand \sg{\sigma}
+ \newcommand \Sg{\Sigma}
+ \newcommand{\thg}{\vartheta}
+ \newcommand \Thg{\Theta}
+ \newcommand \tg{\tau}    % avoid, not worth it
+ \newcommand{\zg}{\zeta}
+
+\newcommand{\vek}[1]{\boldsymbol{#1}}
+
+ \newcommand{\bA}{\mathbf{A}}
+ \newcommand{\bB}{\mathbf{B}}
+ \newcommand{\bC}{\mathbf{C}}
+ \newcommand{\bD}{\mathbf{D}}
+ \newcommand{\bE}{\mathbf{E}}
+ \newcommand{\bF}{\mathbf{F}}
+ \newcommand{\bG}{\mathbf{G}}
+ \newcommand{\bH}{\mathbf{H}}
+ \newcommand{\bI}{\mathbf{I}}
+ \newcommand{\bJ}{\mathbf{J}}
+ \newcommand{\bK}{\mathbf{K}}
+ \newcommand{\bL}{\mathbf{L}}
+ \newcommand{\bM}{\mathbf{M}}
+ \newcommand{\bN}{\mathbf{N}}
+ \newcommand{\bO}{\mathbf{O}}
+ \newcommand{\bP}{\mathbf{P}}
+ \newcommand{\bQ}{\mathbf{Q}}
+ \newcommand{\bR}{\mathbf{R}}
+ \newcommand{\bS}{\mathbf{S}}
+ \newcommand{\bT}{\mathbf{T}}
+ \newcommand{\bU}{\mathbf{U}}
+ \newcommand{\bV}{\mathbf{V}}
+ \newcommand{\bW}{\mathbf{W}}
+ \newcommand{\bX}{\mathbf{X}}
+ \newcommand{\bY}{\mathbf{Y}}
+ \newcommand{\bZ}{\mathbf{Z}}
+
+  \newcommand{\bsA}{\vek{A}}
+%%  \newcommand{\bsB}{\vek{B}}
+%%  \newcommand{\bsC}{\vek{C}}
+%%  \newcommand{\bsD}{\vek{D}}
+%%  \newcommand{\bsE}{\vek{E}}
+%%  \newcommand{\bsF}{\vek{F}}
+  \newcommand{\bsG}{\vek{G}}
+  \newcommand{\bsH}{\vek{H}}
+  \newcommand{\bsI}{\vek{I}}
+%%  \newcommand{\bsJ}{\vek{J}}
+  \newcommand{\bsK}{\vek{K}}
+%%  \newcommand{\bsL}{\vek{L}}
+%%  \newcommand{\bsM}{\vek{M}}
+%%  \newcommand{\bsN}{\vek{N}}
+%%  \newcommand{\bsO}{\vek{O}}
+  \newcommand{\bsP}{\vek{P}}
+%%  \newcommand{\bsQ}{\vek{Q}}
+%%  \newcommand{\bsR}{\vek{R}}
+%%  \newcommand{\bsS}{\vek{S}}
+%%  \newcommand{\bsT}{\vek{T}}
+%%  \newcommand{\bsU}{\vek{U}}
+%%  \newcommand{\bsV}{\vek{V}}
+%%  \newcommand{\bsW}{\vek{W}}
+%%  \newcommand{\bsX}{\vek{X}}
+  \newcommand{\bsY}{\vek{Y}}
+%%  \newcommand{\bsZ}{\vek{Z}}
+
+ \newcommand{\cA}{\mathcal{A}}
+ \newcommand{\cB}{\mathcal{B}}
+ \newcommand{\cC}{\mathcal{C}}
+ \newcommand{\cD}{\mathcal{D}}
+ \newcommand{\cE}{\mathcal{E}}
+ \newcommand{\cF}{\mathcal{F}}
+ \newcommand{\cG}{\mathcal{G}}
+ \newcommand{\cH}{\mathcal{H}}
+ \newcommand{\cI}{\mathcal{I}}
+ \newcommand{\cJ}{\mathcal{J}}
+ \newcommand{\cK}{\mathcal{K}}
+ \newcommand{\cL}{\mathcal{L}}
+ \newcommand{\cM}{\mathcal{M}}
+ \newcommand{\cN}{\mathcal{N}}
+ \newcommand{\cO}{\mathcal{O}}
+ \newcommand{\cP}{\mathcal{P}}
+ \newcommand{\cQ}{\mathcal{Q}}
+ \newcommand{\cR}{\mathcal{R}}
+ \newcommand{\cS}{\mathcal{S}}
+ \newcommand{\cT}{\mathcal{T}}
+ \newcommand{\cU}{\mathcal{U}}
+ \newcommand{\cV}{\mathcal{V}}
+ \newcommand{\cW}{\mathcal{W}}
+ \newcommand{\cX}{\mathcal{X}}
+ \newcommand{\cY}{\mathcal{Y}}
+ \newcommand{\cZ}{\mathcal{Z}}
+
+ \newcommand{\bbA}{\mathbb{A}}
+ \newcommand{\bbB}{\mathbb{B}}
+ \newcommand{\bbE}{\mathbb{E}}
+ \newcommand{\bbF}{\mathbb{F}}
+ \newcommand{\bbG}{\mathbb{G}}
+ \newcommand{\bbH}{\mathbb{H}}
+ \newcommand{\bbK}{\mathbb{K}}
+ \newcommand{\bbL}{\mathbb{L}}
+ \newcommand{\bbC}{\mathbb{C}}
+ \newcommand{\bbM}{\mathbb{M}}
+ \newcommand{\bbN}{\mathbb{N}}
+ \newcommand{\bbP}{\mathbb{P}}
+ \newcommand{\bbQ}{\mathbb{Q}}
+ \newcommand{\bbR}{\mathbb{R}}
+ \newcommand{\bbS}{\mathbb{S}}
+ \newcommand{\bbT}{\mathbb{T}}
+ \newcommand{\bbV}{\mathbb{V}}
+ \newcommand{\bbX}{\mathbb{X}}
+ \newcommand{\bbZ}{\mathbb{Z}}
+
+ \newcommand{\dA}{\mathbb{A}}
+ \newcommand{\dB}{\mathbb{B}}
+ \newcommand{\dF}{\mathbb{F}}
+ \newcommand{\dG}{\mathbb{G}}
+ \newcommand{\dK}{\mathbb{K}}
+ \newcommand{\dL}{\mathbb{L}}
+ \newcommand{\dC}{\mathbb{C}}
+ \newcommand{\dM}{\mathbb{M}}
+ \newcommand{\dN}{\mathbb{N}}
+ \newcommand{\dP}{\mathbb{P}}
+ \newcommand{\dQ}{\mathbb{Q}}
+ \newcommand{\dR}{\mathbb{R}}
+ \newcommand{\dS}{\mathbb{S}}
+ \newcommand{\dT}{\mathbb{T}}
+ \newcommand{\dV}{\mathbb{V}}
+ \newcommand{\dZ}{\mathbb{Z}}
+
+ % delimiters
+\newcommand{\verythinmathskip}{\mskip 1mu}
+\newcommand{\nats}[1]{\mathopen[#1\mathclose]} % \{1,\dots,n\}
+ \newcommand\Eventof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+% \newcommand\Eventof[1]{\bigl[\verythinmathskip#1\verythinmathskip\bigr]}
+ \newcommand\Evof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+% \newcommand\Evof[1]{\bigl[\verythinmathskip#1\verythinmathskip\bigr]}
+ \newcommand\eventof[1]{\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\eventof[1]{\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\evof[1]{\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+ \newcommand\set[1]{\mathopen\{#1\mathclose\}}
+ \newcommand\setof[1]{\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+ \newcommand\Setof[1]{\bigl\{\verythinmathskip#1\verythinmathskip\bigr\}}
+ \newcommand\setOf[2]{\mathopen\{\verythinmathskip#1 : #2\verythinmathskip\mathclose\}}
+ \newcommand\tupof[1]{\mathopen(\verythinmathskip#1\verythinmathskip\mathclose)}
+ \newcommand\tupOf[2]{\mathopen(\verythinmathskip#1: #2\verythinmathskip\mathclose)}
+% \newcommand\tupof[1]{\mathopen\langle\verythinmathskip#1\verythinmathskip\mathclose\rangle}
+ \newcommand\tup[1]{( #1)}
+% \newcommand\tup[1]{\mathopen\langle #1\mathclose\rangle}
+%\newcommand{\pair}[2]{\mathopen\langle #1,#2\mathclose\rangle}
+\newcommand{\pair}[2]{(#1,#2)}
+\newcommand{\bigpair}[2]{\bigl(#1,#2\bigr)}
+\newcommand{\abs}[1]{\lvert #1 \rvert}
+ \newcommand\ang[1]{{\mathopen\langle #1\mathclose\rangle}}
+ \newcommand\Ang[1]{{\left\langle #1\right\rangle}}
+ \newcommand\bra[1]{{\langle #1\rvert}}
+ \newcommand\ket[1]{{\lvert #1 \rangle}}
+ \newcommand\braket[2]{{\mathopen\langle #1 \vert #2 \mathclose\rangle}}
+ \newcommand\bigvert[1]{{\bigl\vert\verythinmathskip#1\verythinmathskip\bigr\vert}}
+ \newcommand\Verti[1]{{\left\vert\verythinmathskip#1\verythinmathskip\right\vert}}
+ \newcommand\bigparen[1]{{\bigl(\verythinmathskip#1\verythinmathskip\bigr)}}
+ \newcommand\Bigparen[1]{{\Bigl(\verythinmathskip#1\verythinmathskip\Bigr)}}
+ \newcommand\biggparen[1]{{\biggl(#1\biggr)}}
+ \newcommand\paren[1]{( #1)}
+ \newcommand\Paren[1]{{\left( #1\right)}}
+ \newcommand\bigbrace[1]{{\bigl\{ #1\bigr\}}}
+ \newcommand\biggbrace[1]{{\biggl\{ #1\biggr\}}}
+ \newcommand\Brace[1]{{\left\{ #1\right\}}}
+ \newcommand\sqbr[1]{{[ #1]}}
+ \newcommand\Sqbr[1]{{\left[ #1\right]}}
+ \newcommand\bigsq[1]{{\bigl[ #1\bigr]}}
+ \newcommand\Bigsq[1]{{\Bigl[ #1\Bigr]}}
+ \newcommand{\cei}[1]{{\lceil #1\rceil}}
+ \newcommand{\flo}[1]{{\lfloor #1\rfloor}}
+ \newcommand{\Cei}[1]{{\left\lceil #1\right\rceil}}
+ \newcommand{\Flo}[1]{{\left\lfloor #1\right\rfloor}}
+ \newcommand{\nm}[1]{{\lVert #1\rVert}} % stands for ``norm''
+ \newcommand{\norm}[1]{{\lVert #1\rVert}} % stands for ``norm''
+ \newcommand{\Norm}[1]{{\left\lVert #1\right\rVert}} % stands for ``norm''
+
+% \newcommand\frto[2]{#1\mathinner{\ldotp\ldotp\/}#2}
+
+% \DeclareMathOperator{\Prob}{\mathbb{P}}
+ \DeclareMathOperator{\Prob}{\mathsf P}
+ \DeclareMathOperator{\Expv}{\mathsf{E}}
+ \DeclareMathOperator{\Vari}{\mathsf{Var}}
+ \DeclareMathOperator{\Cov}{\mathsf{Cov}}
+% \DeclareMathOperator{\Prob}{\mathbf{P}}
+ \newcommand\Pbof[1]{\Prob\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\Pbof[1]{\Prob\mathopen[\verythinmathskip#1\verythinmathskip\mathclose]}
+% \newcommand\Expv{\mathbf{E}\mskip 1mu}
+ \newcommand\Expvof[1]{\Expv\mskip 1mu\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\Vari{\mathbf{Var}\mskip 1mu}
+ \newcommand\Variof[1]{\Vari\mskip 1mu\mathopen\{\verythinmathskip#1\verythinmathskip\mathclose\}}
+% \newcommand\Cov{\mathbf{Cov}\mskip 1mu}
+ \newcommand{\maj}{\mathrm{maj}}
+ \newcommand\Maj{\mathop{\operator@font Maj}\nolimits}
+ \newcommand\nor{\mathbin{\operator@font NOR}}
+ \newcommand\lcm{\mathrm{lcm}}
+ \newcommand\ord{\mathrm{ord}}
+ \newcommand{\NP}{\mathrm{NP}}
+ \newcommand{\RP}{\mathrm{RP}}
+ \newcommand{\BPP}{\mathrm{BPP}}
+\newcommand{\sign}{\mathop\mathrm{sign}}
+
+\newcommand{\co}{\text{co-}}
+% \newcommand\ker{\txt{ker}}
+ \let\imp=\Rightarrow
+ \newcommand\Imp{\mathbin{\;\Longrightarrow\;}}
+ \let\eqv=\Leftrightarrow
+ \let\ded=\vdash % The sign |-.
+ \let\ua=\uparrow
+ \let\da=\downarrow
+ \let\ot=\leftarrow
+
+% Improved versions of exists and forall, with spacing. 
+\newcommand{\pexists}[1]{(\exists\, #1)\;}
+\newcommand{\pforall}[1]{(\forall\, #1)\;}
+\newcommand{\pexistsun}[1]{(\exists!\, #1)\;}
+\newcommand{\pnexists}[1]{(\not\exists\, #1)\;}
+% Replace the following with the above, if possible:
+\newcommand{\sexists}[1]{\exists\, #1\;}
+%\newcommand{\exist}[1]{\exists\, #1\;}
+%\newcommand{\existun}[1]{\exists!\, #1\;}
+%\newcommand{\nexist}[1]{\not\exists\, #1\;}
+\newcommand{\foralls}[1]{\forall\, #1\;}
+
+ % relation symbols, needs amssymb.
+%  \renewcommand{\le}{\leqslant}
+%  \renewcommand{\ge}{\geqslant}
+  \newcommand{\pmid}{\parallel} 
+  \newcommand{\getseq}{\mathrel{\vcentcolon=}}
+  \newcommand{\eqgets}{\mathrel{=\vcentcolon}}
+ 
+\newcommand{\lea}{\stackrel{{}_+}{<}}
+\newcommand{\gea}{\stackrel{{}_+}{>}}
+\newcommand{\eqa}{\stackrel{{}_+}{=}}
+
+\newcommand{\lem}{\stackrel{{}_*}{<}}
+\newcommand{\gem}{\stackrel{{}_*}{>}}
+\newcommand{\eqm}{\stackrel{{}_*}{=}}
+
+ % symbols
+ \newcommand{\on}{\upharpoonright}
+ \newcommand \true{\hbox{\ttfamily true}}
+ \newcommand \false{\hbox{\ttfamily false}}
+ \newcommand {\sbs}{\subset}
+ \newcommand {\sbsq}{\subseteq}
+ \newcommand {\sbsnq}{\subsetneq}
+ \newcommand {\sps}{\supset}
+ \newcommand {\spsq}{\supseteq}
+ \newcommand {\spsnq}{\supsetneq}
+ \newcommand {\eset}{\emptyset}
+%  \newcommand {\xcpt}{\mathbin{\raise0.15ex\hbox{$\smallsetminus$}}}
+ \newcommand {\xcpt}{\setminus}
+
+% \newcommand{\var}[1]{\ensuremath{\mathord{\textrm{\upshape\HyphConv{#1}}}}}
+ \newcommand{\var}[1]{\ensuremath{\mathord{\textrm{\upshape{#1}}}}}
+
+% array with custom column separation
+\newenvironment{arraycs}[2]{\setlength{\arraycolsep}{#1}
+\begin{array}{#2}}{\end{array}}
+
+\newenvironment{parray}[1]{\setlength{\arraycolsep}{0.2em}
+\left(\hskip-\arraycolsep\begin{array}{#1}}{\end{array}
+\hskip-\arraycolsep\right )}
+
+% equations in an array with less column separation
+\newenvironment{arreqs}[1]{\setlength{\arraycolsep}{0.1em}%\renewcommand{\arraystretch}{1.2}
+\begin{array}{#1}}{\end{array}}
+
+ \newcommand{\smallfrac}[2]{{\scriptstyle \frac{#1}{#2}}}
+ \newcommand{\half}{{\scriptstyle \frac{1}{2}}}
+\newcommand{\third}{{\scriptstyle \frac{1}{3}}}
+ \newcommand{\fourth}{{\scriptstyle \frac{1}{4}}}
+ \newcommand{\threefourth}{{\scriptstyle \frac{3}{4}}}
+ \newcommand{\seveneighth}{{\scriptstyle \frac{7}{8}}}
+
+\newenvironment{spmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+
+\newcommand{\opint}[2]{(#1,#2)}
+\newcommand{\clint}[2]{[#1,#2]}
+\newcommand{\lint}[2]{\left[#1,#2\right)}
+\newcommand{\biglint}[2]{\bigl[#1,#2\bigr)}
+\newcommand{\Lint}[2]{\left[#1,#2\right)}
+\newcommand{\rint}[2]{(#1,#2]}
+
+\newcommand\amod{\mskip-\medmuskip\mkern5mu\mathbin
+  {\operator@font amod}\penalty900
+  \mkern5mu\mskip-\medmuskip}
+ % why is the spacing erased after amod in inline math mode?
+
+ % \gluesep stops glue-eating macros.
+ % Example: \begin{theorem}\gluesep \begin{itemize} etc.
+ % Now the first item begins on a new line.
+ \newcommand{\gluesep}{\rule{0pt}{0pt}}
+ % \<space> also works.
+
+% two dots
+\newcommand{\ldts}{\mathinner{\ldotp\ldotp}}
