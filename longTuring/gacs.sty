@@ -22,8 +22,17 @@
 \newif\if@sfHeadings{\@sfHeadingsfalse}
 \DeclareOption{sf-headings}{\@fontoptiontrue\@sfHeadingstrue}
 
+\newif\if@baskervilleHeadings{\@baskervilleHeadingsfalse}
+\DeclareOption{baskerville-headings}{\@fontoptiontrue\@baskervilleHeadingstrue}
+
 \newif\if@baskerville{\@baskervillefalse}
 \DeclareOption{baskerville}{\@fontoptiontrue\@baskervilletrue}
+
+\newif\if@narrowBold{\@narrowBoldfalse}
+\DeclareOption{narrow-bold}{\@fontoptiontrue\@narrowBoldtrue}
+
+\newif\if@charter{\@charterfalse}
+\DeclareOption{charter}{\@fontoptiontrue\@chartertrue}
 
 % No \RequirePackage before declaring and processing options.
 \ProcessOptions\relax
@@ -35,6 +44,24 @@
 \usepackage[baskerville]{newtxmath} 
 \usepackage[bb=ams]{mathalfa}
  }
+
+% Mathdesign without amssymb.
+% \newcommand{\myCharter}{
+%   % \usepackage{classico} % sans-serif 
+%   \usepackage{cabin} % sans-serif 
+%   \usepackage{inconsolata} % for nicer typewriter font
+%   \usepackage[bitstream-charter]{mathdesign} 
+%   \renewcommand{\mathcal}{\EuScript} % since charter redefined it.
+% }
+
+\newcommand{\myCharter}{
+  \usepackage[scaled=.98]{XCharter}% lining figures in math, osf in text
+  \usepackage[scaled=1.04,varqu,varl]{inconsolata}% inconsolata typewriter
+  \usepackage[type1,scaled=.9]{cabin}% sans serif
+  \usepackage[xcharter,noxchvw,scaled=1.07]{newtxmath}
+  \usepackage[cal=euler,bb=fourier]{mathalfa}
+  \linespread{1.04}
+}
 
 \RequirePackage{mathtools} % Can be used in place of amsmath
 % In amsmath:
@@ -67,14 +94,15 @@
 
 \RequirePackage{ifxetex} % For fonts that are only (or better) in xetex.
 
-\RequirePackage{amssymb} % not with mathdesign.  Already called in the template, to come before hyperref.
+%\RequirePackage{amssymb} % not with mathdesign.  Already called in the template, to come before hyperref.
 \RequirePackage{eucal} % For changing \mathcal to the Euler script style.
 \DeclareSymbolFont{bbold}{U}{bbold}{m}{n}
 %\DeclareMathAlphabet{\mathbfsf}{\encodingdefault}{\sfdefault}{bx}{n}
 
 % For a better CM boldface.
-\fontseries{b}\selectfont
-\renewcommand{\bfdefault}{b}
+% \fontseries{b}\selectfont
+% \renewcommand{\bfdefault}{b}
+
 \DeclareMathAlphabet{\mathbf}{\encodingdefault}{cmr}{b}{n}
 
 \ifxetex
@@ -135,7 +163,7 @@
 \RequirePackage{enumitem}
 \setlist[enumerate,1]{leftmargin=*}
 \setlist[enumerate,2]{leftmargin=*,label={\alph*.},ref=\theenumi\theenumii}
-\setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.9}{\textbullet}}}
+\setlist[itemize]{label=\raisebox{0.3ex}{\scalebox{0.9}{{\normalfont\textbullet}}}}
 \setlist[itemize,1]{leftmargin=*}
 \setlist[itemize,2]{label=$\circ$}
 %\setlist[description]{font=\normalfont\bfseries, leftmargin=1em}
@@ -415,11 +443,14 @@
       Package classico not available, using computer roman sf
     }%
   }%
-  \fi
-  \newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}
-  \fi
+  \fi % ifxetex
+  \newHeadings{\sffamily}{\sffamily\mdseries}\newTheorems{sf}{\sffamily\bfseries}\fi % if@sfHeadings
 
   \if@baskerville\myBaskerville\newTheorems{standard}{\bfseries}\fi
+
+  \if@charter\myCharter\newTheorems{standard}{\bfseries}\fi
+  
+  \if@narrowBold\fontseries{b}\selectfont\renewcommand{\bfdefault}{b}\fi
 
 % Math macros
 
@@ -568,6 +599,7 @@
  \newcommand{\bbR}{\mathbb{R}}
  \newcommand{\bbS}{\mathbb{S}}
  \newcommand{\bbT}{\mathbb{T}}
+ \newcommand{\bbU}{\mathbb{U}}
  \newcommand{\bbV}{\mathbb{V}}
  \newcommand{\bbX}{\mathbb{X}}
  \newcommand{\bbZ}{\mathbb{Z}}
@@ -681,7 +713,7 @@
 \newcommand{\pnexists}[1]{(\not\exists\, #1)\;}
 % Replace the following with the above, if possible:
 \newcommand{\sexists}[1]{\exists\, #1\;}
-%\newcommand{\exist}[1]{\exists\, #1\;}
+\newcommand{\exist}[1]{\exists\, #1\;}
 %\newcommand{\existun}[1]{\exists!\, #1\;}
 %\newcommand{\nexist}[1]{\not\exists\, #1\;}
 \newcommand{\foralls}[1]{\forall\, #1\;}
@@ -701,8 +733,10 @@
 \newcommand{\gem}{\stackrel{{}_*}{>}}
 \newcommand{\eqm}{\stackrel{{}_*}{=}}
 
- % symbols
- \newcommand{\on}{\upharpoonright}
+\newcommand{\mvert}{\,\vert\,}
+
+% symbols
+ \newcommand{\on}{\mathord{\upharpoonright}}
  \newcommand \true{\hbox{\ttfamily true}}
  \newcommand \false{\hbox{\ttfamily false}}
  \newcommand {\sbs}{\subset}
