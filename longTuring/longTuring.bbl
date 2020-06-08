@@ -1,4 +1,17 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
+
+\bibitem{AsarinCollins2005}
+Eugene Asarin and Pieter Collins.
+\newblock Noisy turing machines.
+\newblock In Lu{\'i}s Caires, Giuseppe~F. Italiano, Lu{\'i}s Monteiro, Catuscia
+  Palamidessi, and Moti Yung, editors, {\em Automata, Languages and
+  Programming}, pages 1031--1042, Berlin, Heidelberg, 2005. Springer Berlin
+  Heidelberg.
+
+\bibitem{BennettThermodynComp1982}
+Charles~H. Bennett.
+\newblock The thermodynamics of computation -- a review.
+\newblock {\em Intern. J. of Theor. Physics}, 21:905--940, 1981.
 
 \bibitem{burstyTuring13}
 Ilir \c{C}apuni and Peter G\'acs.
@@ -26,10 +39,31 @@ Peter G\'acs.
 \newblock See also arXiv:math/0003117 [math.PR] and the proceedings of STOC
   '97.
 
+\bibitem{GacsReif3dim88}
+Peter G\'acs and John Reif.
+\newblock A simple three-dimensional real-time reliable cellular array.
+\newblock {\em Journal of Computer and System Sciences}, 36(2):125--147, April
+  1988.
+\newblock Short version in STOC '85.
+
 \bibitem{Kurd78}
 G.~L. Kurdyumov.
 \newblock An example of a nonergodic homogenous one-dimensional random medium
   with positive transition probabilities.
 \newblock {\em Soviet Mathematics Doklady}, 19(1):211--214, 1978.
+
+\bibitem{QianSoloveichikWinfree2011}
+Lulu Qian, David Soloveichik, and Erik Winfree.
+\newblock Efficient turing-universal computation with dna polymers.
+\newblock In Yasubumi Sakakibara and Yongli Mi, editors, {\em DNA Computing and
+  Molecular Programming}, pages 123--140, Berlin, Heidelberg, 2011. Springer
+  Berlin Heidelberg.
+
+\bibitem{VonNeum56}
+John von Neumann.
+\newblock Probabilistic logics and the synthesis of reliable organisms from
+  unreliable components.
+\newblock In C.~Shannon and McCarthy, editors, {\em Automata Studies}.
+  Princeton University Press, Princeton, NJ., 1956.
 
 \end{thebibliography}
