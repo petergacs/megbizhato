@@ -59,6 +59,13 @@ Lulu Qian, David Soloveichik, and Erik Winfree.
   Molecular Programming}, pages 123--140, Berlin, Heidelberg, 2011. Springer
   Berlin Heidelberg.
 
+\bibitem{Toom80}
+Andrei~L. Toom.
+\newblock Stable and attractive trajectories in multicomponent systems.
+\newblock In R.~L. Dobrushin, editor, {\em Multicomponent Systems}, volume~6 of
+  {\em Advances in Probability}, pages 549--575. Dekker, New York, 1980.
+\newblock Translation from Russian.
+
 \bibitem{VonNeum56}
 John von Neumann.
 \newblock Probabilistic logics and the synthesis of reliable organisms from

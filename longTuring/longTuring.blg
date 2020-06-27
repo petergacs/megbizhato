@@ -4,44 +4,44 @@ The top-level auxiliary file: longTuring.aux
 The style file: plain.bst
 Database file #1: reli.bib
 Database file #2: gacs-publ.bib
-You've used 10 entries,
+You've used 11 entries,
             2118 wiz_defined-function locations,
-            581 strings with 5962 characters,
-and the built_in function-call counts, 3527 in all, are:
-= -- 355
-> -- 143
-< -- 2
-+ -- 57
-- -- 43
-* -- 243
-:= -- 590
-add.period$ -- 37
-call.type$ -- 10
-change.case$ -- 47
+            594 strings with 6158 characters,
+and the built_in function-call counts, 4002 in all, are:
+= -- 405
+> -- 154
+< -- 4
++ -- 61
+- -- 46
+* -- 274
+:= -- 659
+add.period$ -- 42
+call.type$ -- 11
+change.case$ -- 51
 chr.to.int$ -- 0
-cite$ -- 10
-duplicate$ -- 139
-empty$ -- 287
-format.name$ -- 43
-if$ -- 754
+cite$ -- 11
+duplicate$ -- 164
+empty$ -- 330
+format.name$ -- 46
+if$ -- 867
 int.to.chr$ -- 0
-int.to.str$ -- 10
-missing$ -- 10
-newline$ -- 57
-num.names$ -- 26
-pop$ -- 38
+int.to.str$ -- 11
+missing$ -- 11
+newline$ -- 63
+num.names$ -- 30
+pop$ -- 42
 preamble$ -- 1
-purify$ -- 37
+purify$ -- 40
 quote$ -- 0
-skip$ -- 97
+skip$ -- 115
 stack$ -- 0
-substring$ -- 247
-swap$ -- 30
-text.length$ -- 2
+substring$ -- 280
+swap$ -- 42
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 40
+type$ -- 44
 warning$ -- 0
-while$ -- 36
-width$ -- 12
-write$ -- 124
+while$ -- 41
+width$ -- 13
+write$ -- 140
